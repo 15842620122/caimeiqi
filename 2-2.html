@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>120 蔡美琪</title>
+    <style>
+        /* 标准表格样式，规范边框、间距 */
+        table {
+            /* 边框合并，标准表格样式 */
+            border-collapse: collapse;
+            width: 600px;
+            margin-top: 30px;
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 10px;
+            text-align: center;
+        }
+        /* 表头加深区分 */
+        th {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <a href="./index.html" aria-label="返回首页" style="position:fixed;top:12px;right:12px;z-index:9999;padding:9px 14px;border-radius:999px;background:#426b50;color:#fff;text-decoration:none;font:14px 'Microsoft YaHei',sans-serif;box-shadow:0 3px 12px rgba(0,0,0,.18)">← 返回首页</a>
+    <!--文本超链接-->
+    <a href="https://www.huanqiu.com">环球网</a>
+    <a href="./2-1.html">本地超链接，相对路径</a>
+    <!--./表示当前目录，..表示上一级目录-->
+    <!-- 多个html属性中间用空格分隔-->
+
+    <!--1、图片超链接 标准写法：a包裹img，alt必填（图片加载失败提示）-->
+    <p>图片跳转链接（点击图片打开环球网）：</p>
+    <a href="https://www.huanqiu.com" target="_blank">
+        <img src="./img/7.jpg" width="200" alt="环球网配图">
+    </a>
+
+    <img src="./img/9.jpg" width="200" title="seo,搜索引擎优化" alt="seo配图">
+    <img src="./img/8.jpg" width="200" alt="风景图">
+    <!--只设置宽度，高度自动等比例缩放-->
+
+    <hr>
+    <!--2、标准4行3列表格：大国重器 标准语义化表格结构-->
+    <h3>大国重器信息表</h3>
+    <table>
+        <!--表头区域 第1行-->
+        <thead>
+            <tr>
+                <th>重器名称</th>
+                <th>所属领域</th>
+                <th>核心价值</th>
+            </tr>
+        </thead>
+        <!--表格数据主体 第2、3、4行，总共4行3列-->
+        <tbody>
+            <tr>
+                <td>复兴号动车组</td>
+                <td>轨道交通</td>
+                <td>完全自主知识产权高速列车</td>
+            </tr>
+            <tr>
+                <td>福建舰</td>
+                <td>国防军工</td>
+                <td>国产电磁弹射航空母舰</td>
+            </tr>
+            <tr>
+                <td>嫦娥六号探测器</td>
+                <td>航天工程</td>
+                <td>月球背面无人采样返回</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

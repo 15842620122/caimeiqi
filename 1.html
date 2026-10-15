@@ -1,0 +1,2641 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="一份关于山野植物与浆果的静态自然图鉴。">
+    <title>山野植物手册 · 在林间遇见自然</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --ink: #23352c;
+            --muted: #738078;
+            --green: #426b50;
+            --green-dark: #294a38;
+            --green-soft: #edf2e9;
+            --paper: #f8f7f1;
+            --line: #e7e8df;
+            --serif: "Songti SC", "Noto Serif CJK SC", "STSong", serif;
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        h1,
+        h2,
+        h3,
+        p,
+        dl,
+        dd {
+            margin-block-start: 0;
+        }
+
+        img {
+            display: block;
+            max-width: 100%;
+        }
+
+        ul,
+        ol {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            color: var(--ink);
+            background: var(--paper);
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .site-header {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: rgba(248, 247, 241, 0.88);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(35, 53, 44, 0.08);
+        }
+
+        .header-inner,
+        .section-inner,
+        .footer-inner {
+            width: min(1160px, calc(100% - 64px));
+            margin: 0 auto;
+        }
+
+        .header-inner {
+            min-height: 78px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 32px;
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 11px;
+            flex-shrink: 0;
+        }
+
+        .brand-mark {
+            width: 38px;
+            height: 38px;
+            display: grid;
+            place-items: center;
+            color: #f8f7f1;
+            background: var(--green);
+            border-radius: 50% 50% 46% 12%;
+            font-family: var(--serif);
+            font-size: 21px;
+        }
+
+        .brand-name {
+            display: block;
+            font-family: var(--serif);
+            font-size: 17px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+        }
+
+        .brand-subtitle {
+            display: block;
+            margin-top: 3px;
+            color: var(--muted);
+            font-size: 10px;
+            letter-spacing: 0.16em;
+        }
+
+        .site-nav {
+            display: flex;
+            align-items: center;
+            gap: 34px;
+            color: #536258;
+            font-size: 13px;
+        }
+
+        .site-nav a {
+            position: relative;
+            padding: 10px 0;
+            transition: color 180ms ease;
+        }
+
+        .site-nav a::after {
+            position: absolute;
+            right: 0;
+            bottom: 4px;
+            left: 0;
+            height: 1px;
+            content: "";
+            background: var(--green);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 180ms ease;
+        }
+
+        .site-nav a:hover,
+        .site-nav a:focus-visible {
+            color: var(--green);
+        }
+
+        .site-nav a:hover::after,
+        .site-nav a:focus-visible::after {
+            transform: scaleX(1);
+        }
+
+        :focus-visible {
+            outline: 2px solid #6d8b65;
+            outline-offset: 4px;
+        }
+
+        .nav-note {
+            padding: 10px 15px;
+            color: var(--green);
+            background: var(--green-soft);
+            border-radius: 999px;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .hero {
+            position: relative;
+            overflow: hidden;
+            background:
+                radial-gradient(ellipse at 14% 90%, rgba(208, 218, 196, 0.5), transparent 38%),
+                linear-gradient(110deg, #f5f4eb 0%, #f5f4eb 53%, #e7eddf 100%);
+        }
+
+        .hero::after {
+            position: absolute;
+            top: -145px;
+            right: -125px;
+            width: 360px;
+            aspect-ratio: 1;
+            border: 1px solid rgba(66, 107, 80, 0.09);
+            border-radius: 50%;
+            content: "";
+            box-shadow: 0 0 0 28px rgba(66, 107, 80, 0.025), 0 0 0 58px rgba(66, 107, 80, 0.02);
+            pointer-events: none;
+        }
+
+        .hero-inner {
+            position: relative;
+            z-index: 1;
+            width: min(1160px, calc(100% - 64px));
+            min-height: 530px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 0.94fr;
+            align-items: center;
+            gap: 70px;
+            padding: 58px 0;
+        }
+
+        .hero-content {
+            animation: rise-in 700ms both;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            color: var(--green);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.2em;
+        }
+
+        .eyebrow::before {
+            width: 25px;
+            height: 1px;
+            content: "";
+            background: currentColor;
+        }
+
+        .hero h1 {
+            margin: 24px 0 19px;
+            font-family: var(--serif);
+            font-size: clamp(42px, 5.1vw, 66px);
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            line-height: 1.26;
+        }
+
+        .hero h1 span {
+            display: block;
+            color: var(--green);
+        }
+
+        .hero-copy {
+            max-width: 430px;
+            color: #68766c;
+            font-size: 14px;
+            line-height: 2;
+        }
+
+        .hero-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 28px;
+        }
+
+        .hero-meta span {
+            padding: 8px 13px;
+            color: #5d705f;
+            background: rgba(255, 255, 255, 0.68);
+            border: 1px solid rgba(66, 107, 80, 0.1);
+            border-radius: 999px;
+            font-size: 11px;
+        }
+
+        .hero-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 27px;
+            padding-bottom: 7px;
+            color: var(--green-dark);
+            border-bottom: 1px solid rgba(66, 107, 80, 0.32);
+            font-size: 12px;
+            font-weight: 600;
+            transition: gap 180ms ease, color 180ms ease, border-color 180ms ease;
+        }
+
+        .hero-link:hover,
+        .hero-link:focus-visible {
+            gap: 18px;
+            color: #587d5a;
+            border-color: currentColor;
+        }
+
+        .hero-visual {
+            position: relative;
+            min-height: 390px;
+            padding: 18px;
+            background: rgba(255, 255, 255, 0.48);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: 46% 46% 18px 18px;
+            box-shadow: 0 24px 65px rgba(47, 66, 48, 0.12);
+            animation: rise-in 900ms 100ms both, hero-float 8s 1s ease-in-out infinite alternate;
+        }
+
+        .hero-visual img {
+            display: block;
+            width: 100%;
+            height: 390px;
+            object-fit: cover;
+            object-position: center 29%;
+            border-radius: 46% 46% 12px 12px;
+        }
+
+        .image-caption {
+            position: absolute;
+            right: -20px;
+            bottom: 34px;
+            padding: 14px 19px;
+            color: var(--ink);
+            background: #fbfaf4;
+            box-shadow: 0 8px 26px rgba(35, 53, 44, 0.12);
+            animation: caption-in 700ms 450ms both;
+        }
+
+        .image-caption strong,
+        .image-caption span {
+            display: block;
+        }
+
+        .image-caption strong {
+            font-family: var(--serif);
+            font-size: 16px;
+            letter-spacing: 0.1em;
+        }
+
+        .image-caption span {
+            margin-top: 5px;
+            color: var(--muted);
+            font-size: 10px;
+            letter-spacing: 0.08em;
+        }
+
+        .intro-strip {
+            border-bottom: 1px solid var(--line);
+            background: #fffefa;
+        }
+
+        .intro-inner {
+            width: min(1160px, calc(100% - 64px));
+            min-height: 100px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 32px;
+        }
+
+        .intro-inner p {
+            margin: 0;
+            color: #68766c;
+            font-family: var(--serif);
+            font-size: 16px;
+            letter-spacing: 0.04em;
+        }
+
+        .intro-index {
+            color: #a1aa9d;
+            font-family: var(--serif);
+            font-size: 12px;
+            letter-spacing: 0.18em;
+            white-space: nowrap;
+        }
+
+        .reading-guide {
+            padding: 72px 0 20px;
+        }
+
+        .reading-guide-heading {
+            display: grid;
+            grid-template-columns: 0.8fr 1.2fr;
+            align-items: end;
+            gap: 35px;
+            margin-bottom: 28px;
+        }
+
+        .reading-guide-heading h2 {
+            margin: 12px 0 0;
+            font-family: var(--serif);
+            font-size: clamp(25px, 3vw, 34px);
+            font-weight: 500;
+            letter-spacing: 0.08em;
+        }
+
+        .reading-guide-heading p {
+            max-width: 620px;
+            margin: 0;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.95;
+        }
+
+        .reading-guide-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .reading-guide-card {
+            min-height: 170px;
+            padding: 23px;
+            background: #fffefa;
+            border: 1px solid var(--line);
+        }
+
+        .reading-guide-card span {
+            color: #93a18f;
+            font-family: Georgia, serif;
+            font-size: 11px;
+            letter-spacing: 0.15em;
+        }
+
+        .reading-guide-card h3 {
+            margin: 14px 0 9px;
+            color: var(--green-dark);
+            font-family: var(--serif);
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .reading-guide-card p {
+            margin: 0;
+            color: #748078;
+            font-size: 12px;
+            line-height: 1.9;
+        }
+
+        .collection-stats {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            margin-top: 30px;
+            padding: 20px 0;
+            border-top: 1px solid var(--line);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .caimeiqi_category-nav {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+            margin: 26px 0 34px;
+        }
+
+        .caimeiqi_category-card {
+            --caimeiqi_category-accent: #19715e;
+            display: grid;
+            grid-template-columns: 48px minmax(0, 1fr);
+            align-items: start;
+            gap: 16px;
+            min-height: 142px;
+            padding: 22px;
+            color: #263d31;
+            background: linear-gradient(115deg, #f6faf6, #eaf3ed);
+            border: 1px solid #dce7dd;
+            border-left: 4px solid var(--caimeiqi_category-accent);
+            border-radius: 10px;
+            text-decoration: none;
+            transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+        }
+
+        .caimeiqi_category-card--fruits {
+            --caimeiqi_category-accent: #b36b3d;
+            background: linear-gradient(115deg, #fbf7ef, #f4eee1);
+        }
+
+        .caimeiqi_category-card--shrubs {
+            --caimeiqi_category-accent: #718b43;
+            background: linear-gradient(115deg, #f8faef, #edf2df);
+        }
+
+        .caimeiqi_category-card--vines {
+            --caimeiqi_category-accent: #526f9b;
+            background: linear-gradient(115deg, #f2f7fa, #e8eff5);
+        }
+
+        .caimeiqi_category-card:hover,
+        .caimeiqi_category-card:focus-visible {
+            transform: translateY(-3px);
+            border-color: var(--caimeiqi_category-accent);
+            box-shadow: 0 12px 28px rgba(35, 53, 44, 0.09);
+        }
+
+        .caimeiqi_category-card:focus-visible {
+            outline: 2px solid var(--caimeiqi_category-accent);
+            outline-offset: 3px;
+        }
+
+        .caimeiqi_category-icon {
+            display: grid;
+            width: 48px;
+            height: 48px;
+            place-items: center;
+            color: #fffefa;
+            background: var(--caimeiqi_category-accent);
+            border-radius: 12px;
+            box-shadow: 0 5px 12px rgba(35, 53, 44, 0.14);
+        }
+
+        .caimeiqi_category-icon svg {
+            width: 25px;
+            height: 25px;
+        }
+
+        .caimeiqi_category-copy {
+            display: grid;
+            gap: 8px;
+        }
+
+        .caimeiqi_category-copy strong {
+            font-family: var(--serif);
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .caimeiqi_category-copy span {
+            color: #708078;
+            font-size: 12px;
+            line-height: 1.8;
+        }
+
+        .caimeiqi_category-copy em {
+            color: var(--caimeiqi_category-accent);
+            font-size: 11px;
+            font-style: normal;
+            font-weight: 600;
+        }
+
+        .collection-stat {
+            padding: 0 22px;
+            border-right: 1px solid var(--line);
+        }
+
+        .collection-stat:first-child {
+            padding-left: 0;
+        }
+
+        .collection-stat:last-child {
+            border-right: 0;
+        }
+
+        .collection-stat strong,
+        .collection-stat span {
+            display: block;
+        }
+
+        .collection-stat strong {
+            color: var(--green-dark);
+            font-family: var(--serif);
+            font-size: 19px;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+        }
+
+        .collection-stat span {
+            margin-top: 5px;
+            color: #879187;
+            font-size: 10px;
+            letter-spacing: 0.06em;
+        }
+
+        .plants-section {
+            padding: 88px 0 96px;
+            scroll-margin-top: 78px;
+            counter-reset: specimen;
+        }
+
+        .section-heading {
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            gap: 24px;
+            margin-bottom: 34px;
+        }
+
+        .section-heading h2 {
+            margin: 12px 0 0;
+            font-family: var(--serif);
+            font-size: clamp(28px, 3vw, 38px);
+            font-weight: 500;
+            letter-spacing: 0.08em;
+        }
+
+        .section-heading p {
+            max-width: 300px;
+            margin: 0 0 3px;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.8;
+        }
+
+        .plant-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 24px;
+        }
+
+        .plant-category-title {
+            grid-column: 1 / -1;
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 18px;
+            margin: 22px 0 0;
+            padding: 17px 0 13px;
+            border-bottom: 1px solid var(--line);
+            scroll-margin-top: 100px;
+        }
+
+        .plant-category-title strong {
+            color: var(--green-dark);
+            font-family: var(--serif);
+            font-size: 21px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+        }
+
+        .plant-category-title span {
+            color: #899489;
+            font-size: 10px;
+            letter-spacing: 0.08em;
+        }
+
+        .plant-card {
+            position: relative;
+            counter-increment: specimen;
+            overflow: hidden;
+            background: #fffefa;
+            border: 1px solid #ecece4;
+            border-radius: 5px;
+            box-shadow: 0 5px 18px rgba(35, 53, 44, 0.025);
+            transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+        }
+
+        .plant-card:hover {
+            transform: translateY(-6px);
+            border-color: #d8dfd2;
+            box-shadow: 0 18px 38px rgba(35, 53, 44, 0.1);
+        }
+
+        .plant-image {
+            position: relative;
+            min-height: 370px;
+            display: grid;
+            place-items: center;
+            overflow: hidden;
+            background: #f0ead9;
+        }
+
+        .plant-image::after {
+            position: absolute;
+            top: 14px;
+            left: 14px;
+            padding: 7px 9px;
+            color: #f8f7f1;
+            background: rgba(35, 53, 44, 0.75);
+            content: "SPECIMEN / 0" counter(specimen);
+            font-family: Georgia, serif;
+            font-size: 9px;
+            letter-spacing: 0.12em;
+            opacity: 0.88;
+            transition: background-color 180ms ease, opacity 180ms ease;
+            pointer-events: none;
+        }
+
+        .plant-card:hover .plant-image::after {
+            background: var(--green);
+            opacity: 1;
+        }
+
+        .plant-image img {
+            display: block;
+            width: 100%;
+            height: 370px;
+            object-fit: contain;
+            transition: transform 350ms cubic-bezier(0.2, 0.7, 0.3, 1);
+        }
+
+        .plant-image-link {
+            display: grid;
+            width: 100%;
+            height: 100%;
+            place-items: center;
+        }
+
+        .plant-image-link:focus-visible {
+            position: relative;
+            z-index: 1;
+            outline-offset: -5px;
+        }
+
+        .plant-card:hover .plant-image img {
+            transform: scale(1.035);
+        }
+
+        .plant-info {
+            padding: 20px 21px 22px;
+        }
+
+        .plant-topline {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 14px;
+        }
+
+        .plant-topline h3 {
+            margin: 0;
+            font-family: var(--serif);
+            font-size: 22px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+        }
+
+        .plant-topline h3::after {
+            display: block;
+            width: 24px;
+            height: 1px;
+            margin-top: 8px;
+            content: "";
+            background: #b7c4ae;
+            transition: width 220ms ease;
+        }
+
+        .plant-card:hover .plant-topline h3::after {
+            width: 44px;
+        }
+
+        .plant-latin {
+            color: #9aa397;
+            font-family: Georgia, serif;
+            font-size: 11px;
+            font-style: italic;
+        }
+
+        .plant-info p {
+            margin: 12px 0 0;
+            color: #738078;
+            font-size: 12px;
+            line-height: 1.85;
+        }
+
+        .plant-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+            margin-top: 16px;
+        }
+
+        .plant-tags span {
+            padding: 5px 9px;
+            color: #647767;
+            background: var(--green-soft);
+            border-radius: 2px;
+            font-size: 10px;
+        }
+
+        .plant-more {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 17px;
+            color: var(--green);
+            font-size: 11px;
+            font-weight: 600;
+            transition: gap 180ms ease;
+        }
+
+        .plant-more:hover,
+        .plant-more:focus-visible {
+            gap: 13px;
+        }
+
+        .plant-details {
+            padding: 0 0 96px;
+            scroll-margin-top: 78px;
+        }
+
+        .details-heading {
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            gap: 24px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .details-heading h2 {
+            margin: 11px 0 0;
+            font-family: var(--serif);
+            font-size: clamp(27px, 3vw, 36px);
+            font-weight: 500;
+            letter-spacing: 0.08em;
+        }
+
+        .details-heading p {
+            max-width: 330px;
+            margin: 0;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.8;
+        }
+
+        .detail-list {
+            display: grid;
+            gap: 18px;
+        }
+
+        .detail-category-title {
+            margin: 24px 0 0;
+            padding-bottom: 12px;
+            color: var(--green-dark);
+            border-bottom: 1px solid var(--line);
+            font-family: var(--serif);
+            font-size: 19px;
+            letter-spacing: 0.08em;
+        }
+
+        .detail-entry {
+            display: grid;
+            grid-template-columns: minmax(210px, 0.72fr) 1.28fr;
+            overflow: hidden;
+            scroll-margin-top: 94px;
+            background: #fffefa;
+            border: 1px solid #ecece4;
+            transition: border-color 180ms ease, box-shadow 180ms ease;
+        }
+
+        .detail-entry:target {
+            border-color: #aabda5;
+            box-shadow: 0 0 0 3px rgba(66, 107, 80, 0.08);
+        }
+
+        .detail-entry:nth-child(even) {
+            grid-template-columns: 1.28fr minmax(210px, 0.72fr);
+        }
+
+        .detail-entry:nth-child(even) .detail-visual {
+            order: 1;
+        }
+
+        .detail-visual {
+            height: 350px;
+            display: grid;
+            place-items: center;
+            overflow: hidden;
+            background: #f0ead9;
+        }
+
+        .detail-visual img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            max-height: 370px;
+            object-fit: contain;
+            transition: transform 280ms ease;
+        }
+
+        .detail-entry:hover .detail-visual img {
+            transform: scale(1.025);
+        }
+
+        .detail-copy {
+            align-self: center;
+            padding: 30px clamp(22px, 4vw, 48px);
+        }
+
+        .detail-number {
+            color: #8a9988;
+            font-family: Georgia, serif;
+            font-size: 10px;
+            letter-spacing: 0.16em;
+        }
+
+        .detail-copy h3 {
+            margin: 10px 0 12px;
+            font-family: var(--serif);
+            font-size: 25px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+        }
+
+        .detail-copy > p {
+            margin: 0;
+            color: #6f7b71;
+            font-size: 13px;
+            line-height: 1.95;
+        }
+
+        .detail-facts {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px 20px;
+            margin: 22px 0 0;
+            padding-top: 18px;
+            border-top: 1px solid var(--line);
+        }
+
+        .detail-facts div {
+            min-width: 0;
+        }
+
+        .detail-facts dt {
+            margin-bottom: 5px;
+            color: var(--green);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+        }
+
+        .detail-facts dd {
+            margin: 0;
+            color: #7b877d;
+            font-size: 11px;
+            line-height: 1.7;
+        }
+
+        .detail-back {
+            display: inline-flex;
+            gap: 7px;
+            margin-top: 21px;
+            color: var(--green);
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .safety-note {
+            margin: 20px 0 0;
+            padding: 15px 18px;
+            color: #68766c;
+            background: #edf2e9;
+            font-size: 11px;
+            line-height: 1.8;
+        }
+
+        .field-note {
+            padding: 24px 0 88px;
+            scroll-margin-top: 98px;
+        }
+
+        .field-note-inner {
+            display: block;
+        }
+
+        .news-center-heading {
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .news-center-heading h2 {
+            display: inline-flex;
+            align-items: center;
+            gap: 24px;
+            margin: 0;
+            font-family: var(--serif);
+            font-size: 23px;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+        }
+
+        .news-center-heading h2::before,
+        .news-center-heading h2::after {
+            width: 48px;
+            height: 1px;
+            content: "";
+            background: #cbd3ca;
+        }
+
+        .news-tabs {
+            display: grid;
+            grid-auto-flow: column;
+            justify-content: center;
+            gap: 8px;
+            margin: 17px 0 26px;
+        }
+
+        .news-tab {
+            min-height: 32px;
+            padding: 0 15px;
+            border: 1px solid transparent;
+            border-radius: 999px;
+            color: #69756c;
+            background: #f1f2ee;
+            font: inherit;
+            font-size: 11px;
+            cursor: pointer;
+            transition: color 180ms ease, background-color 180ms ease, border-color 180ms ease;
+        }
+
+        .news-tab:hover,
+        .news-tab:focus-visible,
+        .news-tab[aria-pressed="true"] {
+            color: #fff;
+            background: #3d9c66;
+            border-color: #3d9c66;
+        }
+
+        .news-layout {
+            display: grid;
+            grid-template-columns: minmax(220px, 0.72fr) minmax(0, 1.65fr);
+            gap: 24px;
+        }
+
+        .news-feature {
+            align-self: start;
+            margin: 0;
+            background: #f0f0eb;
+        }
+
+        .news-feature img {
+            width: 100%;
+            height: 190px;
+            object-fit: cover;
+            object-position: center 43%;
+        }
+
+        .news-feature figcaption {
+            padding: 9px 10px;
+            color: #657168;
+            font-size: 11px;
+            text-align: center;
+        }
+
+        .news-list {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            align-content: start;
+            column-gap: 22px;
+        }
+
+        .news-item {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 10px;
+            min-height: 42px;
+            border-bottom: 1px solid #e8e9e4;
+            color: #39483d;
+            font-size: 11px;
+            transition: color 160ms ease;
+        }
+
+        .news-item:hover,
+        .news-item:focus-visible {
+            color: #318854;
+        }
+
+        .news-item[hidden] {
+            display: none;
+        }
+
+        .news-title {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .news-item time {
+            color: #7b847d;
+            font-size: 10px;
+            white-space: nowrap;
+        }
+
+        .news-status {
+            min-height: 18px;
+            margin: 9px 0 0;
+            color: var(--muted);
+            font-size: 11px;
+            text-align: right;
+        }
+
+        .site-footer {
+            padding: 25px 0;
+            color: #9ca69c;
+            background: #283d30;
+            font-size: 11px;
+        }
+
+        .brand-mark {
+            border-radius: 50%;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .site-header {
+            background: #fff;
+            border-bottom-color: #e9eee6;
+            backdrop-filter: none;
+        }
+
+        .site-nav {
+            gap: clamp(18px, 2.8vw, 36px);
+            color: #55734a;
+        }
+
+        .site-nav a::after {
+            display: none;
+        }
+
+        .site-nav a:hover,
+        .site-nav a:focus-visible {
+            color: #fff;
+        }
+
+        .site-nav a:first-child {
+            padding: 12px 18px;
+            color: #fff;
+            background: #579632;
+        }
+
+        .site-nav a:first-child:hover,
+        .site-nav a:first-child:focus-visible {
+            background: #477d29;
+        }
+
+        .nav-note {
+            padding: 9px 14px;
+            color: #fff;
+            background: #609c38;
+            font-size: 11px;
+        }
+
+        .hero {
+            min-height: 400px;
+            background-color: #35502b;
+            background-image:
+                linear-gradient(90deg, rgba(18, 34, 19, 0.38), rgba(18, 34, 19, 0.1) 55%, rgba(18, 34, 19, 0.22)),
+                url("./img/s16.jpg");
+            background-position: center 48%;
+            background-size: cover;
+        }
+
+        .hero::after {
+            display: none;
+        }
+
+        .hero-inner {
+            width: min(1160px, calc(100% - 64px));
+            min-height: 400px;
+            display: flex;
+            justify-content: center;
+            padding: 30px 0;
+        }
+
+        .hero-search {
+            width: min(760px, 100%);
+            align-self: center;
+            text-align: center;
+        }
+
+        .hero-search-title {
+            margin: 0 0 21px;
+            color: #fff;
+            font-family: var(--serif);
+            font-size: clamp(23px, 3.5vw, 34px);
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            text-shadow: 0 2px 12px rgba(15, 27, 16, 0.45);
+        }
+
+        .plant-search {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            min-height: 54px;
+            padding: 5px 6px 5px 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: 999px;
+            background: #fff;
+            box-shadow: 0 12px 34px rgba(12, 26, 14, 0.24);
+        }
+
+        .plant-search select {
+            max-width: 130px;
+            padding: 0 28px 0 4px;
+            color: #38453b;
+            background: transparent;
+            border: 0;
+            font: inherit;
+            font-size: 13px;
+        }
+
+        .plant-search input {
+            flex: 1;
+            min-width: 0;
+            height: 40px;
+            padding: 0 12px;
+            color: var(--ink);
+            border: 0;
+            outline: 0;
+            font: inherit;
+            font-size: 14px;
+        }
+
+        .plant-search input::placeholder {
+            color: #9aa49a;
+        }
+
+        .plant-search button {
+            width: 42px;
+            height: 42px;
+            display: grid;
+            flex: 0 0 auto;
+            place-items: center;
+            color: #fff;
+            background: #579632;
+            border: 0;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 180ms ease, transform 180ms ease;
+        }
+
+        .plant-search button:hover {
+            background: #477d29;
+            transform: scale(1.04);
+        }
+
+        .plant-search button svg {
+            width: 19px;
+            height: 19px;
+        }
+
+        .search-hint {
+            min-height: 20px;
+            margin: 13px 0 0;
+            color: #fff;
+            font-size: 12px;
+            text-shadow: 0 1px 8px rgba(15, 27, 16, 0.65);
+        }
+
+        .hero-caption {
+            min-height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 20px;
+            color: #a96e27;
+            background: rgba(248, 247, 241, 0.78);
+            font-family: Georgia, var(--serif);
+            font-size: 11px;
+            letter-spacing: 0.04em;
+            text-align: center;
+        }
+
+        .plant-card[hidden],
+        .plant-category-title[hidden] {
+            display: none;
+        }
+
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        @keyframes rise-in {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes caption-in {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes hero-float {
+            from {
+                transform: translateY(0);
+            }
+
+            to {
+                transform: translateY(-7px);
+            }
+        }
+
+        .footer-inner {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        @media (max-width: 820px) {
+            .header-inner,
+            .section-inner,
+            .footer-inner,
+            .hero-inner,
+            .intro-inner {
+                width: min(100% - 40px, 620px);
+            }
+
+            .reading-guide-heading {
+                grid-template-columns: 1fr;
+                gap: 14px;
+            }
+
+            .reading-guide-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .caimeiqi_category-nav {
+                gap: 12px;
+            }
+
+            .caimeiqi_category-card {
+                grid-template-columns: 40px minmax(0, 1fr);
+                gap: 12px;
+                padding: 17px;
+            }
+
+            .caimeiqi_category-icon {
+                width: 40px;
+                height: 40px;
+            }
+
+            .site-nav {
+                gap: 18px;
+            }
+
+            .nav-note {
+                display: none;
+            }
+
+            .hero-inner {
+                min-height: auto;
+                grid-template-columns: 1fr 0.8fr;
+                gap: 28px;
+                padding: 56px 0;
+            }
+
+            .hero-visual,
+            .hero-visual img {
+                min-height: 330px;
+                height: 330px;
+            }
+
+            .plant-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 14px;
+            }
+
+            .plant-image,
+            .plant-image img {
+                min-height: 300px;
+                height: 300px;
+            }
+
+            .plant-info {
+                padding: 17px 15px 19px;
+            }
+
+            .plant-topline {
+                align-items: start;
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .field-note-inner {
+                width: min(1160px, calc(100% - 40px));
+            }
+
+            .news-layout {
+                grid-template-columns: minmax(175px, 0.72fr) minmax(0, 1.65fr);
+                gap: 18px;
+            }
+
+            .news-list {
+                grid-template-columns: 1fr;
+            }
+
+            .plant-details {
+                padding-bottom: 72px;
+            }
+
+            .detail-entry,
+            .detail-entry:nth-child(even) {
+                grid-template-columns: minmax(160px, 0.75fr) 1.25fr;
+            }
+
+            .detail-copy {
+                padding: 22px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .header-inner {
+                min-height: 68px;
+                gap: 12px;
+            }
+
+            .brand-name {
+                font-size: 15px;
+            }
+
+            .brand-subtitle {
+                font-size: 9px;
+            }
+
+            .site-nav {
+                gap: 14px;
+                font-size: 11px;
+            }
+
+            .hero-inner {
+                grid-template-columns: 1fr;
+                gap: 32px;
+                padding: 55px 0 48px;
+            }
+
+            .hero h1 {
+                margin-top: 18px;
+                font-size: 47px;
+            }
+
+            .hero-copy {
+                font-size: 13px;
+            }
+
+            .hero-visual {
+                width: min(100%, 390px);
+                height: auto;
+                min-height: 280px;
+                margin: 0 auto;
+            }
+
+            .hero-visual img {
+                min-height: 0;
+                height: 244px;
+                object-position: center top;
+            }
+
+            .image-caption {
+                right: -8px;
+                bottom: 26px;
+            }
+
+            .intro-inner {
+                min-height: 84px;
+            }
+
+            .intro-inner p {
+                font-size: 13px;
+                line-height: 1.8;
+            }
+
+            .intro-index {
+                font-size: 10px;
+            }
+
+            .plants-section {
+                padding: 64px 0;
+            }
+
+            .collection-stats {
+                margin-top: 23px;
+                padding: 17px 0;
+            }
+
+            .collection-stat {
+                padding: 0 11px;
+            }
+
+            .collection-stat strong {
+                font-size: 16px;
+            }
+
+            .collection-stat span {
+                font-size: 9px;
+            }
+
+            .caimeiqi_category-nav {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                margin: 20px 0 28px;
+            }
+
+            .caimeiqi_category-card {
+                min-height: 0;
+                padding: 16px;
+            }
+
+            .section-heading {
+                align-items: start;
+                flex-direction: column;
+                gap: 13px;
+                margin-bottom: 24px;
+            }
+
+            .section-heading p {
+                max-width: 100%;
+            }
+
+            .plant-grid {
+                grid-template-columns: 1fr;
+                gap: 18px;
+            }
+
+            .plant-image,
+            .plant-image img {
+                min-height: 0;
+                height: 390px;
+            }
+
+            .details-heading {
+                align-items: start;
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .detail-entry,
+            .detail-entry:nth-child(even) {
+                grid-template-columns: 1fr;
+            }
+
+            .detail-entry:nth-child(even) .detail-visual {
+                order: 0;
+            }
+
+            .detail-visual {
+                height: 310px;
+            }
+
+            .detail-copy {
+                padding: 22px 20px 24px;
+            }
+
+            .detail-copy h3 {
+                font-size: 22px;
+            }
+
+            .detail-facts {
+                gap: 12px;
+            }
+
+            .plant-topline {
+                align-items: baseline;
+                flex-direction: row;
+            }
+
+            .field-note {
+                padding-bottom: 58px;
+            }
+
+            .field-note-inner {
+                width: min(1160px, calc(100% - 36px));
+            }
+
+            .news-center-heading h2 {
+                gap: 12px;
+                font-size: 20px;
+            }
+
+            .news-center-heading h2::before,
+            .news-center-heading h2::after {
+                width: 28px;
+            }
+
+            .news-tabs {
+                gap: 5px;
+                margin-bottom: 20px;
+            }
+
+            .news-tab {
+                padding: 0 11px;
+                font-size: 10px;
+            }
+
+            .news-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .news-feature img {
+                height: 210px;
+            }
+
+            .news-list {
+                grid-template-columns: 1fr;
+            }
+
+            .news-item {
+                min-height: 43px;
+                font-size: 12px;
+            }
+
+            .footer-inner {
+                flex-direction: column;
+                gap: 7px;
+            }
+        }
+
+        @media (max-width: 820px) {
+            .site-nav {
+                gap: 16px;
+            }
+
+            .hero-inner {
+                width: min(100% - 40px, 620px);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .header-inner {
+                flex-wrap: wrap;
+                justify-content: center;
+                padding: 12px 0;
+            }
+
+            .brand {
+                margin-right: auto;
+            }
+
+            .site-nav {
+                order: 3;
+                width: 100%;
+                justify-content: space-between;
+                gap: 7px;
+                font-size: 11px;
+            }
+
+            .site-nav a:first-child {
+                padding: 10px 12px;
+            }
+
+            .hero,
+            .hero-inner {
+                min-height: 330px;
+            }
+
+            .hero-inner {
+                width: calc(100% - 36px);
+            }
+
+            .hero-search-title {
+                font-size: 23px;
+            }
+
+            .plant-search {
+                min-height: 48px;
+                padding-left: 10px;
+            }
+
+            .plant-search select {
+                max-width: 92px;
+                padding-right: 7px;
+                font-size: 11px;
+            }
+
+            .plant-search input {
+                padding: 0 7px;
+                font-size: 12px;
+            }
+
+            .plant-search button {
+                width: 38px;
+                height: 38px;
+            }
+
+            .hero-caption {
+                font-size: 10px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body class="cmq-plant-handbook">
+    <header class="site-header">
+        <div class="header-inner">
+            <a class="brand" href="#top" aria-label="山野植物手册首页">
+                <span class="brand-mark" aria-hidden="true">野</span>
+                <span>
+                    <span class="brand-name">山野植物手册</span>
+                    <span class="brand-subtitle">FIELD NOTES · PLANTS</span>
+                </span>
+            </a>
+            <nav class="site-nav" aria-label="主导航">
+                <a href="#top" aria-current="page">首页</a>
+                <a href="#plants">物种信息</a>
+                <a href="#reading-guide-title">植物生态</a>
+                <a href="#notes">自然观察</a>
+            </nav>
+            <span class="nav-note">春日自然观察</span>
+        </div>
+    </header>
+
+    <main id="top">
+        <section class="hero" aria-labelledby="hero-title">
+            <div class="hero-inner">
+                <div class="hero-search">
+                    <h1 class="hero-search-title" id="hero-title">发现身边的山野植物</h1>
+                    <form class="plant-search" id="plant-search" role="search">
+                        <label class="visually-hidden" for="plant-category">搜索类别</label>
+                        <select id="plant-category" name="category">
+                            <option value="all">全部植物</option>
+                            <option value="fruits">浆果与果实</option>
+                            <option value="flowers">山野花卉</option>
+                            <option value="shrubs">灌木类</option>
+                            <option value="vines">藤本植物</option>
+                        </select>
+                        <label class="visually-hidden" for="plant-query">植物名称或特征</label>
+                        <input id="plant-query" name="q" type="search" placeholder="搜索植物名称或形态特征">
+                        <button type="submit" aria-label="搜索植物">
+                            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" stroke-width="1.8"></circle>
+                                <path d="m16 16 4.2 4.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+                            </svg>
+                        </button>
+                    </form>
+                    <p class="search-hint" id="search-hint" aria-live="polite">按名称或特征查找，或选择植物分类开始探索</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="intro-strip">
+            <div class="intro-inner">
+                <p>VERONICA SPICATA · 穗花婆婆纳</p>
+                <span class="intro-index">FIELD GUIDE · 01</span>
+            </div>
+        </div>
+
+        <section class="reading-guide" aria-labelledby="reading-guide-title">
+            <div class="section-inner">
+                <div class="reading-guide-heading">
+                    <div>
+                        <span class="eyebrow">HOW TO OBSERVE</span>
+                        <h2 id="reading-guide-title">从哪里开始认识植物？</h2>
+                    </div>
+                    <p>观察植物不必从背诵名称开始。先描述看见的事实，再逐步比较不同植物之间的相似与差异；一张清楚的照片，也可以成为细致观察的起点。</p>
+                </div>
+                <div class="reading-guide-grid">
+                    <article class="reading-guide-card">
+                        <span>01 / SHAPE</span>
+                        <h3>先看整体轮廓</h3>
+                        <p>留意植株是直立、铺展还是攀援，再观察茎与叶片的相对位置。整体形态能帮助我们建立第一印象。</p>
+                    </article>
+                    <article class="reading-guide-card">
+                        <span>02 / DETAILS</span>
+                        <h3>再找局部特征</h3>
+                        <p>把目光移到叶缘、叶脉、花瓣、果皮和种子。颜色与纹理的细节，常常比“看起来像什么”更容易被准确记录。</p>
+                    </article>
+                    <article class="reading-guide-card">
+                        <span>03 / HABITAT</span>
+                        <h3>记下生长环境</h3>
+                        <p>记录观察日期、地点、光照与周围植被。环境信息能补充单张照片没有呈现的背景，也方便日后回看比较。</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="plants-section" id="plants" aria-labelledby="plants-title">
+            <div class="section-inner">
+                <div class="section-heading">
+                    <div>
+                        <span class="eyebrow">PLANT COLLECTION</span>
+                        <h2 id="plants-title">山野植物图鉴</h2>
+                    </div>
+                    <p>本期收录十八种植物，分为浆果与果实、山野花卉、灌木类和藤本植物四类。点击图片或卡片下方链接，可查看对应的形态观察与介绍。</p>
+                </div>
+
+                <!-- 作者：蔡美琪 -->
+                <div class="collection-stats" aria-label="本期图鉴摘要">
+                    <div class="collection-stat">
+                        <strong>18 种</strong>
+                        <span>本期收录植物</span>
+                    </div>
+                    <div class="collection-stat">
+                        <strong>04 类</strong>
+                        <span>果实 · 花卉 · 灌木 · 藤本</span>
+                    </div>
+                    <div class="collection-stat">
+                        <strong>慢观察</strong>
+                        <span>把自然发现带进日常</span>
+                    </div>
+                </div>
+
+                <nav class="caimeiqi_category-nav" aria-label="植物分类">
+                    <a class="caimeiqi_category-card caimeiqi_category-card--fruits" href="#category-fruits">
+                        <span class="caimeiqi_category-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M12 7c-1-2-3-3-5-3m5 3c1-2 3-3 5-3M12 7v3m0 0c-3-2-6 0-6 4a5 5 0 0 0 6 5 5 5 0 0 0 6-5c0-4-3-6-6-4Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path>
+                                <path d="M12 12v6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"></path>
+                            </svg>
+                        </span>
+                        <span class="caimeiqi_category-copy">
+                            <strong>浆果与果实</strong>
+                            <span>观察果叶、枝条与果实结构，认识山野植物丰富的结果形态。</span>
+                            <em>进入分类 · 9 种 →</em>
+                        </span>
+                    </a>
+                    <a class="caimeiqi_category-card" href="#category-flowers">
+                        <span class="caimeiqi_category-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M12 20V9m0 4c-3-4-7-3-7-3s1 5 7 5m0-3c3-5 7-4 7-4s-1 6-7 7M12 9c-3-2-2-6-2-6s4 1 4 4c0 1-1 2-2 2Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>
+                        </span>
+                        <span class="caimeiqi_category-copy">
+                            <strong>山野花卉</strong>
+                            <span>从花朵、花瓣与叶片入手，比较不同山野花卉的形态特征。</span>
+                            <em>进入分类 · 6 种 →</em>
+                        </span>
+                    </a>
+                    <a class="caimeiqi_category-card caimeiqi_category-card--shrubs" href="#caimeiqi_category-shrubs">
+                        <span class="caimeiqi_category-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M12 20V9m0 4c-2-4-6-3-6-3s1 5 6 5m0-4c2-4 6-3 6-3s-1 5-6 5M12 9c-2-3-1-6-1-6s4 1 4 4c0 1-1 2-3 2ZM7 20h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>
+                        </span>
+                        <span class="caimeiqi_category-copy">
+                            <strong>灌木类</strong>
+                            <span>观察南五加皮的复叶与枝条，认识灌木植物的生长形态。</span>
+                            <em>进入分类 · 1 种 →</em>
+                        </span>
+                    </a>
+                    <a class="caimeiqi_category-card caimeiqi_category-card--vines" href="#caimeiqi_category-vines">
+                        <span class="caimeiqi_category-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M6 21c8-4 1-8 8-12 2-1 3-3 3-6M8 11c-3-2-5-1-5-1s1 4 4 4m4-3c0-3 3-4 3-4s2 3 0 5m-5 5c-3-1-5 1-5 1s3 3 6 2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>
+                        </span>
+                        <span class="caimeiqi_category-copy">
+                            <strong>藤本植物</strong>
+                            <span>比较穿山龙与青风藤的攀援茎和叶片形态。</span>
+                            <em>进入分类 · 2 种 →</em>
+                        </span>
+                    </a>
+                </nav>
+
+                <div class="plant-grid">
+                    <div class="plant-category-title" id="category-fruits" data-plant-category="fruits">
+                        <strong>浆果与果实</strong>
+                        <span>FRUITS &amp; BERRIES / 09 SPECIES</span>
+                    </div>
+                    <article class="plant-card">
+                        <div class="plant-image">
+                            <a class="plant-image-link" href="#detail-maomei" aria-label="查看山莓的植物介绍">
+                                <img src="./img/s1.jpg" alt="山莓的复叶、细刺与红色聚合果形态图">
+                            </a>
+                        </div>
+                        <div class="plant-info">
+                            <div class="plant-topline">
+                                <h3>山莓</h3>
+                                <span class="plant-latin">莓果观察 · 01</span>
+                            </div>
+                            <p>观察复叶、枝条细刺和红色聚合果，并比较整果与纵切面中的小核果。</p>
+                            <div class="plant-tags">
+                                <span>复叶</span>
+                                <span>细刺</span>
+                                <span>聚合果</span>
+                            </div>
+                            <a class="plant-more" href="#detail-maomei">查看植物介绍 <span aria-hidden="true">→</span></a>
+                        </div>
+                    </article>
+
+                    <article class="plant-card">
+                        <div class="plant-image">
+                            <a class="plant-image-link" href="#detail-shanmei" aria-label="查看越橘的植物介绍">
+                                <img src="./img/s2.jpg" alt="越橘的椭圆叶片、紫红色果实与种子切面">
+                            </a>
+                        </div>
+                        <div class="plant-info">
+                            <div class="plant-topline">
+                                <h3>越橘</h3>
+                                <span class="plant-latin">果实观察 · 02</span>
+                            </div>
+                            <p>椭圆叶片与紫红色圆果生在枝条上；切面可见果肉和种子，适合观察果实内部结构。</p>
+                            <div class="plant-tags">
+                                <span>椭圆叶</span>
+                                <span>紫红果</span>
+                                <span>果实切面</span>
+                            </div>
+                            <a class="plant-more" href="#detail-shanmei">查看植物介绍 <span aria-hidden="true">→</span></a>
+                        </div>
+                    </article>
+
+                    <article class="plant-card">
+                        <div class="plant-image">
+                            <a class="plant-image-link" href="#detail-huoji" aria-label="查看茅莓的植物介绍">
+                                <img src="./img/s3.jpg" alt="茅莓的锯齿叶片、细茎与红色聚合果形态图">
+                            </a>
+                        </div>
+                        <div class="plant-info">
+                            <div class="plant-topline">
+                                <h3>茅莓</h3>
+                                <span class="plant-latin">果实观察 · 03</span>
+                            </div>
+                            <p>枝条上有锯齿状小叶和细刺，红色聚合果由多个小核果组成，可观察果实的聚合结构。</p>
+                            <div class="plant-tags">
+                                <span>锯齿叶</span>
+                                <span>细刺枝条</span>
+                                <span>聚合果</span>
+                            </div>
+                            <a class="plant-more" href="#detail-huoji">查看植物介绍 <span aria-hidden="true">→</span></a>
+                        </div>
+                    </article>
+
+                    <article class="plant-card">
+                        <div class="plant-image">
+                            <a class="plant-image-link" href="#detail-jinyingzi" aria-label="查看金樱子的植物介绍">
+                                <img src="./img/s4.jpg" alt="金樱子的带刺枝条、红橙色果实与果实剖面">
+                            </a>
+                        </div>
+                        <div class="plant-info">
+                            <div class="plant-topline">
+                                <h3>金樱子</h3>
+                                <span class="plant-latin">果实观察 · 04</span>
+                            </div>
+                            <p>果实呈椭圆形，表面有细刺；剖面可观察到内部绒毛层与种子。</p>
+                            <div class="plant-tags">
+                                <span>细刺</span>
+                                <span>椭圆果</span>
+                                <span>果实剖面</span>
+                            </div>
+                            <a class="plant-more" href="#detail-jinyingzi">查看植物介绍 <span aria-hidden="true">→</span></a>
+                        </div>
+                    </article>
+
+                    <article class="plant-card">
+                        <div class="plant-image">
+                            <a class="plant-image-link" href="#detail-tangdi" aria-label="查看火棘果的植物介绍">
+                                <img src="./img/s5.jpg" alt="火棘果的常绿叶片、枝刺与成簇橙红色果实">
+                            </a>
+                        </div>
+                        <div class="plant-info">
+                            <div class="plant-topline">
+                                <h3>火棘果</h3>
+                                <span class="plant-latin">果实观察 · 05</span>
+                            </div>
+                            <p>常绿枝叶间结有成簇的橙红色果实，图中还展示枝刺、果柄和果实切面。</p>
+                            <div class="plant-tags">
+                                <span>常绿叶</span>
+                                <span>枝条有刺</span>
+                                <span>橙红果簇</span>
+                            </div>
+                            <a class="plant-more" href="#detail-tangdi">查看植物介绍 <span aria-hidden="true">→</span></a>
+                        </div>
+                    </article>
+
+                    <article class="plant-card">
+                        <div class="plant-image">
+                            <a class="plant-image-link" href="#detail-yueju" aria-label="查看花楸果的植物介绍">
+                                <img src="./img/s6.jpg" alt="花楸果的羽状复叶、橙色果簇与果实切面">
+                            </a>
+                        </div>
+                        <div class="plant-info">
+                            <div class="plant-topline">
+                                <h3>花楸果</h3>
+                                <span class="plant-latin">果实观察 · 06</span>
+                            </div>
+                            <p>羽状复叶与成簇的橙色果实十分醒目，可观察小叶排列、果梗和果实切面。</p>
+                            <div class="plant-tags">
+                                <span>羽状复叶</span>
+                                <span>橙色果簇</span>
+                                <span>果实切面</span>
+                            </div>
+                            <a class="plant-more" href="#detail-yueju">查看植物介绍 <span aria-hidden="true">→</span></a>
+                        </div>
+                    </article>
+
+                    <article class="plant-card">
+                        <div class="plant-image">
+                            <a class="plant-image-link" href="#detail-huaqiu" aria-label="查看山茱萸的植物介绍">
+                                <img src="./img/s7.jpg" alt="山茱萸的宽椭圆叶片、红色长椭圆果实与果核">
+                            </a>
+                        </div>
+                        <div class="plant-info">
+                            <div class="plant-topline">
+                                <h3>山茱萸</h3>
+                                <span class="plant-latin">果实观察 · 07</span>
+                            </div>
+                            <p>宽椭圆叶片与红色长椭圆果实并列呈现；果实剖面和果核可帮助观察内部层次。</p>
+                            <div class="plant-tags">
+                                <span>宽椭圆叶</span>
+                                <span>红色长果</span>
+                                <span>果核</span>
+                            </div>
+                            <a class="plant-more" href="#detail-huaqiu">查看植物介绍 <span aria-hidden="true">→</span></a>
+                        </div>
+                    </article>
+
+                    <article class="plant-card">
+                        <div class="plant-image">
+                            <a class="plant-image-link" href="#detail-shanzhuyu" aria-label="查看唐棣果的植物介绍">
+                                <img src="./img/s8.jpg" alt="唐棣果的椭圆叶片、深紫色果实与切面">
+                            </a>
+                        </div>
+                        <div class="plant-info">
+                            <div class="plant-topline">
+                                <h3>唐棣果</h3>
+                                <span class="plant-latin">果实观察 · 08</span>
+                            </div>
+                            <p>椭圆叶片与深紫色圆果生在枝条上；图中展示果实切面和种子，便于观察果肉结构。</p>
+                            <div class="plant-tags">
+                                <span>椭圆叶</span>
+                                <span>深紫色果</span>
+                                <span>种子切面</span>
+                            </div>
+                            <a class="plant-more" href="#detail-shanzhuyu">查看植物介绍 <span aria-hidden="true">→</span></a>
+                        </div>
+                    </article>
+
+                    <article class="plant-card">
+                        <div class="plant-image">
+                            <a class="plant-image-link" href="#detail-yinmei" aria-label="查看银莓的植物介绍">
+                                <img src="./img/s9.jpg" alt="银莓的银绿色叶片、红色椭圆果实与果实剖面">
+                            </a>
+                        </div>
+                        <div class="plant-info">
+                            <div class="plant-topline">
+                                <h3>银莓</h3>
+                                <span class="plant-latin">果实观察 · 09</span>
+                            </div>
+                            <p>银灰色椭圆叶片衬托着红色椭圆果实；图中还展示了果肉和果核剖面。</p>
+                            <div class="plant-tags">
+                                <span>银绿叶</span>
+                                <span>红色果</span>
+                                <span>果核剖面</span>
+                            </div>
+                            <a class="plant-more" href="#detail-yinmei">查看植物介绍 <span aria-hidden="true">→</span></a>
+                        </div>
+                    </article>
+
+                    <div class="plant-category-title" id="category-flowers" data-plant-category="flowers">
+                        <strong>山野花卉</strong>
+                        <span>WILDFLOWERS / 06 SPECIES</span>
+                    </div>
+                    <article class="plant-card">
+                        <div class="plant-image">
+                            <a class="plant-image-link" href="#detail-sugenym" aria-label="查看宿根亚麻的植物介绍">
+                                <img src="./img/s12.jpg" alt="宿根亚麻的蓝紫色花朵与细长叶片">
+                            </a>
+                        </div>
+                        <div class="plant-info">
+                            <div class="plant-topline">
+                                <h3>宿根亚麻</h3>
+                                <span class="plant-latin">花卉观察 · 10</span>
+                            </div>
+                            <p>蓝紫色花朵有五枚花瓣，中心颜色明亮；花朵与细长叶片形成清爽的色彩对比。</p>
+                            <div class="plant-tags">
+                                <span>蓝紫花</span>
+                                <span>五瓣花</span>
+                                <span>细长叶</span>
+                            </div>
+                            <a class="plant-more" href="#detail-sugenym">查看植物介绍 <span aria-hidden="true">→</span></a>
+                        </div>
+                    </article>
+
+                    <article class="plant-card">
+                        <div class="plant-image">
+                            <a class="plant-image-link" href="#detail-fenglingcao" aria-label="查看风铃草的植物介绍">
+                                <img src="./img/s13.jpg" alt="山丹鲜橙色花朵与细长叶片">
+                            </a>
+                        </div>
+                        <div class="plant-info">
+                            <div class="plant-topline">
+                                <h3>山丹</h3>
+                                <span class="plant-latin">花卉观察 · 11</span>
+                            </div>
+                            <p>鲜橙色花朵在绿色草地中格外醒目，可观察花被片形态和细长叶片。</p>
+                            <div class="plant-tags">
+                                <span>橙色花</span>
+                                <span>百合类</span>
+                                <span>草地生境</span>
+                            </div>
+                            <a class="plant-more" href="#detail-fenglingcao">查看植物介绍 <span aria-hidden="true">→</span></a>
+                        </div>
+                    </article>
+
+                    <article class="plant-card">
+                        <div class="plant-image">
+                            <a class="plant-image-link" href="#detail-shandan" aria-label="查看山丹的植物介绍">
+                                <img src="./img/s14.jpg" alt="风铃草紫色钟形花朵与山野生境">
+                            </a>
+                        </div>
+                        <div class="plant-info">
+                            <div class="plant-topline">
+                                <h3>风铃草</h3>
+                                <span class="plant-latin">花卉观察 · 12</span>
+                            </div>
+                            <p>紫色钟形花朵沿细长花梗排列，在草地背景中形成鲜明对比。</p>
+                            <div class="plant-tags">
+                                <span>钟形花</span>
+                                <span>紫色花冠</span>
+                                <span>草地生境</span>
+                            </div>
+                            <a class="plant-more" href="#detail-shandan">查看植物介绍 <span aria-hidden="true">→</span></a>
+                        </div>
+                    </article>
+
+                    <article class="plant-card">
+                        <div class="plant-image">
+                            <a class="plant-image-link" href="#detail-ziban" aria-label="查看紫斑风铃草的植物介绍">
+                                <img src="./img/s15.jpg" alt="紫斑风铃草白色钟形花朵与紫色斑点">
+                            </a>
+                        </div>
+                        <div class="plant-info">
+                            <div class="plant-topline">
+                                <h3>紫斑风铃草</h3>
+                                <span class="plant-latin">花卉观察 · 13</span>
+                            </div>
+                            <p>白色下垂花朵像小铃铛，花瓣上可见紫色斑点；细长花梗让花序呈现轻盈的线条感。</p>
+                            <div class="plant-tags">
+                                <span>白色钟形花</span>
+                                <span>紫色斑点</span>
+                                <span>下垂花序</span>
+                            </div>
+                            <a class="plant-more" href="#detail-ziban">查看植物介绍 <span aria-hidden="true">→</span></a>
+                        </div>
+                    </article>
+
+                    <article class="plant-card">
+                        <div class="plant-image">
+                            <a class="plant-image-link" href="#detail-laoguancao" aria-label="查看穗花婆婆纳的植物介绍">
+                            <img src="./img/s16.jpg" alt="穗花婆婆纳紫色直立穗状花序">
+                            </a>
+                        </div>
+                        <div class="plant-info">
+                            <div class="plant-topline">
+                                <h3>穗花婆婆纳</h3>
+                                <span class="plant-latin">花卉观察 · 14</span>
+                            </div>
+                            <p>紫色小花密集排列在直立花序上，可观察花穗的整体形态和开放层次。</p>
+                            <div class="plant-tags">
+                                <span>紫色花穗</span>
+                                <span>直立花序</span>
+                                <span>小花密集</span>
+                            </div>
+                            <a class="plant-more" href="#detail-laoguancao">查看植物介绍 <span aria-hidden="true">→</span></a>
+                        </div>
+                    </article>
+
+                    <article class="plant-card">
+                        <div class="plant-image">
+                            <a class="plant-image-link" href="#detail-suihua" aria-label="查看粗根老鹳草的植物介绍">
+                            <img src="./img/s17.jpg" alt="粗根老鹳草粉紫色五瓣花与掌状裂叶">
+                            </a>
+                        </div>
+                        <div class="plant-info">
+                            <div class="plant-topline">
+                                <h3>粗根老鹳草</h3>
+                                <span class="plant-latin">花卉观察 · 15</span>
+                            </div>
+                            <p>粉紫色五瓣花有清晰的放射状脉纹，周围掌状裂叶衬托出花朵的形状。</p>
+                            <div class="plant-tags">
+                                <span>粉紫花</span>
+                                <span>掌状裂叶</span>
+                                <span>花瓣脉纹</span>
+                            </div>
+                            <a class="plant-more" href="#detail-suihua">查看植物介绍 <span aria-hidden="true">→</span></a>
+                        </div>
+                    </article>
+
+                    <div class="plant-category-title" id="caimeiqi_category-shrubs" data-plant-category="shrubs">
+                        <strong>灌木类</strong>
+                        <span>SHRUBS / 01 SPECIES</span>
+                    </div>
+                    <article class="plant-card">
+                        <div class="plant-image">
+                            <a class="plant-image-link" href="#caimeiqi_category-shrubs" aria-label="查看南五加皮的植物图片">
+                                <img src="./img/s10.jpg" alt="南五加皮的掌状复叶与山野枝条">
+                            </a>
+                        </div>
+                        <div class="plant-info">
+                            <div class="plant-topline">
+                                <h3>南五加皮</h3>
+                                <span class="plant-latin">灌木观察 · 16</span>
+                            </div>
+                            <p>观察掌状复叶、小叶边缘与枝条的着生关系，留意灌木在林下环境中的生长形态。</p>
+                            <div class="plant-tags">
+                                <span>掌状复叶</span>
+                                <span>木本枝条</span>
+                                <span>林下植物</span>
+                            </div>
+                            <a class="plant-more" href="#caimeiqi_category-shrubs">返回灌木分类 <span aria-hidden="true">→</span></a>
+                        </div>
+                    </article>
+
+                    <div class="plant-category-title" id="caimeiqi_category-vines" data-plant-category="vines">
+                        <strong>藤本植物</strong>
+                        <span>CLIMBING PLANTS / 02 SPECIES</span>
+                    </div>
+                    <article class="plant-card">
+                        <div class="plant-image">
+                            <a class="plant-image-link" href="#caimeiqi_category-vines" aria-label="查看穿山龙的植物图片">
+                                <img src="./img/s11.jpg" alt="穿山龙的藤茎与心形叶片">
+                            </a>
+                        </div>
+                        <div class="plant-info">
+                            <div class="plant-topline">
+                                <h3>穿山龙</h3>
+                                <span class="plant-latin">藤本观察 · 17</span>
+                            </div>
+                            <p>观察缠绕生长的藤茎与心形叶片，比较叶脉走向和植株攀援的方式。</p>
+                            <div class="plant-tags">
+                                <span>缠绕藤茎</span>
+                                <span>心形叶</span>
+                                <span>攀援生长</span>
+                            </div>
+                            <a class="plant-more" href="#caimeiqi_category-vines">返回藤本分类 <span aria-hidden="true">→</span></a>
+                        </div>
+                    </article>
+                    <article class="plant-card">
+                        <div class="plant-image">
+                            <a class="plant-image-link" href="#caimeiqi_category-vines" aria-label="查看青风藤的植物图片">
+                                <img src="./img/s21.jpg" alt="青风藤攀援枝条上的叶片与穗状花序">
+                            </a>
+                        </div>
+                        <div class="plant-info">
+                            <div class="plant-topline">
+                                <h3>青风藤</h3>
+                                <span class="plant-latin">藤本观察 · 18</span>
+                            </div>
+                            <p>留意青风藤的攀援枝条、叶片形态与下垂花序，观察藤本植物在林缘的生长姿态。</p>
+                            <div class="plant-tags">
+                                <span>攀援枝条</span>
+                                <span>叶片观察</span>
+                                <span>穗状花序</span>
+                            </div>
+                            <a class="plant-more" href="#caimeiqi_category-vines">返回藤本分类 <span aria-hidden="true">→</span></a>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="plant-details" id="plant-details" aria-labelledby="details-title">
+            <div class="section-inner">
+                <div class="details-heading">
+                    <div>
+                        <span class="eyebrow">CLOSER LOOK</span>
+                        <h2 id="details-title">点开图，读懂植物</h2>
+                    </div>
+                    <p>对照图片观察叶片、果实、花形与生长方式。内容依据素材中的植物标注整理，供课程练习使用。</p>
+                </div>
+
+                <div class="detail-list">
+                    <article class="detail-entry" id="detail-maomei">
+                        <div class="detail-visual"><img src="./img/s1.jpg" alt="山莓复叶、细刺枝条和红色聚合果形态细节"></div>
+                        <div class="detail-copy">
+                            <span class="detail-number">FIELD SPECIMEN / 01</span>
+                            <h3>山莓</h3>
+                            <p>图片标注为山莓，展示复叶、枝条细刺和红色聚合果。完整果实与纵切面并列，可观察由多个小核果组成的果实结构。</p>
+                            <dl class="detail-facts">
+                                <div><dt>叶片</dt><dd>叶片沿枝条着生，叶缘呈锯齿状。</dd></div>
+                                <div><dt>枝条</dt><dd>枝条表面有细刺，观察时避免徒手触碰。</dd></div>
+                                <div><dt>果实</dt><dd>红色聚合果由多个小核果聚合而成。</dd></div>
+                                <div><dt>观察提示</dt><dd>比较整果和纵切面中的果粒排列。</dd></div>
+                            </dl>
+                            <a class="detail-back" href="#plants">返回植物图册 ↑</a>
+                        </div>
+                    </article>
+
+                    <article class="detail-entry" id="detail-shanmei">
+                        <div class="detail-visual"><img src="./img/s2.jpg" alt="越橘椭圆叶片、紫红色果实和种子切面"></div>
+                        <div class="detail-copy">
+                            <span class="detail-number">FIELD SPECIMEN / 02</span>
+                            <h3>越橘</h3>
+                            <p>图片标注为越橘，展示椭圆叶片、枝条上的紫红色圆果，以及果实纵切面和种子。可对照整果与切面观察果肉结构。</p>
+                            <dl class="detail-facts">
+                                <div><dt>叶片</dt><dd>叶片呈椭圆形，沿枝条着生。</dd></div>
+                                <div><dt>果实</dt><dd>圆形果实呈紫红至深色，可观察果顶痕迹。</dd></div>
+                                <div><dt>切面</dt><dd>果实剖面可见果肉和种子分布。</dd></div>
+                                <div><dt>观察提示</dt><dd>比较叶片轮廓、果色和果实内部结构。</dd></div>
+                            </dl>
+                            <a class="detail-back" href="#plants">返回植物图册 ↑</a>
+                        </div>
+                    </article>
+
+                    <article class="detail-entry" id="detail-huoji">
+                        <div class="detail-visual"><img src="./img/s3.jpg" alt="茅莓锯齿叶片、细茎枝条和红色聚合果形态细节"></div>
+                        <div class="detail-copy">
+                            <span class="detail-number">FIELD SPECIMEN / 03</span>
+                            <h3>茅莓</h3>
+                            <p>图片标注为茅莓，展示锯齿叶缘、贴地伸展的细茎和红色聚合果。可以沿枝条观察叶片着生，再比较成熟果实的果粒结构。</p>
+                            <dl class="detail-facts">
+                                <div><dt>叶片</dt><dd>叶片边缘有明显锯齿，叶片形状多样。</dd></div>
+                                <div><dt>枝条</dt><dd>枝条细长并带有小刺，可观察其贴地生长形态。</dd></div>
+                                <div><dt>果实</dt><dd>红色聚合果由许多小核果组成。</dd></div>
+                                <div><dt>观察提示</dt><dd>记录叶缘、细刺和果粒的形态特征。</dd></div>
+                            </dl>
+                            <a class="detail-back" href="#plants">返回植物图册 ↑</a>
+                        </div>
+                    </article>
+
+                    <article class="detail-entry" id="detail-jinyingzi">
+                        <div class="detail-visual"><img src="./img/s4.jpg" alt="金樱子枝条上的细刺、果实和种子剖面"></div>
+                        <div class="detail-copy">
+                            <span class="detail-number">FIELD SPECIMEN / 04</span>
+                            <h3>金樱子</h3>
+                            <p>金樱子的图示重点展示带刺枝条、椭圆形果实和果实纵切面。果顶保留的萼片、果皮外层以及内部种子，都是观察果实结构的线索。</p>
+                            <dl class="detail-facts">
+                                <div><dt>枝条</dt><dd>枝上有刺，观察时保持距离。</dd></div>
+                                <div><dt>果实</dt><dd>椭圆形，顶部可观察到残留萼片。</dd></div>
+                                <div><dt>内部</dt><dd>剖面中可见绒毛状结构和种子。</dd></div>
+                                <div><dt>观察提示</dt><dd>比较果皮、果肉和种子所在位置。</dd></div>
+                            </dl>
+                            <a class="detail-back" href="#plants">返回植物图册 ↑</a>
+                        </div>
+                    </article>
+
+                    <article class="detail-entry" id="detail-tangdi">
+                        <div class="detail-visual"><img src="./img/s5.jpg" alt="火棘果常绿叶片、枝刺和成簇橙红色果实"></div>
+                        <div class="detail-copy">
+                            <span class="detail-number">FIELD SPECIMEN / 05</span>
+                            <h3>火棘果</h3>
+                            <p>图片标注为火棘果，常绿叶片与枝条上的刺和成簇橙红色果实一同呈现。果实切面可见果肉与种子，适合比较果实外部和内部结构。</p>
+                            <dl class="detail-facts">
+                                <div><dt>叶片</dt><dd>绿色叶片沿枝条着生，叶形较小。</dd></div>
+                                <div><dt>枝条</dt><dd>图中可见尖锐枝刺，观察时保持距离。</dd></div>
+                                <div><dt>果实</dt><dd>橙红色果实在枝端附近成簇生长。</dd></div>
+                                <div><dt>观察提示</dt><dd>记录果簇、果柄和果实切面的特征。</dd></div>
+                            </dl>
+                            <a class="detail-back" href="#plants">返回植物图册 ↑</a>
+                        </div>
+                    </article>
+
+                    <article class="detail-entry" id="detail-yueju">
+                        <div class="detail-visual"><img src="./img/s6.jpg" alt="花楸果羽状复叶、橙色果簇和果实切面"></div>
+                        <div class="detail-copy">
+                            <span class="detail-number">FIELD SPECIMEN / 06</span>
+                            <h3>花楸果</h3>
+                            <p>图片标注为花楸果，羽状复叶与成簇的橙色果实是主要观察特征。图中同时展示果梗、果顶痕迹和果实切面。</p>
+                            <dl class="detail-facts">
+                                <div><dt>叶片</dt><dd>羽状复叶由多个小叶沿叶轴排列组成。</dd></div>
+                                <div><dt>果实</dt><dd>橙色小果聚集成簇，果顶留有花部痕迹。</dd></div>
+                                <div><dt>果梗</dt><dd>细果梗连接果实与枝条。</dd></div>
+                                <div><dt>观察提示</dt><dd>记录小叶排列、果簇轮廓和果实切面。</dd></div>
+                            </dl>
+                            <a class="detail-back" href="#plants">返回植物图册 ↑</a>
+                        </div>
+                    </article>
+
+                    <article class="detail-entry" id="detail-huaqiu">
+                        <div class="detail-visual"><img src="./img/s7.jpg" alt="山茱萸宽椭圆叶片、红色长椭圆果实和果核"></div>
+                        <div class="detail-copy">
+                            <span class="detail-number">FIELD SPECIMEN / 07</span>
+                            <h3>山茱萸</h3>
+                            <p>图片标注为山茱萸，展示宽椭圆叶片、红色长椭圆果实及果实纵切面。剖面中的果核与果肉层次清楚，便于对照观察。</p>
+                            <dl class="detail-facts">
+                                <div><dt>叶片</dt><dd>宽椭圆形叶片对生，叶脉清晰可见。</dd></div>
+                                <div><dt>果实</dt><dd>红色长椭圆果实由果梗连接在枝条上。</dd></div>
+                                <div><dt>果核</dt><dd>纵切面中可见坚硬的果核结构。</dd></div>
+                                <div><dt>观察提示</dt><dd>并排比较叶片、整果和果实纵切面。</dd></div>
+                            </dl>
+                            <a class="detail-back" href="#plants">返回植物图册 ↑</a>
+                        </div>
+                    </article>
+
+                    <article class="detail-entry" id="detail-shanzhuyu">
+                        <div class="detail-visual"><img src="./img/s8.jpg" alt="唐棣果椭圆叶片、深紫色果实和种子切面"></div>
+                        <div class="detail-copy">
+                            <span class="detail-number">FIELD SPECIMEN / 08</span>
+                            <h3>唐棣果</h3>
+                            <p>图片标注为唐棣果，椭圆叶片和深紫色圆果沿枝条生长。图中也展示了果肉、种子和切面，可对照观察果实内部结构。</p>
+                            <dl class="detail-facts">
+                                <div><dt>叶片</dt><dd>椭圆形叶片展开在枝条两侧。</dd></div>
+                                <div><dt>果实</dt><dd>深紫色近圆果实，可观察果顶痕迹。</dd></div>
+                                <div><dt>种子</dt><dd>图示剖面中可见果肉和种子分布。</dd></div>
+                                <div><dt>观察提示</dt><dd>记录果色、叶形和果实着生位置。</dd></div>
+                            </dl>
+                            <a class="detail-back" href="#plants">返回植物图册 ↑</a>
+                        </div>
+                    </article>
+
+                    <article class="detail-entry" id="detail-yinmei">
+                        <div class="detail-visual"><img src="./img/s9.jpg" alt="银莓银绿色叶片、红色椭圆果实和剖面"></div>
+                        <div class="detail-copy">
+                            <span class="detail-number">FIELD SPECIMEN / 09</span>
+                            <h3>银莓</h3>
+                            <p>图片标注为银莓，银绿色叶片与带斑点的红色果实相邻生长。果实剖面呈现果肉和种核，可对照观察果皮与内部结构。</p>
+                            <dl class="detail-facts">
+                                <div><dt>叶片</dt><dd>椭圆形叶片呈银绿色，叶脉清晰。</dd></div>
+                                <div><dt>果实</dt><dd>红色椭圆果，果面可见细小浅色斑点。</dd></div>
+                                <div><dt>剖面</dt><dd>切面中可见果肉和内部果核。</dd></div>
+                                <div><dt>观察提示</dt><dd>留意银色叶面与红果之间的色彩对比。</dd></div>
+                            </dl>
+                            <a class="detail-back" href="#plants">返回植物图册 ↑</a>
+                        </div>
+                    </article>
+
+                    <h3 class="detail-category-title">山野花卉</h3>
+                    <article class="detail-entry" id="detail-sugenym">
+                        <div class="detail-visual"><img src="./img/s12.jpg" alt="宿根亚麻的蓝紫色五瓣花和叶片"></div>
+                        <div class="detail-copy">
+                            <span class="detail-number">FIELD SPECIMEN / 10</span>
+                            <h3>宿根亚麻</h3>
+                            <p>素材标注为宿根亚麻，照片突出蓝紫色五瓣花、明亮花心和细长叶片。近看可留意花瓣脉纹及花朵与叶片之间的比例。</p>
+                            <dl class="detail-facts">
+                                <div><dt>花朵</dt><dd>蓝紫色花瓣围绕明亮的花心展开。</dd></div>
+                                <div><dt>花瓣</dt><dd>五枚花瓣，表面可见细密脉纹。</dd></div>
+                                <div><dt>叶片</dt><dd>叶片细长，沿茎部着生。</dd></div>
+                                <div><dt>观察提示</dt><dd>比较花色、花瓣数量和叶片形状。</dd></div>
+                            </dl>
+                            <a class="detail-back" href="#plants">返回植物图册 ↑</a>
+                        </div>
+                    </article>
+
+                    <article class="detail-entry" id="detail-fenglingcao">
+                        <div class="detail-visual"><img src="./img/s13.jpg" alt="山丹鲜橙色花朵与细长叶片"></div>
+                        <div class="detail-copy">
+                            <span class="detail-number">FIELD SPECIMEN / 11</span>
+                            <h3>山丹</h3>
+                            <p>图片标注为山丹，也注明其为细叶百合。照片展示橙红色花朵和细长叶片，可观察花被片展开方向以及花朵相对植株的着生位置。</p>
+                            <dl class="detail-facts">
+                                <div><dt>花朵</dt><dd>橙红色花被片向外舒展。</dd></div>
+                                <div><dt>花部</dt><dd>可见花药和花丝伸出花朵中央。</dd></div>
+                                <div><dt>叶片</dt><dd>茎周围有细长的线形叶片。</dd></div>
+                                <div><dt>观察提示</dt><dd>从花色、花被片和叶形进行记录。</dd></div>
+                            </dl>
+                            <a class="detail-back" href="#plants">返回植物图册 ↑</a>
+                        </div>
+                    </article>
+
+                    <article class="detail-entry" id="detail-shandan">
+                        <div class="detail-visual"><img src="./img/s14.jpg" alt="风铃草紫色钟形花朵和山野草地生境"></div>
+                        <div class="detail-copy">
+                            <span class="detail-number">FIELD SPECIMEN / 12</span>
+                            <h3>风铃草</h3>
+                            <p>图片标注为风铃草，紫色钟形花朵从花梗上垂下，周围可见草地和其他野生植物，画面同时保留了花朵形态与生长环境。</p>
+                            <dl class="detail-facts">
+                                <div><dt>花冠</dt><dd>紫色花冠呈钟形，花口向外展开。</dd></div>
+                                <div><dt>花序</dt><dd>花朵和花苞沿细长花茎分布。</dd></div>
+                                <div><dt>生境</dt><dd>素材呈现开阔的山野草地环境。</dd></div>
+                                <div><dt>观察提示</dt><dd>留意花苞、盛开花朵和花梗的位置。</dd></div>
+                            </dl>
+                            <a class="detail-back" href="#plants">返回植物图册 ↑</a>
+                        </div>
+                    </article>
+
+                    <article class="detail-entry" id="detail-ziban">
+                        <div class="detail-visual"><img src="./img/s15.jpg" alt="紫斑风铃草白色下垂花朵上的紫色斑点"></div>
+                        <div class="detail-copy">
+                            <span class="detail-number">FIELD SPECIMEN / 13</span>
+                            <h3>紫斑风铃草</h3>
+                            <p>素材标注为紫斑风铃草。白色钟形花朵下垂生长，花冠上的紫色斑点和细长花梗形成明显的观察特征。</p>
+                            <dl class="detail-facts">
+                                <div><dt>花冠</dt><dd>白色钟形花，花冠上有紫色斑点。</dd></div>
+                                <div><dt>花序</dt><dd>多朵花沿弯曲的花梗排列。</dd></div>
+                                <div><dt>花苞</dt><dd>照片中可同时看到未开放的花苞。</dd></div>
+                                <div><dt>观察提示</dt><dd>比较花苞与盛开花朵的形态差异。</dd></div>
+                            </dl>
+                            <a class="detail-back" href="#plants">返回植物图册 ↑</a>
+                        </div>
+                    </article>
+
+                    <article class="detail-entry" id="detail-laoguancao">
+                        <div class="detail-visual"><img src="./img/s16.jpg" alt="穗花婆婆纳直立的紫色穗状花序"></div>
+                        <div class="detail-copy">
+                            <span class="detail-number">FIELD SPECIMEN / 14</span>
+                            <h3>穗花婆婆纳</h3>
+                            <p>图片标注为穗花婆婆纳，紫色小花密集排列在直立花序上。可以观察花穗的整体形态、花朵分布和开放层次。</p>
+                            <dl class="detail-facts">
+                                <div><dt>花序</dt><dd>花朵密集着生在直立的长花序上。</dd></div>
+                                <div><dt>花色</dt><dd>小花呈紫色，沿花序轴分布。</dd></div>
+                                <div><dt>植株</dt><dd>茎直立，花序高出周围叶片。</dd></div>
+                                <div><dt>观察提示</dt><dd>记录花穗长度、花朵密度和开放层次。</dd></div>
+                            </dl>
+                            <a class="detail-back" href="#plants">返回植物图册 ↑</a>
+                        </div>
+                    </article>
+
+                    <article class="detail-entry" id="detail-suihua">
+                        <div class="detail-visual"><img src="./img/s17.jpg" alt="粗根老鹳草粉紫色五瓣花与掌状裂叶"></div>
+                        <div class="detail-copy">
+                            <span class="detail-number">FIELD SPECIMEN / 15</span>
+                            <h3>粗根老鹳草</h3>
+                            <p>素材标注为粗根老鹳草。近景呈现粉紫色五瓣花，花瓣上的放射状脉纹清楚可见，周围掌状裂叶也便于观察。</p>
+                            <dl class="detail-facts">
+                                <div><dt>花朵</dt><dd>粉紫色花瓣呈放射状展开。</dd></div>
+                                <div><dt>花瓣</dt><dd>可见从花心向外延伸的深色脉纹。</dd></div>
+                                <div><dt>叶片</dt><dd>掌状分裂叶片围绕花朵生长。</dd></div>
+                                <div><dt>观察提示</dt><dd>同时记录花瓣纹理与叶片裂片形态。</dd></div>
+                            </dl>
+                            <a class="detail-back" href="#plants">返回植物图册 ↑</a>
+                        </div>
+                    </article>
+                </div>
+                <p class="safety-note">自然观察提示：本页内容用于网页设计与植物形态学习。野外植物可能存在相似种，仅凭图片无法准确鉴定；请勿采摘或食用不熟悉的植物。</p>
+            </div>
+        </section>
+
+        <section class="field-note" id="notes" aria-labelledby="notes-title">
+            <div class="section-inner field-note-inner">
+                <div class="news-center-heading">
+                    <h2 id="notes-title">新闻中心</h2>
+                    <div class="news-tabs" role="group" aria-label="筛选新闻类别">
+                        <button class="news-tab" type="button" data-news-filter="all" aria-pressed="true">全部资讯</button>
+                        <button class="news-tab" type="button" data-news-filter="field" aria-pressed="false">观察指南</button>
+                        <button class="news-tab" type="button" data-news-filter="ecology" aria-pressed="false">生态保护</button>
+                    </div>
+                </div>
+                <div class="news-layout">
+                    <figure class="news-feature">
+                        <img src="./img/s16.jpg" alt="穗花婆婆纳紫色花穗盛开在绿色山野间" loading="lazy">
+                        <figcaption>山野花卉观察 · 穗花婆婆纳</figcaption>
+                    </figure>
+                    <div>
+                        <div class="news-list" aria-label="植物观察资讯">
+                            <a class="news-item" href="#plants" data-news-category="field">
+                                <span class="news-title">观察叶片：分辨单叶、复叶与叶缘形态</span>
+                                <time datetime="2024-12-01">2024-12-01</time>
+                            </a>
+                            <a class="news-item" href="#detail-suihua" data-news-category="field">
+                                <span class="news-title">从花序和花瓣纹理开始认识山野花卉</span>
+                                <time datetime="2024-12-01">2024-12-01</time>
+                            </a>
+                            <a class="news-item" href="#plants" data-news-category="field">
+                                <span class="news-title">观察花果：记录颜色、形状与着生位置</span>
+                                <time datetime="2024-12-01">2024-12-01</time>
+                            </a>
+                            <a class="news-item" href="#plants" data-news-category="ecology">
+                                <span class="news-title">记录植物生境：补充日期、地点和光照</span>
+                                <time datetime="2024-12-01">2024-12-01</time>
+                            </a>
+                            <a class="news-item" href="#plants" data-news-category="ecology">
+                                <span class="news-title">野外观察请勿采摘、品尝或触碰陌生植物</span>
+                                <time datetime="2024-12-01">2024-12-01</time>
+                            </a>
+                            <a class="news-item" href="#plants" data-news-category="field">
+                                <span class="news-title">拍摄植物：同时留下整体与局部特征</span>
+                                <time datetime="2024-12-01">2024-12-01</time>
+                            </a>
+                            <a class="news-item" href="#plants" data-news-category="ecology">
+                                <span class="news-title">尊重野生花卉生境，从文明观赏做起</span>
+                                <time datetime="2024-12-01">2024-12-01</time>
+                            </a>
+                            <a class="news-item" href="#plants" data-news-category="field">
+                                <span class="news-title">谨慎辨认相似植物，不凭单张照片定种</span>
+                                <time datetime="2024-12-01">2024-12-01</time>
+                            </a>
+                        </div>
+                        <p class="news-status" id="news-status" aria-live="polite">共 8 条资讯</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <span>山野植物手册 · 网页元素设计实验</span>
+            <span>用心观察自然，尊重每一片山野</span>
+        </div>
+    </footer>
+    <script>
+        const plantSearch = document.querySelector("#plant-search");
+        const plantQuery = document.querySelector("#plant-query");
+        const plantCategory = document.querySelector("#plant-category");
+        const searchHint = document.querySelector("#search-hint");
+        const plantGridChildren = [...document.querySelectorAll(".plant-grid > *")];
+
+        plantSearch.addEventListener("submit", (event) => {
+            event.preventDefault();
+
+            const query = plantQuery.value.trim().toLocaleLowerCase("zh-CN");
+            const selectedCategory = plantCategory.value;
+            let activeCategory = "";
+            let matchCount = 0;
+            const categoryMatches = new Map();
+
+            for (const item of plantGridChildren) {
+                if (item.classList.contains("plant-category-title")) {
+                    activeCategory = item.dataset.plantCategory;
+                    categoryMatches.set(activeCategory, false);
+                    item.hidden = selectedCategory !== "all" && selectedCategory !== activeCategory;
+                    continue;
+                }
+
+                const categoryMatchesQuery = selectedCategory === "all" || selectedCategory === activeCategory;
+                const textMatchesQuery = !query || item.textContent.toLocaleLowerCase("zh-CN").includes(query);
+                item.hidden = !categoryMatchesQuery || !textMatchesQuery;
+
+                if (!item.hidden) {
+                    matchCount += 1;
+                    categoryMatches.set(activeCategory, true);
+                }
+            }
+
+            for (const item of plantGridChildren) {
+                if (item.classList.contains("plant-category-title")) {
+                    const category = item.dataset.plantCategory;
+                    item.hidden = !categoryMatches.get(category);
+                }
+            }
+
+            searchHint.textContent = matchCount
+                ? `找到 ${matchCount} 种植物`
+                : "没有找到匹配的植物，请换一个名称或特征试试";
+            document.querySelector("#plants").scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+
+        const newsTabs = [...document.querySelectorAll("[data-news-filter]")];
+        const newsItems = [...document.querySelectorAll("[data-news-category]")];
+        const newsStatus = document.querySelector("#news-status");
+
+        for (const tab of newsTabs) {
+            tab.addEventListener("click", () => {
+                const selectedCategory = tab.dataset.newsFilter;
+                let visibleCount = 0;
+
+                for (const newsItem of newsItems) {
+                    newsItem.hidden = selectedCategory !== "all" && newsItem.dataset.newsCategory !== selectedCategory;
+                    visibleCount += Number(!newsItem.hidden);
+                }
+
+                for (const newsTab of newsTabs) {
+                    newsTab.setAttribute("aria-pressed", String(newsTab === tab));
+                }
+
+                newsStatus.textContent = `共 ${visibleCount} 条资讯`;
+            });
+        }
+    </script>
+</body>
+</html>

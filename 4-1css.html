@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        /* 群组选择器：清除h2 h3 p默认内外边距 */
+        h2,h3,p { 
+            padding:0;
+            margin:0;
+        }
+        /* ID选择器 盒子整体样式 */
+        #box{
+            padding: 8px;
+            margin: 20px;
+            border: 1px solid red;
+            font-size: 12px;
+        }
+        /* 后代选择器 box内h3，下方同名样式会覆盖本段 */
+        #box h3{
+            font-size: 16px;
+            line-height: 33px;
+            text-align: center;
+            color: rgb(162, 224, 45);
+        }
+        /* 覆盖上方h3样式，最终生效 */
+        #box h3{
+            font-size: 16px;
+            line-height: 33px;
+            text-align: center;
+            color: rgb(62, 178, 207);
+            letter-spacing: 3px;
+        }
+        /* box内段落样式 */
+        #box p{ 
+            color: rgb(206, 24, 194);
+            text-indent: 2em;
+            line-height: 30px;
+        }
+        /* box内超链接 去除下划线蓝色字体 */
+        #box a{
+            color: rgb(0, 0, 255);
+            text-decoration: none;
+        }
+        /* 拓展需求2：h2黑底、白字、文字居中、行高150% */
+        h2 {
+            background-color: black;
+            color: white;
+            text-align: center;
+            line-height: 150%;
+        }
+        /* 拓展需求1：学号、姓名、班级蓝色加粗 */
+        p span{
+            color: blue;
+            font-weight: bold;
+        }
+        /* 拓展需求3：知识点蓝底白字，增加内边距更美观 */
+        .know-text{
+            background-color: blue;
+            color: white;
+            padding: 2px 5px;
+        }
+    </style>
+</head>
+<body>
+    <a href="./index.html" aria-label="返回首页" style="position:fixed;top:12px;right:12px;z-index:9999;padding:9px 14px;border-radius:999px;background:#426b50;color:#fff;text-decoration:none;font:14px 'Microsoft YaHei',sans-serif;box-shadow:0 3px 12px rgba(0,0,0,.18)">← 返回首页</a>
+    <h2>css群组选择器和后代迭代器</h2>
+    <div id="box">
+        <h3>css进阶</h3>
+        <p>学号：<span>24001010120</span>，姓名：<span>蔡美琪</span>，班级：<span>计算机24001</span>，《高级网页设计》设计的学习难度：中等，
+            本实例的知识点：<span class="know-text">css群组选择器和后代迭代器</span>。
+            <a href="https://www.baidu.com">百度一下</a>
+        </p>
+    </div>
+</body>
+</html>

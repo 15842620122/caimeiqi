@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>盒模型、框模型 box</title>
+    <style>
+        body,ul,p,h1,h2,h3,h4,h5,h6{
+            margin: 0;
+            padding: 0;
+        }
+        .a {
+            width: 500px;
+            height: 300px;
+            border: 2px dotted blue;
+            padding: 70px 60px 50px 40px;/*内边距*/
+            margin: 40px auto;/*外边距*/
+        }
+        .b {
+            width: 500px;
+            height: 300px;
+            border: 2px dashed blue;
+            margin: 50px auto 40px;/*外边距*/
+        }
+        .c {
+            width: 300px;
+            height: 200px;
+            border: 2px solid blue;
+            padding: 2px;
+            margin: 40px auto;
+}
+
+    </style>
+</head>
+<body>
+    <a href="./index.html" aria-label="返回首页" style="position:fixed;top:12px;right:12px;z-index:9999;padding:9px 14px;border-radius:999px;background:#426b50;color:#fff;text-decoration:none;font:14px 'Microsoft YaHei',sans-serif;box-shadow:0 3px 12px rgba(0,0,0,.18)">← 返回首页</a>
+    <div class="a">120蔡美琪</div>
+    <div class="b">120蔡美琪</div>
+    <div class="c">120蔡美琪</div>
+</body>
+</html>

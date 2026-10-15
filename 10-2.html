@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>10-2 CSS Animation 幻灯片</title>
+	<style>
+		:root {
+			color-scheme: light;
+			--ink: #211c19;
+			--muted: #81766e;
+			--paper: #f1eee8;
+			--accent: #c9432e;
+			--line: #e5ded5;
+		}
+
+		* {
+			box-sizing: border-box;
+		}
+
+		body {
+			min-height: 100vh;
+			margin: 0;
+			padding: 56px 24px;
+			color: var(--ink);
+			background-color: var(--paper);
+			background-image: linear-gradient(rgba(33, 28, 25, 0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(33, 28, 25, 0.025) 1px, transparent 1px);
+			background-size: 34px 34px;
+			font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+		}
+
+		.page {
+			width: min(100%, 1000px);
+			margin: 0 auto;
+		}
+
+		.page-header {
+			display: flex;
+			align-items: flex-end;
+			justify-content: space-between;
+			gap: 24px;
+			margin-bottom: 24px;
+		}
+
+		.kicker {
+			display: flex;
+			align-items: center;
+			gap: 9px;
+			margin: 0 0 12px;
+			color: var(--accent);
+			font-size: 0.7rem;
+			font-weight: 700;
+			letter-spacing: 0.15em;
+			text-transform: uppercase;
+		}
+
+		.kicker::before {
+			width: 22px;
+			height: 2px;
+			background: currentColor;
+			content: "";
+		}
+
+		h1 {
+			margin: 0;
+			font-size: clamp(2rem, 5vw, 3.3rem);
+			font-weight: 800;
+			line-height: 1.15;
+			letter-spacing: 0;
+		}
+
+		.edition {
+			flex: 0 0 auto;
+			padding-bottom: 5px;
+			color: var(--muted);
+			font-size: 0.72rem;
+			letter-spacing: 0.1em;
+		}
+
+		.slide-card {
+			overflow: hidden;
+			border: 1px solid rgba(33, 28, 25, 0.1);
+			border-radius: 8px;
+			background: #fbf9f5;
+			box-shadow: 0 28px 72px rgba(45, 31, 24, 0.14), 0 3px 10px rgba(45, 31, 24, 0.05);
+		}
+
+		.card-topline {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			min-height: 48px;
+			padding: 0 20px;
+			border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+			background: #241f1d;
+			color: rgba(250, 246, 239, 0.62);
+			font-size: 0.67rem;
+			font-weight: 700;
+			letter-spacing: 0.12em;
+		}
+
+		.status {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			color: #f6f0e8;
+			letter-spacing: 0;
+			text-transform: none;
+		}
+
+		.status::before {
+			width: 7px;
+			height: 7px;
+			border-radius: 50%;
+			background: #a7c77b;
+			content: "";
+			box-shadow: 0 0 0 3px rgba(167, 199, 123, 0.15);
+		}
+
+		.viewport {
+			position: relative;
+			width: 100%;
+			aspect-ratio: 16 / 9;
+			overflow: hidden;
+			background: #17231f;
+			perspective: 1200px;
+			perspective-origin: 50% 50%;
+		}
+
+		.viewport::after {
+			position: absolute;
+			z-index: 5;
+			inset: 0;
+			content: "";
+			background: linear-gradient(90deg, rgba(18, 13, 12, 0.16), transparent 16%, transparent 84%, rgba(18, 13, 12, 0.16));
+			pointer-events: none;
+		}
+
+		.track {
+			position: absolute;
+			inset: 0;
+			transform-style: preserve-3d;
+		}
+
+		.track img {
+			position: absolute;
+			inset: 0;
+			display: block;
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+			backface-visibility: hidden;
+			transform-origin: center;
+			will-change: transform;
+			user-select: none;
+			-webkit-user-drag: none;
+		}
+
+		.track img:nth-child(1) {
+			z-index: 1;
+			animation: frame-one 18s cubic-bezier(0.68, 0, 0.32, 1) infinite;
+		}
+
+		.track img:nth-child(2) {
+			z-index: 2;
+			animation: frame-two 18s cubic-bezier(0.68, 0, 0.32, 1) infinite;
+		}
+
+		.track img:nth-child(3) {
+			z-index: 3;
+			animation: frame-three 18s cubic-bezier(0.68, 0, 0.32, 1) infinite;
+		}
+
+		.track img:nth-child(4) {
+			z-index: 4;
+			animation: frame-loop 18s cubic-bezier(0.68, 0, 0.32, 1) infinite;
+		}
+
+		.slide-progress {
+			display: grid;
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			gap: 6px;
+			padding: 17px 28px 0;
+			background: #fbf9f5;
+		}
+
+		.slide-progress span {
+			position: relative;
+			height: 3px;
+			overflow: hidden;
+			border-radius: 99px;
+			background: #e5ded5;
+		}
+
+		.slide-progress span::after {
+			position: absolute;
+			inset: 0;
+			border-radius: inherit;
+			background: var(--accent);
+			content: "";
+			transform: scaleX(0);
+			transform-origin: left center;
+		}
+
+		.slide-progress span:nth-child(1)::after { animation: progress-one 18s linear infinite; }
+		.slide-progress span:nth-child(2)::after { animation: progress-two 18s linear infinite; }
+		.slide-progress span:nth-child(3)::after { animation: progress-three 18s linear infinite; }
+
+		.caption {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 24px;
+			padding: 19px 28px 25px;
+			background: #fbf9f5;
+		}
+
+		.caption-main {
+			display: flex;
+			align-items: center;
+			gap: 16px;
+		}
+
+		.caption-mark {
+			width: 3px;
+			height: 42px;
+			background: var(--accent);
+		}
+
+		h2 {
+			margin: 0;
+			font-size: 1.35rem;
+			font-weight: 800;
+			letter-spacing: 0;
+		}
+
+		.caption-text {
+			margin: 5px 0 0;
+			color: var(--muted);
+			font-size: 0.82rem;
+			line-height: 1.6;
+		}
+
+		.caption-note {
+			flex: 0 0 auto;
+			color: var(--muted);
+			font-size: 0.69rem;
+			letter-spacing: 0.08em;
+			text-align: right;
+		}
+
+		.caption-note strong {
+			display: block;
+			margin-bottom: 5px;
+			color: var(--ink);
+			font-size: 0.75rem;
+		}
+
+		@keyframes frame-one {
+			0%, 25% { transform: translateX(0) rotateY(0) scale(1); }
+			33.333%, 100% { transform: translateX(-110%) rotateY(14deg) scale(0.9); }
+		}
+
+		@keyframes frame-two {
+			0%, 25% { transform: translateX(110%) rotateY(-14deg) scale(0.9); }
+			33.333%, 58.333% { transform: translateX(0) rotateY(0) scale(1); }
+			66.667%, 100% { transform: translateX(-110%) rotateY(14deg) scale(0.9); }
+		}
+
+		@keyframes frame-three {
+			0%, 58.333% { transform: translateX(110%) rotateY(-14deg) scale(0.9); }
+			66.667%, 91.667% { transform: translateX(0) rotateY(0) scale(1); }
+			100% { transform: translateX(-110%) rotateY(14deg) scale(0.9); }
+		}
+
+		@keyframes frame-loop {
+			0%, 91.667% { transform: translateX(110%) rotateY(-14deg) scale(0.9); }
+			100% { transform: translateX(0) rotateY(0) scale(1); }
+		}
+
+		@keyframes progress-one {
+			0% { transform: scaleX(0); }
+			25%, 33.333% { transform: scaleX(1); }
+			33.334%, 100% { transform: scaleX(0); }
+		}
+
+		@keyframes progress-two {
+			0%, 33.333% { transform: scaleX(0); }
+			58.333%, 66.667% { transform: scaleX(1); }
+			66.668%, 100% { transform: scaleX(0); }
+		}
+
+		@keyframes progress-three {
+			0%, 66.667% { transform: scaleX(0); }
+			91.667%, 100% { transform: scaleX(1); }
+		}
+
+		@media (max-width: 600px) {
+			body {
+				padding: 32px 16px;
+			}
+
+			.page-header {
+				align-items: flex-start;
+			}
+
+			.edition {
+				padding-top: 5px;
+				text-align: right;
+			}
+
+			.card-topline {
+				min-height: 42px;
+				padding: 0 14px;
+				font-size: 0.59rem;
+			}
+
+			.slide-progress {
+				padding: 14px 18px 0;
+			}
+
+			.caption {
+				align-items: flex-start;
+				padding: 20px 18px;
+			}
+
+			.caption-main {
+				gap: 12px;
+			}
+
+			.caption-note {
+				max-width: 95px;
+				line-height: 1.5;
+			}
+		}
+
+		@media (max-width: 390px) {
+			.page-header {
+				flex-direction: column;
+				gap: 12px;
+			}
+
+			.edition {
+				padding: 0;
+				text-align: left;
+			}
+
+			.caption-note {
+				display: none;
+			}
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			.track img {
+				animation: none;
+				transform: translateX(110%) rotateY(-14deg) scale(0.9);
+			}
+
+			.track img:first-child {
+				transform: translateX(0) rotateY(0) scale(1);
+			}
+
+			.slide-progress span::after {
+				animation: none;
+				transform: scaleX(0);
+			}
+
+			.slide-progress span:first-child::after {
+				transform: scaleX(1);
+			}
+		}
+	</style>
+</head>
+<body>
+    <a href="./index.html" aria-label="返回首页" style="position:fixed;top:12px;right:12px;z-index:9999;padding:9px 14px;border-radius:999px;background:#426b50;color:#fff;text-decoration:none;font:14px 'Microsoft YaHei',sans-serif;box-shadow:0 3px 12px rgba(0,0,0,.18)">← 返回首页</a>
+	<main class="page">
+		<header class="page-header">
+			<div>
+				<p class="kicker">CSS Animation / 10-2</p>
+				<h1>让画面向前一步</h1>
+			</div>
+			<span class="edition">IMAGE STUDY&nbsp; · &nbsp;01—03</span>
+		</header>
+
+		<section class="slide-card" aria-label="CSS 位置动画幻灯片">
+			<div class="card-topline">
+				<span>POSITION ANIMATION</span>
+				<span class="status">自动播放</span>
+			</div>
+
+			<div class="viewport">
+				<div class="track">
+					<img src="./img/7.jpg" alt="红黑舞台灯光下的男性写真">
+					<img src="./img/8.jpg" alt="灰色背景下的黑色西装肖像">
+					<img src="./img/9.jpg" alt="红色背景中的黑色礼服造型">
+					<img src="./img/7.jpg" alt="" aria-hidden="true">
+				</div>
+			</div>
+			<div class="slide-progress" aria-hidden="true">
+				<span></span>
+				<span></span>
+				<span></span>
+			</div>
+
+			<div class="caption">
+				<div class="caption-main">
+					<span class="caption-mark" aria-hidden="true"></span>
+					<div>
+						<h2>蔡美琪</h2>
+						<p class="caption-text">三帧影像，沿着时间轴依次登场。</p>
+					</div>
+				</div>
+				<div class="caption-note">
+					<strong>SLIDE 01 — 03</strong>
+					纯 CSS · translateX()
+				</div>
+			</div>
+		</section>
+	</main>
+</body>
+</html>

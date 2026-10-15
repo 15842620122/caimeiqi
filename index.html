@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>蔡美琪的《高级网页设计》课堂实践</title>
+    <style>
+      :root {
+        --bg-1: #fdf2f8;
+        --bg-2: #eef6ff;
+        --card: rgba(255, 255, 255, 0.82);
+        --card-strong: rgba(255, 255, 255, 0.95);
+        --primary: #8b5cf6;
+        --primary-dark: #6d28d9;
+        --secondary: #ec4899;
+        --accent: #f59e0b;
+        --text: #2f2a3a;
+        --muted: #6b7280;
+        --line: rgba(139, 92, 246, 0.15);
+        --shadow: 0 20px 45px rgba(109, 40, 217, 0.14);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Microsoft YaHei", "PingFang SC", "Segoe UI", sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at top left, rgba(236, 72, 153, 0.14), transparent 28%),
+          radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.14), transparent 30%),
+          linear-gradient(135deg, var(--bg-1), var(--bg-2));
+        min-height: 100vh;
+      }
+
+      .page {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 48px 24px 80px;
+      }
+
+      .hero {
+        position: relative;
+        background: linear-gradient(135deg, rgba(255,255,255,0.82), rgba(255,255,255,0.68));
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        box-shadow: var(--shadow);
+        padding: 36px 30px;
+        overflow: hidden;
+      }
+
+      .hero::before,
+      .hero::after {
+        content: "";
+        position: absolute;
+        width: 220px;
+        height: 220px;
+        border-radius: 50%;
+        background: rgba(139, 92, 246, 0.06);
+      }
+
+      .hero::before {
+        top: -60px;
+        right: -40px;
+      }
+
+      .hero::after {
+        bottom: -90px;
+        left: -30px;
+      }
+
+      .hero-inner {
+        position: relative;
+        z-index: 1;
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 8px 16px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, rgba(139, 92, 246, 0.12), rgba(236, 72, 153, 0.12));
+        border: 1px solid rgba(139, 92, 246, 0.18);
+        color: var(--primary-dark);
+        font-size: 0.82rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+      }
+
+      h1 {
+        margin: 18px 0 10px;
+        font-size: clamp(2.2rem, 5vw, 4rem);
+        line-height: 1.2;
+        letter-spacing: 2px;
+        background: linear-gradient(135deg, var(--primary-dark), var(--secondary), var(--accent));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      .subheading {
+        margin: 0;
+        font-size: 1.08rem;
+        line-height: 1.8;
+        color: var(--muted);
+        max-width: 760px;
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+        gap: 16px;
+        margin-top: 26px;
+      }
+
+      .stat {
+        background: rgba(255,255,255,0.72);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 16px 18px;
+      }
+
+      .stat strong {
+        display: block;
+        font-size: 1.7rem;
+        color: var(--primary-dark);
+        margin-bottom: 6px;
+      }
+
+      .stat span {
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+
+      .content {
+        margin-top: 32px;
+      }
+
+      .section-title {
+        margin: 0 0 18px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--primary-dark);
+        font-size: 1.7rem;
+      }
+
+      .section-title::before {
+        content: "";
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        box-shadow: 0 0 18px rgba(139, 92, 246, 0.38);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 20px;
+      }
+
+      .card {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 170px;
+        padding: 22px 20px 18px;
+        background: linear-gradient(180deg, var(--card-strong), var(--card));
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        box-shadow: 0 16px 28px rgba(31, 41, 55, 0.06);
+        text-decoration: none;
+        color: var(--text);
+        overflow: hidden;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      }
+
+      .card::before {
+        content: "";
+        position: absolute;
+        inset: 0 auto auto 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+      }
+
+      .card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 24px 34px rgba(76, 29, 149, 0.14);
+        border-color: rgba(139, 92, 246, 0.26);
+      }
+
+      .card .label {
+        display: inline-block;
+        align-self: flex-start;
+        padding: 7px 12px;
+        border-radius: 999px;
+        font-size: 0.76rem;
+        letter-spacing: 1px;
+        background: rgba(139, 92, 246, 0.08);
+        color: var(--primary-dark);
+        font-weight: 700;
+      }
+
+      .card h3 {
+        margin: 16px 0 10px;
+        font-size: 1.45rem;
+      }
+
+      .card p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.7;
+        font-size: 0.95rem;
+      }
+
+      .card .arrow {
+        margin-top: 18px;
+        font-size: 1.3rem;
+        color: var(--secondary);
+      }
+
+      .prompt-box {
+        margin-top: 36px;
+        background: linear-gradient(135deg, rgba(139, 92, 246, 0.06), rgba(236, 72, 153, 0.08));
+        border: 1px solid rgba(139, 92, 246, 0.14);
+        border-radius: 22px;
+        padding: 22px 24px;
+        box-shadow: 0 12px 26px rgba(91, 33, 182, 0.06);
+      }
+
+      .prompt-box h2 {
+        margin: 0 0 12px;
+        font-size: 1.35rem;
+        color: var(--primary-dark);
+      }
+
+      .prompt-box blockquote {
+        margin: 0;
+        padding: 18px 20px;
+        border-left: 5px solid var(--secondary);
+        border-radius: 12px;
+        background: rgba(255,255,255,0.7);
+        color: #433a52;
+        line-height: 1.9;
+        font-size: 1rem;
+      }
+
+      @media (max-width: 680px) {
+        .page {
+          padding: 30px 16px 60px;
+        }
+
+        .hero {
+          padding: 26px 18px;
+        }
+
+        .card {
+          min-height: 150px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="hero">
+        <div class="hero-inner">
+          <span class="badge">课堂实践作品集</span>
+          <h1>蔡美琪的《高级网页设计》课堂实践</h1>
+          <p class="subheading">
+            这是一个汇总本目录下全部网页的导航页，展示了各项 HTML/CSS 作品与学习成果，
+            通过清晰的页面结构与精致的视觉设计，呈现出本课程的实践内容与创作思路。
+          </p>
+
+          <div class="stats">
+            <div class="stat">
+              <strong>23</strong>
+              <span>网页作品</span>
+            </div>
+            <div class="stat">
+              <strong>HTML</strong>
+              <span>原生代码</span>
+            </div>
+            <div class="stat">
+              <strong>CSS</strong>
+              <span>精美样式</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main class="content">
+        <h2 class="section-title">作品导航</h2>
+        <section class="grid" aria-label="网页列表">
+          <a class="card" href="2-1.html">
+            <span class="label">第 2 章</span>
+            <div>
+              <h3>2-1.html</h3>
+              <p>基础网页布局与内容结构实践</p>
+            </div>
+            <div class="arrow">→</div>
+          </a>
+
+          <a class="card" href="2-2.html">
+            <span class="label">第 2 章</span>
+            <div>
+              <h3>2-2.html</h3>
+              <p>进阶页面排版与视觉层次强化</p>
+            </div>
+            <div class="arrow">→</div>
+          </a>
+
+          <a class="card" href="3-1from.html">
+            <span class="label">第 3 章</span>
+            <div>
+              <h3>3-1from.html</h3>
+              <p>表单设计与交互元素应用</p>
+            </div>
+            <div class="arrow">→</div>
+          </a>
+
+          <a class="card" href="3-2css.html">
+            <span class="label">第 3 章</span>
+            <div>
+              <h3>3-2css.html</h3>
+              <p>CSS 样式设计与装饰效果实现</p>
+            </div>
+            <div class="arrow">→</div>
+          </a>
+
+          <a class="card" href="4-1css.html">
+            <span class="label">第 4 章</span>
+            <div>
+              <h3>4-1css.html</h3>
+              <p>高级 CSS 版式与页面美化实践</p>
+            </div>
+            <div class="arrow">→</div>
+          </a>
+
+          <a class="card" href="5-1%20层叠与继承.html">
+            <span class="label">第 5 章</span>
+            <div>
+              <h3>5-1 层叠与继承.html</h3>
+              <p>层叠规则与样式继承示例</p>
+            </div>
+            <div class="arrow">→</div>
+          </a>
+
+          <a class="card" href="5-2%20盒模型.html">
+            <span class="label">第 5 章</span>
+            <div>
+              <h3>5-2 盒模型.html</h3>
+              <p>盒模型布局与边距控制</p>
+            </div>
+            <div class="arrow">→</div>
+          </a>
+
+          <a class="card" href="6-1%20flex.html">
+            <span class="label">第 6 章</span>
+            <div>
+              <h3>6-1 flex.html</h3>
+              <p>Flex 弹性布局练习</p>
+            </div>
+            <div class="arrow">→</div>
+          </a>
+
+          <a class="card" href="6-2%20%E4%B8%80%E5%B7%A6%E4%B8%80%E5%8F%B3.html">
+            <span class="label">第 6 章</span>
+            <div>
+              <h3>6-2 一左一右.html</h3>
+              <p>左右分栏布局设计</p>
+            </div>
+            <div class="arrow">→</div>
+          </a>
+
+          <a class="card" href="7-1%E4%B8%8A%E5%9B%BE%E4%B8%8B%E6%96%87.html">
+            <span class="label">第 7 章</span>
+            <div>
+              <h3>7-1上图下文.html</h3>
+              <p>图片在上、文字在下布局</p>
+            </div>
+            <div class="arrow">→</div>
+          </a>
+
+          <a class="card" href="7-2%20%E5%B7%A6%E5%9B%BE%E5%8F%B3%E6%96%87.html">
+            <span class="label">第 7 章</span>
+            <div>
+              <h3>7-2 左图右文.html</h3>
+              <p>图片在左、文字在右布局</p>
+            </div>
+            <div class="arrow">→</div>
+          </a>
+
+          <a class="card" href="8-1%20css%E9%80%89%E6%8B%A9%E5%99%A8.html">
+            <span class="label">第 8 章</span>
+            <div>
+              <h3>8-1 css选择器.html</h3>
+              <p>CSS 选择器与元素样式匹配</p>
+            </div>
+            <div class="arrow">→</div>
+          </a>
+
+          <a class="card" href="9-1transition.html">
+            <span class="label">第 9 章</span>
+            <div>
+              <h3>9-1transition.html</h3>
+              <p>CSS transition 过渡效果实践</p>
+            </div>
+            <div class="arrow">→</div>
+          </a>
+
+          <a class="card" href="10-1animation.html">
+            <span class="label">第 10 章</span>
+            <div>
+              <h3>10-1animation.html</h3>
+              <p>山野植物手册网页实践作品</p>
+            </div>
+            <div class="arrow">→</div>
+          </a>
+
+          <a class="card" href="10-2.html">
+            <span class="label">第 10 章</span>
+            <div>
+              <h3>10-2.html</h3>
+              <p>响应式盒子布局练习</p>
+            </div>
+            <div class="arrow">→</div>
+          </a>
+
+          <a class="card" href="10-3.html">
+            <span class="label">第 10 章</span>
+            <div>
+              <h3>10-3.html</h3>
+              <p>视口与色彩效果练习</p>
+            </div>
+            <div class="arrow">→</div>
+          </a>
+
+          <a class="card" href="10-4.html">
+            <span class="label">第 10 章</span>
+            <div>
+              <h3>10-4.html</h3>
+              <p>CSS Animation 色彩循环效果</p>
+            </div>
+            <div class="arrow">→</div>
+          </a>
+
+          <a class="card" href="10-5.html">
+            <span class="label">第 10 章</span>
+            <div>
+              <h3>10-5.html</h3>
+              <p>CSS3 3D 变换与动画练习</p>
+            </div>
+            <div class="arrow">→</div>
+          </a>
+
+          <a class="card" href="11-1.html">
+            <span class="label">第 11 章</span>
+            <div>
+              <h3>11-1.html</h3>
+              <p>CSS3 3D 环形旋转动画练习</p>
+            </div>
+            <div class="arrow">→</div>
+          </a>
+
+          <a class="card" href="11-2.html">
+            <span class="label">第 11 章</span>
+            <div>
+              <h3>11-2.html</h3>
+              <p>Web 前端长度单位示例</p>
+            </div>
+            <div class="arrow">→</div>
+          </a>
+
+          <a class="card" href="11-3.html">
+            <span class="label">第 11 章</span>
+            <div>
+              <h3>11-3.html</h3>
+              <p>山野植物手册页面作品</p>
+            </div>
+            <div class="arrow">→</div>
+          </a>
+
+          <a class="card" href="11-4.html">
+            <span class="label">第 11 章</span>
+            <div>
+              <h3>11-4.html</h3>
+              <p>星星闪烁的 CSS 3D 动画</p>
+            </div>
+            <div class="arrow">→</div>
+          </a>
+
+          <a class="card" href="1.html">
+            <span class="label">其他作品</span>
+            <div>
+              <h3>1.html</h3>
+              <p>课堂网页实践作品</p>
+            </div>
+            <div class="arrow">→</div>
+          </a>
+        </section>
+
+        <section class="prompt-box" aria-label="提示词展示">
+          <h2>提示词</h2>
+          <blockquote>
+            “创建一个新页面，包括本目录下的所有网页的超链接，使用原生代码，不使用cdn，新页面名称为index.html，主题为蔡美琪的《高级网页设计》课堂实践，美化页面，页面中包括本提示词。”
+          </blockquote>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
