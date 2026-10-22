@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>移动端底部导航（字体图标）</title>
+    <link rel="stylesheet" href="./font/iconfont.css">
+    <style>
+        :root {
+            --caimeiqi-primary: #2563eb;
+            --caimeiqi-primary-light: #dbeafe;
+            --caimeiqi-accent: #f59e0b;
+            --caimeiqi-danger: #ff3b30;
+            --caimeiqi-text: #1f2d3d;
+            --caimeiqi-muted: #64748b;
+            --caimeiqi-radius: 14px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            padding: 40px 16px 130px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            background: linear-gradient(135deg, #eef6ff, #fff7fb);
+            font-family: "Microsoft YaHei", sans-serif;
+            color: var(--caimeiqi-text);
+        }
+
+        .caimeiqi_demo {
+            width: min(960px, 100%);
+            min-width: 0;
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid #d7e3ff;
+            border-radius: 18px;
+            box-shadow: 0 16px 40px rgba(46, 87, 168, 0.12);
+            padding: clamp(18px, 5vw, 32px) clamp(16px, 5vw, 30px);
+        }
+
+        .caimeiqi_home {
+            display: inline-block;
+            margin-bottom: 14px;
+            color: var(--caimeiqi-primary);
+            font-size: 14px;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+        }
+
+        .caimeiqi_home:hover {
+            border-bottom-color: var(--caimeiqi-primary);
+        }
+
+        h2 {
+            margin: 0 0 14px;
+            text-align: center;
+            font-size: clamp(24px, 7vw, 32px);
+            letter-spacing: 2px;
+        }
+
+        h3 {
+            margin: 30px 0 12px;
+            padding-left: 10px;
+            border-left: 4px solid var(--caimeiqi-accent);
+            font-size: 20px;
+        }
+
+        .caimeiqi_intro {
+            margin: 0;
+            line-height: 1.9;
+            color: var(--caimeiqi-muted);
+            font-size: clamp(15px, 4vw, 17px);
+            overflow-wrap: anywhere;
+        }
+
+        .caimeiqi_intro strong {
+            color: var(--caimeiqi-primary);
+        }
+
+        .caimeiqi_code {
+            display: block;
+            margin: 14px 0;
+            padding: 14px 16px;
+            border-radius: 10px;
+            background: #0f172a;
+            color: #e2e8f0;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 14px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .caimeiqi_grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 12px;
+            margin-top: 14px;
+        }
+
+        .caimeiqi_tile {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 6px;
+            border: 1px dashed #c7d6f5;
+            border-radius: 12px;
+            background: #f8fbff;
+            color: var(--caimeiqi-primary);
+            transition: transform 0.25s, background 0.25s;
+        }
+
+        .caimeiqi_tile:hover {
+            transform: translateY(-4px);
+            background: var(--caimeiqi-primary-light);
+        }
+
+        .caimeiqi_tile .iconfont {
+            font-size: 30px;
+        }
+
+        .caimeiqi_tile_icon {
+            width: 30px;
+            height: 30px;
+            fill: currentColor;
+        }
+
+        .caimeiqi_name {
+            font-size: 12px;
+            font-family: Consolas, "Courier New", monospace;
+            color: var(--caimeiqi-muted);
+            text-align: center;
+            word-break: break-all;
+        }
+
+        .caimeiqi_note {
+            font-size: 14px;
+            color: var(--caimeiqi-muted);
+            line-height: 1.9;
+            margin: 10px 0 0;
+            overflow-wrap: anywhere;
+        }
+
+        .caimeiqi_note strong {
+            color: var(--caimeiqi-primary);
+        }
+
+        .caimeiqi_rule_list {
+            margin: 28px 0 0;
+            padding-left: 22px;
+            color: #334155;
+            font-size: 16px;
+            line-height: 2;
+        }
+
+        .caimeiqi_rule_list strong {
+            color: var(--caimeiqi-primary);
+        }
+
+        .caimeiqi_sign {
+            margin: 22px 0 0;
+            text-align: right;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        /* ============ 固定底部导航（全屏宽度） ============ */
+        .caimeiqi_tabbar {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1.9fr;
+            align-items: stretch;
+            min-height: 84px;
+            padding: 8px max(12px, env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+            background: #fff;
+            border-top: 1px solid #ededed;
+            z-index: 999;
+        }
+
+        .caimeiqi_tab_item {
+            position: relative;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 2px 4px;
+            color: #666;
+            font-size: clamp(12px, 3.6vw, 16px);
+            text-align: center;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .caimeiqi_tab_item + .caimeiqi_tab_item {
+            border-left: 1px solid #f2f2f2;
+        }
+
+        .caimeiqi_tab_action {
+            align-self: center;
+            flex-direction: row;
+            gap: 8px;
+            min-height: 60px;
+            margin: 0 4px;
+            padding: 8px 12px;
+            border-radius: 12px;
+            background: #40b34f;
+            color: #fff;
+            font-size: clamp(14px, 4vw, 20px);
+            box-shadow: 0 5px 12px rgba(64, 179, 79, 0.25);
+        }
+
+        .caimeiqi_tab_action:active {
+            background: #329e40;
+        }
+
+        .caimeiqi_plus {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            flex: 0 0 24px;
+            border: 2px solid currentColor;
+            border-radius: 50%;
+            font-size: 21px;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .caimeiqi_tab_item:active {
+            background: #f2faf3;
+        }
+
+        .caimeiqi_is_active {
+            color: #40b34f;
+        }
+
+        .caimeiqi_icon_wrap {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+        }
+
+        .caimeiqi_icon_wrap .iconfont {
+            color: #40b34f;
+            font-size: clamp(26px, 7vw, 34px);
+            line-height: 1;
+        }
+
+        .caimeiqi_tab_custom_icon {
+            width: clamp(26px, 7vw, 34px);
+            height: clamp(26px, 7vw, 34px);
+            display: block;
+        }
+
+        .caimeiqi_icon_defs {
+            display: none;
+        }
+
+        .caimeiqi_tab_text {
+            display: block;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* 数字徽章：贴在图标的右上角 */
+        .caimeiqi_badge {
+            position: absolute;
+            top: -3px;
+            right: -9px;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 5px;
+            border-radius: 999px;
+            background: var(--caimeiqi-danger);
+            color: #fff;
+            font-size: 11px;
+            font-weight: 700;
+            font-style: normal;
+            line-height: 18px;
+            text-align: center;
+            letter-spacing: 0;
+            box-shadow: 0 0 0 2px #fff;
+        }
+
+        /* 红点：贴在图标的右上角 */
+        .caimeiqi_dot {
+            position: absolute;
+            top: 0;
+            right: -5px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--caimeiqi-danger);
+            box-shadow: 0 0 0 2px #fff;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="caimeiqi_demo">
+        <a class="caimeiqi_home" href="1.html">← 返回首页</a>
+        <h2>移动端底部导航 · 字体图标</h2>
+        <p class="caimeiqi_intro">这个页面使用 <strong>iconfont 字体图标</strong>（font/iconfont.css）实现移动端固定底栏；统计和植物识别按参考图分别使用柱状图与相机图标，宽度随屏幕自适应。本页由<strong>蔡美琪</strong>完成。</p>
+
+        <h3>一、图标与结构</h3>
+        <p class="caimeiqi_note">设置图标来自 iconfont；统计与植物识别使用下方自定义 SVG 柱状图、相机图标，以匹配参考图；添加植物项用绿色圆角按钮突出显示：</p>
+        <div class="caimeiqi_grid">
+            <div class="caimeiqi_tile"><i class="iconfont icon-settings"></i><span class="caimeiqi_name">icon-settings</span></div>
+            <div class="caimeiqi_tile"><svg class="caimeiqi_tile_icon" aria-hidden="true"><use href="#caimeiqi_chart_icon"></use></svg><span class="caimeiqi_name">统计 · 柱状图</span></div>
+            <div class="caimeiqi_tile"><svg class="caimeiqi_tile_icon" aria-hidden="true"><use href="#caimeiqi_camera_icon"></use></svg><span class="caimeiqi_name">植物识别 · 相机</span></div>
+            <div class="caimeiqi_tile"><i class="iconfont icon-addNode"></i><span class="caimeiqi_name">icon-addNode</span></div>
+        </div>
+        <code class="caimeiqi_code">&lt;link rel="stylesheet" href="./font/iconfont.css"&gt;
+
+&lt;!-- 页面内定义柱状图和相机 SVG symbol --&gt;
+&lt;nav class="caimeiqi_tabbar"&gt;
+  &lt;div class="caimeiqi_tab_item caimeiqi_is_active"&gt;
+    &lt;span class="caimeiqi_icon_wrap"&gt;&lt;i class="iconfont icon-settings"&gt;&lt;/i&gt;&lt;/span&gt;
+    &lt;span class="caimeiqi_tab_text"&gt;设置&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class="caimeiqi_tab_item"&gt;
+    &lt;span class="caimeiqi_icon_wrap"&gt;&lt;svg class="caimeiqi_tab_custom_icon"&gt;&lt;use href="#caimeiqi_chart_icon"&gt;&lt;/use&gt;&lt;/svg&gt;&lt;/span&gt;
+    &lt;span class="caimeiqi_tab_text"&gt;统计&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class="caimeiqi_tab_item"&gt;
+    &lt;span class="caimeiqi_icon_wrap"&gt;&lt;svg class="caimeiqi_tab_custom_icon"&gt;&lt;use href="#caimeiqi_camera_icon"&gt;&lt;/use&gt;&lt;/svg&gt;&lt;/span&gt;
+    &lt;span class="caimeiqi_tab_text"&gt;植物识别&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class="caimeiqi_tab_item caimeiqi_tab_action"&gt;
+    &lt;span class="caimeiqi_plus"&gt;+&lt;/span&gt;
+    &lt;span class="caimeiqi_tab_text"&gt;添加植物&lt;/span&gt;
+  &lt;/div&gt;
+&lt;/nav&gt;</code>
+
+        <h3>二、固定定位 + 全屏宽度 + 自适应等分</h3>
+        <code class="caimeiqi_code">        .caimeiqi_tabbar {
+          position: fixed; left: 0; bottom: 0;
+          width: 100%;
+          display: grid;
+          grid-template-columns: 1fr 1fr 1.45fr 1.9fr;
+          padding-bottom: env(safe-area-inset-bottom);
+        }</code>
+
+        <h3>三、数字徽章与右上角红点</h3>
+        <code class="caimeiqi_code">.caimeiqi_icon_wrap { position: relative; width: 28px; height: 28px; }
+.caimeiqi_badge {                  <span style="color:#7dd3fc">/* 数字徽章，盖在图标右上角 */</span>
+  position: absolute;
+  top: -6px; right: -12px;
+  min-width: 18px; height: 18px;
+  border-radius: 999px;
+  background: #ff3b30;
+  color: #fff; font-size: 11px; line-height: 18px; text-align: center;
+  box-shadow: 0 0 0 2px #fff;      <span style="color:#7dd3fc">/* 白描边，压在图标上也看得清 */</span>
+}
+.caimeiqi_dot {                    <span style="color:#7dd3fc">/* 红点，绝对定位在图标右上角 */</span>
+  position: absolute;
+  top: -1px; right: -8px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #ff3b30;
+}</code>
+
+        <h3>四、移动端适配要点</h3>
+        <ul class="caimeiqi_rule_list">
+            <li><strong>viewport：</strong><code>&lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;</code> 让页面按设备宽度渲染</li>
+            <li><strong>全屏宽度：</strong><code>position: fixed</code> 配 <code>left: 0; bottom: 0; width: 100vw</code>，导航条始终横跨整个视口</li>
+            <li><strong>自适应布局：</strong>底栏用 CSS Grid 按参考图分配四个区域，最后的“添加植物”按钮更宽；320px、375px、414px 屏幕均铺满宽度</li>
+            <li><strong>字号缩放：</strong>图标 <code>font-size: clamp(22px, 6vw, 26px)</code>、文字 <code>clamp(11px, 3vw, 13px)</code>，随屏宽平滑变化不溢出</li>
+            <li><strong>安全区：</strong><code>padding-bottom: env(safe-area-inset-bottom)</code> 适配 iPhone 底部手势条</li>
+            <li><strong>避免遮挡：</strong>正文容器 <code>padding-bottom: 130px</code>，滚动到底时内容不会被固定导航盖住</li>
+            <li><strong>操作按钮：</strong>添加植物项使用圆形加号和绿色圆角按钮，与普通图标导航形成层级</li>
+            <li><strong>字体图标特点：</strong>图标是字体字符，用 <code>font-size</code> 控制大小、<code>color</code> 控制颜色，选中态一处改色即可</li>
+        </ul>
+
+        <p class="caimeiqi_sign">蔡美琪 · 13-3 iconfont 字体图标底部导航</p>
+    </div>
+
+    <svg class="caimeiqi_icon_defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <symbol id="caimeiqi_chart_icon" viewBox="0 0 36 36">
+            <path fill="currentColor" d="M2 23h8v11H2zM14 14h8v20h-8zM26 5h8v29h-8z"/>
+        </symbol>
+        <symbol id="caimeiqi_camera_icon" viewBox="0 0 36 36">
+            <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M11 8.5 13 5h10l2 3.5h5a3 3 0 0 1 3 3v17a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3v-17a3 3 0 0 1 3-3h5Z"/>
+            <circle cx="18" cy="19.5" r="6" fill="none" stroke="currentColor" stroke-width="2"/>
+            <circle cx="29" cy="13" r="1" fill="currentColor"/>
+        </symbol>
+    </svg>
+    <nav class="caimeiqi_tabbar" aria-label="底部导航">
+        <div class="caimeiqi_tab_item caimeiqi_is_active">
+            <span class="caimeiqi_icon_wrap">
+                <i class="iconfont icon-settings"></i>
+            </span>
+            <span class="caimeiqi_tab_text">设置</span>
+        </div>
+        <div class="caimeiqi_tab_item">
+            <span class="caimeiqi_icon_wrap">
+                <svg class="caimeiqi_tab_custom_icon" aria-hidden="true"><use href="#caimeiqi_chart_icon"></use></svg>
+                <b class="caimeiqi_dot" aria-label="有新内容"></b>
+            </span>
+            <span class="caimeiqi_tab_text">统计</span>
+        </div>
+        <div class="caimeiqi_tab_item">
+            <span class="caimeiqi_icon_wrap">
+                <svg class="caimeiqi_tab_custom_icon" aria-hidden="true"><use href="#caimeiqi_camera_icon"></use></svg>
+                <b class="caimeiqi_badge">3</b>
+            </span>
+            <span class="caimeiqi_tab_text">植物识别</span>
+        </div>
+        <div class="caimeiqi_tab_item caimeiqi_tab_action">
+            <span class="caimeiqi_icon_wrap">
+                <span class="caimeiqi_plus" aria-hidden="true">+</span>
+            </span>
+            <span class="caimeiqi_tab_text">添加植物</span>
+        </div>
+    </nav>
+</body>
+</html>

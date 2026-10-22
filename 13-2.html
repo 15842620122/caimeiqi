@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lucide SVG 图标</title>
+    <style>
+        :root {
+            --caimeiqi-primary: #0f766e;
+            --caimeiqi-primary-light: #ccfbf1;
+            --caimeiqi-accent: #f97316;
+            --caimeiqi-text: #1f2d3d;
+            --caimeiqi-muted: #64748b;
+            --caimeiqi-radius: 14px;
+            --caimeiqi-red: #ef4444;
+            --caimeiqi-blue: #2563eb;
+            --caimeiqi-purple: #9333ea;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            padding: 40px 16px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            background: linear-gradient(135deg, #eefcf7, #fff7ed);
+            font-family: "Microsoft YaHei", sans-serif;
+            color: var(--caimeiqi-text);
+        }
+
+        .caimeiqi_demo {
+            width: min(960px, 94vw);
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid #c7ede3;
+            border-radius: 18px;
+            box-shadow: 0 16px 40px rgba(15, 118, 110, 0.12);
+            padding: 32px 30px;
+        }
+
+        .caimeiqi_home {
+            display: inline-block;
+            margin-bottom: 14px;
+            color: var(--caimeiqi-primary);
+            font-size: 14px;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+        }
+
+        .caimeiqi_home:hover {
+            border-bottom-color: var(--caimeiqi-primary);
+        }
+
+        h2 {
+            margin: 0 0 14px;
+            text-align: center;
+            font-size: 32px;
+            letter-spacing: 2px;
+        }
+
+        h3 {
+            margin: 30px 0 12px;
+            padding-left: 10px;
+            border-left: 4px solid var(--caimeiqi-accent);
+            font-size: 20px;
+        }
+
+        .caimeiqi_intro {
+            margin: 0;
+            line-height: 1.9;
+            color: var(--caimeiqi-muted);
+            font-size: 17px;
+        }
+
+        .caimeiqi_intro strong {
+            color: var(--caimeiqi-primary);
+        }
+
+        .caimeiqi_code {
+            display: block;
+            margin: 14px 0;
+            padding: 14px 16px;
+            border-radius: 10px;
+            background: #042f2e;
+            color: #e2e8f0;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 14px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .caimeiqi_grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 12px;
+            margin-top: 14px;
+        }
+
+        .caimeiqi_tile {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 6px;
+            border: 1px dashed #a7ddd0;
+            border-radius: 12px;
+            background: #f6fffc;
+            color: var(--caimeiqi-primary);
+            transition: transform 0.25s, box-shadow 0.25s, background 0.25s;
+        }
+
+        .caimeiqi_tile:hover {
+            transform: translateY(-4px);
+            background: var(--caimeiqi-primary-light);
+            box-shadow: 0 8px 18px rgba(15, 118, 110, 0.18);
+        }
+
+        .caimeiqi_tile i,
+        .caimeiqi_tile svg {
+            width: 28px;
+            height: 28px;
+            display: block;
+            transition: transform 0.25s;
+        }
+
+        .caimeiqi_tile:hover i,
+        .caimeiqi_tile:hover svg {
+            transform: scale(1.15);
+        }
+
+        .caimeiqi_name {
+            font-size: 12px;
+            font-family: Consolas, "Courier New", monospace;
+            color: var(--caimeiqi-muted);
+            text-align: center;
+            word-break: break-all;
+        }
+
+        .caimeiqi_row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+            margin-top: 12px;
+            padding: 16px;
+            border-radius: var(--caimeiqi-radius);
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+        }
+
+        .caimeiqi_row i,
+        .caimeiqi_row svg {
+            width: 26px;
+            height: 26px;
+            display: block;
+        }
+
+        .caimeiqi_tag {
+            font-size: 13px;
+            color: #fff;
+            background: var(--caimeiqi-accent);
+            border-radius: 999px;
+            padding: 4px 12px;
+            white-space: nowrap;
+        }
+
+        .caimeiqi_tag_teal {
+            background: var(--caimeiqi-primary);
+        }
+
+        .caimeiqi_sz1 i, .caimeiqi_sz1 svg { width: 14px; height: 14px; }
+        .caimeiqi_sz2 i, .caimeiqi_sz2 svg { width: 24px; height: 24px; }
+        .caimeiqi_sz3 i, .caimeiqi_sz3 svg { width: 36px; height: 36px; }
+        .caimeiqi_sz4 i, .caimeiqi_sz4 svg { width: 52px; height: 52px; }
+
+        .caimeiqi_c_red { color: var(--caimeiqi-red); }
+        .caimeiqi_c_blue { color: var(--caimeiqi-blue); }
+        .caimeiqi_c_purple { color: var(--caimeiqi-purple); }
+        .caimeiqi_c_accent { color: var(--caimeiqi-accent); }
+
+        .caimeiqi_sw1 svg { stroke-width: 1; }
+        .caimeiqi_sw2 svg { stroke-width: 2; }
+        .caimeiqi_sw3 svg { stroke-width: 3.5; }
+
+        .caimeiqi_label {
+            font-size: 14px;
+            color: var(--caimeiqi-muted);
+            margin: 12px 0 0;
+        }
+
+        .caimeiqi_svgbox {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            align-items: center;
+            margin-top: 14px;
+            padding: 18px;
+            border-radius: var(--caimeiqi-radius);
+            background: #f6fffc;
+            border: 1px solid #a7ddd0;
+        }
+
+        .caimeiqi_svgbox svg {
+            width: 64px;
+            height: 64px;
+            color: var(--caimeiqi-primary);
+        }
+
+        .caimeiqi_rule_list {
+            margin: 28px 0 0;
+            padding-left: 22px;
+            color: #334155;
+            font-size: 16px;
+            line-height: 2;
+        }
+
+        .caimeiqi_rule_list strong {
+            color: var(--caimeiqi-primary);
+        }
+
+        .caimeiqi_sign {
+            margin: 22px 0 0;
+            text-align: right;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="caimeiqi_demo">
+        <a class="caimeiqi_home" href="1.html">← 返回首页</a>
+        <h2>Lucide SVG 图标</h2>
+        <p class="caimeiqi_intro">Lucide 是一套开源的<strong>图标 SVG 集合</strong>，每个图标都是一段 <strong>&lt;svg&gt;</strong> 标记（viewBox + path + 描边）。本页把官方 CDN 文件 <strong>lucide.min.js</strong> 下载到本地 <strong>cdn/</strong> 目录，页面里写 <strong>&lt;i data-lucide="图标名"&gt;</strong> 占位，脚本会把它<strong>替换成真正的 SVG 元素</strong>。因为是 SVG，颜色（currentColor）、大小（width/height）、线条粗细（stroke-width）都能用 CSS 随意控制。本页由<strong>蔡美琪</strong>完成。</p>
+
+        <h3>一、基本用法</h3>
+        <code class="caimeiqi_code">&lt;script src="./cdn/lucide.min.js"&gt;&lt;/script&gt;
+
+&lt;i data-lucide="house"&gt;&lt;/i&gt;   <span style="color:#5eead4">/* 占位符，稍后被替换成 svg */</span>
+&lt;i data-lucide="heart"&gt;&lt;/i&gt;
+
+&lt;script&gt;
+  lucide.createIcons();        <span style="color:#5eead4">/* 把所有 data-lucide 元素渲染成 SVG */</span>
+&lt;/script&gt;</code>
+        <div class="caimeiqi_grid">
+            <div class="caimeiqi_tile"><i data-lucide="house"></i><span class="caimeiqi_name">house</span></div>
+            <div class="caimeiqi_tile"><i data-lucide="heart"></i><span class="caimeiqi_name">heart</span></div>
+            <div class="caimeiqi_tile"><i data-lucide="user"></i><span class="caimeiqi_name">user</span></div>
+            <div class="caimeiqi_tile"><i data-lucide="search"></i><span class="caimeiqi_name">search</span></div>
+            <div class="caimeiqi_tile"><i data-lucide="settings"></i><span class="caimeiqi_name">settings</span></div>
+            <div class="caimeiqi_tile"><i data-lucide="bell"></i><span class="caimeiqi_name">bell</span></div>
+            <div class="caimeiqi_tile"><i data-lucide="camera"></i><span class="caimeiqi_name">camera</span></div>
+            <div class="caimeiqi_tile"><i data-lucide="lock"></i><span class="caimeiqi_name">lock</span></div>
+            <div class="caimeiqi_tile"><i data-lucide="star"></i><span class="caimeiqi_name">star</span></div>
+            <div class="caimeiqi_tile"><i data-lucide="download"></i><span class="caimeiqi_name">download</span></div>
+            <div class="caimeiqi_tile"><i data-lucide="trash-2"></i><span class="caimeiqi_name">trash-2</span></div>
+            <div class="caimeiqi_tile"><i data-lucide="bookmark"></i><span class="caimeiqi_name">bookmark</span></div>
+        </div>
+
+        <h3>二、从占位符到 SVG</h3>
+        <code class="caimeiqi_code"><span style="color:#5eead4">/* 渲染前（源码里写的） */</span>
+&lt;i data-lucide="leaf"&gt;&lt;/i&gt;
+
+<span style="color:#5eead4">/* 渲染后（打开开发者工具可以看到） */</span>
+&lt;svg class="lucide lucide-leaf" xmlns="http://www.w3.org/2000/svg"
+     width="24" height="24" viewBox="0 0 24 24"
+     fill="none" stroke="currentColor" stroke-width="2"
+     stroke-linecap="round" stroke-linejoin="round"&gt;
+  &lt;path d="M11 20a10 10 0 0 0 10-10 25.9 25.9 0 0 0-1.04-7.281 ..."/&gt;
+  &lt;path d="M2 21a5 5 0 0 1 2.911-4.544 ..."/&gt;
+&lt;/svg&gt;</code>
+        <p class="caimeiqi_label" style="margin-top:0">下面这枚叶子不是字体，而是页面里真实存在的 SVG 元素（和 Lucide 生成的代码一模一样，可右键检查）：</p>
+        <div class="caimeiqi_svgbox">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 20a10 10 0 0010-10 25.9 25.9 0 00-1.04-7.281 1 1 0 00-1.755-.325C15.833 5.5 13 5.5 9.8 6.1A7 7 0 0011 20"></path>
+                <path d="M2 21a5 5 0 012.911-4.544C7.613 15.212 8.351 15.24 11 13"></path>
+            </svg>
+            <span class="caimeiqi_label" style="margin:0">inline SVG：没有字体文件、没有图片请求，直接写在 HTML 里，浏览器按矢量绘制。</span>
+        </div>
+
+        <h3>三、用 CSS 控制 SVG 大小</h3>
+        <code class="caimeiqi_code">.caimeiqi_sz4 svg { width: 52px; height: 52px; }   <span style="color:#5eead4">/* 改宽高即可 */</span>
+.caimeiqi_sw3 svg { stroke-width: 3.5; }         <span style="color:#5eead4">/* 改线条粗细 */</span></code>
+        <div class="caimeiqi_row">
+            <span class="caimeiqi_sz1"><i data-lucide="leaf"></i></span>
+            <span class="caimeiqi_sz2"><i data-lucide="leaf"></i></span>
+            <span class="caimeiqi_sz3"><i data-lucide="leaf"></i></span>
+            <span class="caimeiqi_sz4"><i data-lucide="leaf"></i></span>
+            <span class="caimeiqi_label" style="margin:0">14 / 24 / 36 / 52 px</span>
+        </div>
+        <div class="caimeiqi_row">
+            <span class="caimeiqi_sz3 caimeiqi_sw1"><i data-lucide="circle-check"></i></span>
+            <span class="caimeiqi_sz3 caimeiqi_sw2"><i data-lucide="circle-check"></i></span>
+            <span class="caimeiqi_sz3 caimeiqi_sw3"><i data-lucide="circle-check"></i></span>
+            <span class="caimeiqi_label" style="margin:0">stroke-width: 1 / 2 / 3.5</span>
+        </div>
+
+        <h3>四、用 currentColor 换颜色</h3>
+        <code class="caimeiqi_code">.caimeiqi_c_red { color: #ef4444; }   <span style="color:#5eead4">/* svg 的 stroke="currentColor" 会取到它 */</span></code>
+        <div class="caimeiqi_row">
+            <span class="caimeiqi_sz3 caimeiqi_c_red"><i data-lucide="heart"></i></span>
+            <span class="caimeiqi_sz3 caimeiqi_c_blue"><i data-lucide="star"></i></span>
+            <span class="caimeiqi_sz3 caimeiqi_c_purple"><i data-lucide="bell"></i></span>
+            <span class="caimeiqi_sz3 caimeiqi_c_accent"><i data-lucide="flame"></i></span>
+            <span class="caimeiqi_label" style="margin:0">red / blue / purple / orange</span>
+        </div>
+        <div class="caimeiqi_row" style="font-size:16px">
+            <i data-lucide="bell"></i>
+            <span>图标与这段文字同处一行，颜色随文字继承</span>
+        </div>
+
+        <h3>五、分类展示</h3>
+        <p class="caimeiqi_label" style="margin-top:0">自然植物</p>
+        <div class="caimeiqi_grid">
+            <div class="caimeiqi_tile"><i data-lucide="leaf"></i><span class="caimeiqi_name">leaf</span></div>
+            <div class="caimeiqi_tile"><i data-lucide="sprout"></i><span class="caimeiqi_name">sprout</span></div>
+            <div class="caimeiqi_tile"><i data-lucide="tree-pine"></i><span class="caimeiqi_name">tree-pine</span></div>
+            <div class="caimeiqi_tile"><i data-lucide="flower-2"></i><span class="caimeiqi_name">flower-2</span></div>
+            <div class="caimeiqi_tile"><i data-lucide="sun"></i><span class="caimeiqi_name">sun</span></div>
+            <div class="caimeiqi_tile"><i data-lucide="moon"></i><span class="caimeiqi_name">moon</span></div>
+            <div class="caimeiqi_tile"><i data-lucide="cloud"></i><span class="caimeiqi_name">cloud</span></div>
+            <div class="caimeiqi_tile"><i data-lucide="umbrella"></i><span class="caimeiqi_name">umbrella</span></div>
+            <div class="caimeiqi_tile"><i data-lucide="droplet"></i><span class="caimeiqi_name">droplet</span></div>
+            <div class="caimeiqi_tile"><i data-lucide="flame"></i><span class="caimeiqi_name">flame</span></div>
+        </div>
+        <p class="caimeiqi_label">界面操作</p>
+        <div class="caimeiqi_grid">
+            <div class="caimeiqi_tile"><i data-lucide="arrow-right"></i><span class="caimeiqi_name">arrow-right</span></div>
+            <div class="caimeiqi_tile"><i data-lucide="circle-check"></i><span class="caimeiqi_name">circle-check</span></div>
+            <div class="caimeiqi_tile"><i data-lucide="play"></i><span class="caimeiqi_name">play</span></div>
+            <div class="caimeiqi_tile"><i data-lucide="pause"></i><span class="caimeiqi_name">pause</span></div>
+            <div class="caimeiqi_tile"><i data-lucide="pencil"></i><span class="caimeiqi_name">pencil</span></div>
+            <div class="caimeiqi_tile"><i data-lucide="share-2"></i><span class="caimeiqi_name">share-2</span></div>
+            <div class="caimeiqi_tile"><i data-lucide="refresh-cw"></i><span class="caimeiqi_name">refresh-cw</span></div>
+            <div class="caimeiqi_tile"><i data-lucide="palette"></i><span class="caimeiqi_name">palette</span></div>
+            <div class="caimeiqi_tile"><i data-lucide="code"></i><span class="caimeiqi_name">code</span></div>
+            <div class="caimeiqi_tile"><i data-lucide="zap"></i><span class="caimeiqi_name">zap</span></div>
+        </div>
+
+        <ul class="caimeiqi_rule_list">
+            <li><strong>图标形式：</strong>每个图标就是一段 <code>&lt;svg&gt;</code> 标记，由 <code>viewBox</code> 定义 24×24 画布、<code>&lt;path&gt;</code> 描出轮廓</li>
+            <li><strong>接入方式：</strong>本地引入 <code>./cdn/lucide.min.js</code>，写 <code>data-lucide</code> 占位符，<code>lucide.createIcons()</code> 一次性替换成 SVG</li>
+            <li><strong>矢量缩放：</strong>改 <code>width / height</code> 即可任意放大缩小，永远不模糊，也不需要下载多套尺寸</li>
+            <li><strong>颜色继承：</strong><code>stroke="currentColor"</code> 让描边跟着 CSS 的 <code>color</code> 走，文字什么颜色图标就什么颜色</li>
+            <li><strong>线条可调：</strong><code>stroke-width</code>、<code>stroke-linecap</code> 都是属性，CSS 可覆盖，能做出细线、粗线等风格</li>
+            <li><strong>与字体图标对比：</strong>字体图标是一个字符（只能整体换色），SVG 是真实 DOM（可分别控制每段路径、加动画、改结构）</li>
+        </ul>
+
+        <p class="caimeiqi_sign">蔡美琪 · 13-2 Lucide SVG 图标</p>
+    </div>
+
+    <script src="./cdn/lucide.min.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

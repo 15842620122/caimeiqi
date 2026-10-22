@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Font Awesome 字体图标</title>
+    <link rel="stylesheet" href="./cdn/font-awesome/css/all.min.css">
+    <style>
+        :root {
+            --caimeiqi-primary: #1d4ed8;
+            --caimeiqi-primary-light: #dbeafe;
+            --caimeiqi-accent: #f59e0b;
+            --caimeiqi-text: #1f2d3d;
+            --caimeiqi-muted: #64748b;
+            --caimeiqi-radius: 14px;
+            --caimeiqi-green: #16a34a;
+            --caimeiqi-red: #ef4444;
+            --caimeiqi-purple: #9333ea;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            padding: 40px 16px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            background: linear-gradient(135deg, #eef6ff, #fff7fb);
+            font-family: "Microsoft YaHei", sans-serif;
+            color: var(--caimeiqi-text);
+        }
+
+        .caimeiqi_demo {
+            width: min(960px, 94vw);
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid #d7e3ff;
+            border-radius: 18px;
+            box-shadow: 0 16px 40px rgba(46, 87, 168, 0.12);
+            padding: 32px 30px;
+        }
+
+        .caimeiqi_home {
+            display: inline-block;
+            margin-bottom: 14px;
+            color: var(--caimeiqi-primary);
+            font-size: 14px;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+        }
+
+        .caimeiqi_home:hover {
+            border-bottom-color: var(--caimeiqi-primary);
+        }
+
+        h2 {
+            margin: 0 0 14px;
+            text-align: center;
+            font-size: 32px;
+            letter-spacing: 2px;
+        }
+
+        h3 {
+            margin: 30px 0 12px;
+            padding-left: 10px;
+            border-left: 4px solid var(--caimeiqi-accent);
+            font-size: 20px;
+        }
+
+        .caimeiqi_intro {
+            margin: 0;
+            line-height: 1.9;
+            color: var(--caimeiqi-muted);
+            font-size: 17px;
+        }
+
+        .caimeiqi_intro strong {
+            color: var(--caimeiqi-primary);
+        }
+
+        .caimeiqi_code {
+            display: block;
+            margin: 14px 0;
+            padding: 14px 16px;
+            border-radius: 10px;
+            background: #0f172a;
+            color: #e2e8f0;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 14px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .caimeiqi_grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 12px;
+            margin-top: 14px;
+        }
+
+        .caimeiqi_tile {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 6px;
+            border: 1px dashed #c7d6f5;
+            border-radius: 12px;
+            background: #f8fbff;
+            font-size: 28px;
+            color: var(--caimeiqi-primary);
+            transition: transform 0.25s, box-shadow 0.25s, background 0.25s;
+        }
+
+        .caimeiqi_tile:hover {
+            transform: translateY(-4px);
+            background: var(--caimeiqi-primary-light);
+            box-shadow: 0 8px 18px rgba(29, 78, 216, 0.18);
+        }
+
+        .caimeiqi_name {
+            font-size: 12px;
+            font-family: Consolas, "Courier New", monospace;
+            color: var(--caimeiqi-muted);
+            text-align: center;
+            word-break: break-all;
+        }
+
+        .caimeiqi_row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+            margin-top: 12px;
+            padding: 16px;
+            border-radius: var(--caimeiqi-radius);
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            font-size: 26px;
+        }
+
+        .caimeiqi_tag {
+            font-size: 13px;
+            color: #fff;
+            background: var(--caimeiqi-accent);
+            border-radius: 999px;
+            padding: 4px 12px;
+            white-space: nowrap;
+        }
+
+        .caimeiqi_tag_blue {
+            background: var(--caimeiqi-primary);
+        }
+
+        .caimeiqi_tag_green {
+            background: var(--caimeiqi-green);
+        }
+
+        .caimeiqi_s1 { font-size: 14px; }
+        .caimeiqi_s2 { font-size: 24px; }
+        .caimeiqi_s3 { font-size: 36px; }
+        .caimeiqi_s4 { font-size: 52px; }
+
+        .caimeiqi_c_red { color: var(--caimeiqi-red); }
+        .caimeiqi_c_green { color: var(--caimeiqi-green); }
+        .caimeiqi_c_purple { color: var(--caimeiqi-purple); }
+        .caimeiqi_c_accent { color: var(--caimeiqi-accent); }
+
+        .caimeiqi_label {
+            font-size: 14px;
+            color: var(--caimeiqi-muted);
+            margin: 12px 0 0;
+        }
+
+        .caimeiqi_rule_list {
+            margin: 28px 0 0;
+            padding-left: 22px;
+            color: #334155;
+            font-size: 16px;
+            line-height: 2;
+        }
+
+        .caimeiqi_rule_list strong {
+            color: var(--caimeiqi-primary);
+        }
+
+        .caimeiqi_sign {
+            margin: 22px 0 0;
+            text-align: right;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="caimeiqi_demo">
+        <a class="caimeiqi_home" href="1.html">← 返回首页</a>
+        <h2>Font Awesome 字体图标</h2>
+        <p class="caimeiqi_intro">Font Awesome 把成千上万个图标做进<strong>一个字体文件</strong>，每个图标就是字体里的一个字符，浏览器通过 <strong>:before</strong> 伪元素的 <strong>content</strong> 把它打出来。因为是<strong>字体</strong>，所以它像文字一样可以改大小、改颜色、加阴影，缩放永远清晰。本页由<strong>蔡美琪</strong>完成，图标库文件已下载到本地 <strong>cdn/font-awesome/</strong> 目录，离线也能显示。</p>
+
+        <h3>一、基本用法</h3>
+        <code class="caimeiqi_code">&lt;link rel="stylesheet" href="./cdn/font-awesome/css/all.min.css"&gt;
+
+&lt;i class="fa-solid fa-house"&gt;&lt;/i&gt;      <span style="color:#7dd3fc">/* 实心 solid */</span>
+&lt;i class="fa-regular fa-heart"&gt;&lt;/i&gt;    <span style="color:#7dd3fc">/* 线条 regular */</span>
+&lt;i class="fa-brands fa-github"&gt;&lt;/i&gt;    <span style="color:#7dd3fc">/* 品牌 brands */</span></code>
+        <div class="caimeiqi_grid">
+            <div class="caimeiqi_tile"><i class="fa-solid fa-house"></i><span class="caimeiqi_name">fa-house</span></div>
+            <div class="caimeiqi_tile"><i class="fa-solid fa-heart"></i><span class="caimeiqi_name">fa-heart</span></div>
+            <div class="caimeiqi_tile"><i class="fa-solid fa-user"></i><span class="caimeiqi_name">fa-user</span></div>
+            <div class="caimeiqi_tile"><i class="fa-solid fa-magnifying-glass"></i><span class="caimeiqi_name">fa-magnifying-glass</span></div>
+            <div class="caimeiqi_tile"><i class="fa-solid fa-gear"></i><span class="caimeiqi_name">fa-gear</span></div>
+            <div class="caimeiqi_tile"><i class="fa-solid fa-bell"></i><span class="caimeiqi_name">fa-bell</span></div>
+            <div class="caimeiqi_tile"><i class="fa-solid fa-camera"></i><span class="caimeiqi_name">fa-camera</span></div>
+            <div class="caimeiqi_tile"><i class="fa-solid fa-envelope"></i><span class="caimeiqi_name">fa-envelope</span></div>
+            <div class="caimeiqi_tile"><i class="fa-solid fa-lock"></i><span class="caimeiqi_name">fa-lock</span></div>
+            <div class="caimeiqi_tile"><i class="fa-solid fa-star"></i><span class="caimeiqi_name">fa-star</span></div>
+            <div class="caimeiqi_tile"><i class="fa-solid fa-download"></i><span class="caimeiqi_name">fa-download</span></div>
+            <div class="caimeiqi_tile"><i class="fa-solid fa-trash"></i><span class="caimeiqi_name">fa-trash</span></div>
+        </div>
+
+        <h3>二、三种样式前缀</h3>
+        <div class="caimeiqi_row">
+            <span class="caimeiqi_tag caimeiqi_tag_blue">fa-solid 实心</span>
+            <i class="fa-solid fa-heart"></i>
+            <i class="fa-solid fa-circle-check"></i>
+            <i class="fa-solid fa-bookmark"></i>
+            <i class="fa-solid fa-bell"></i>
+            <i class="fa-solid fa-user"></i>
+        </div>
+        <div class="caimeiqi_row">
+            <span class="caimeiqi_tag caimeiqi_tag_green">fa-regular 线条</span>
+            <i class="fa-regular fa-heart"></i>
+            <i class="fa-regular fa-star"></i>
+            <i class="fa-regular fa-bookmark"></i>
+            <i class="fa-regular fa-circle-check"></i>
+            <i class="fa-regular fa-bell"></i>
+        </div>
+        <div class="caimeiqi_row">
+            <span class="caimeiqi_tag">fa-brands 品牌</span>
+            <i class="fa-brands fa-github"></i>
+            <i class="fa-brands fa-qq"></i>
+            <i class="fa-brands fa-weibo"></i>
+            <i class="fa-brands fa-weixin"></i>
+            <i class="fa-brands fa-twitter"></i>
+            <i class="fa-brands fa-facebook"></i>
+            <i class="fa-brands fa-instagram"></i>
+        </div>
+        <p class="caimeiqi_label">同一个图标名（如 heart）在不同前缀下是同一个字形的不同画法，实心字重最全，线条和品牌需要各自的字体文件。</p>
+
+        <h3>三、像文字一样改大小、改颜色</h3>
+        <code class="caimeiqi_code"><span style="color:#7dd3fc">/* 图标 = 字体，font-size 和 color 直接生效 */</span>
+.caimeiqi_s4 { font-size: 52px; color: #16a34a; }</code>
+        <div class="caimeiqi_row">
+            <i class="fa-solid fa-leaf caimeiqi_s1"></i>
+            <i class="fa-solid fa-leaf caimeiqi_s2"></i>
+            <i class="fa-solid fa-leaf caimeiqi_s3"></i>
+            <i class="fa-solid fa-leaf caimeiqi_s4"></i>
+            <span class="caimeiqi_label" style="margin:0">14 / 24 / 36 / 52 px</span>
+        </div>
+        <div class="caimeiqi_row">
+            <i class="fa-solid fa-seedling caimeiqi_s3 caimeiqi_c_green"></i>
+            <i class="fa-solid fa-fire caimeiqi_s3 caimeiqi_c_red"></i>
+            <i class="fa-solid fa-star caimeiqi_s3 caimeiqi_c_accent"></i>
+            <i class="fa-solid fa-heart caimeiqi_s3 caimeiqi_c_purple"></i>
+            <span class="caimeiqi_label" style="margin:0">green / red / amber / purple</span>
+        </div>
+        <div class="caimeiqi_row">
+            <i class="fa-solid fa-bell"></i>
+            <span style="font-size:16px">通知图标和右边这段文字同处一行、同一字号</span>
+        </div>
+
+        <h3>四、分类展示</h3>
+        <p class="caimeiqi_label" style="margin-top:0">自然植物</p>
+        <div class="caimeiqi_grid">
+            <div class="caimeiqi_tile"><i class="fa-solid fa-leaf"></i><span class="caimeiqi_name">fa-leaf</span></div>
+            <div class="caimeiqi_tile"><i class="fa-solid fa-seedling"></i><span class="caimeiqi_name">fa-seedling</span></div>
+            <div class="caimeiqi_tile"><i class="fa-solid fa-tree"></i><span class="caimeiqi_name">fa-tree</span></div>
+            <div class="caimeiqi_tile"><i class="fa-solid fa-sun"></i><span class="caimeiqi_name">fa-sun</span></div>
+            <div class="caimeiqi_tile"><i class="fa-solid fa-moon"></i><span class="caimeiqi_name">fa-moon</span></div>
+            <div class="caimeiqi_tile"><i class="fa-solid fa-cloud"></i><span class="caimeiqi_name">fa-cloud</span></div>
+            <div class="caimeiqi_tile"><i class="fa-solid fa-umbrella"></i><span class="caimeiqi_name">fa-umbrella</span></div>
+            <div class="caimeiqi_tile"><i class="fa-solid fa-droplet"></i><span class="caimeiqi_name">fa-droplet</span></div>
+        </div>
+        <p class="caimeiqi_label">界面操作</p>
+        <div class="caimeiqi_grid">
+            <div class="caimeiqi_tile"><i class="fa-solid fa-arrow-right"></i><span class="caimeiqi_name">fa-arrow-right</span></div>
+            <div class="caimeiqi_tile"><i class="fa-solid fa-circle-check"></i><span class="caimeiqi_name">fa-circle-check</span></div>
+            <div class="caimeiqi_tile"><i class="fa-solid fa-play"></i><span class="caimeiqi_name">fa-play</span></div>
+            <div class="caimeiqi_tile"><i class="fa-solid fa-pause"></i><span class="caimeiqi_name">fa-pause</span></div>
+            <div class="caimeiqi_tile"><i class="fa-solid fa-pen"></i><span class="caimeiqi_name">fa-pen</span></div>
+            <div class="caimeiqi_tile"><i class="fa-solid fa-share-nodes"></i><span class="caimeiqi_name">fa-share-nodes</span></div>
+            <div class="caimeiqi_tile"><i class="fa-solid fa-rotate-right"></i><span class="caimeiqi_name">fa-rotate-right</span></div>
+            <div class="caimeiqi_tile"><i class="fa-solid fa-expand"></i><span class="caimeiqi_name">fa-expand</span></div>
+        </div>
+
+        <ul class="caimeiqi_rule_list">
+            <li><strong>实现原理：</strong>图标是字体文件中的字符，由 <code>@font-face</code> 加载，<code>:before</code> 的 <code>content</code> 输出对应编码</li>
+            <li><strong>类名结构：</strong><code>fa-solid / fa-regular / fa-brands</code> 选字重，<code>fa-图标名</code> 选具体图标</li>
+            <li><strong>字体图标优点：</strong>体积小、可缓存，像文字一样用 <code>font-size</code>、<code>color</code> 控制，任意缩放不模糊</li>
+            <li><strong>局限：</strong>一次只能显示一个字形，不能做出双色、渐变等复杂效果，依赖字体文件加载成功</li>
+            <li><strong>本地引用：</strong>本页链接 <code>./cdn/font-awesome/css/all.min.css</code>，字体在 <code>../webfonts/</code> 相对路径下，完全离线可用</li>
+        </ul>
+
+        <p class="caimeiqi_sign">蔡美琪 · 13-1 Font Awesome 字体图标</p>
+    </div>
+</body>
+</html>
