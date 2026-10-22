@@ -1,0 +1,131 @@
+<!-- 姓名：蔡美琪，日期：2026-10-22，功能名称：JavaScript 六种基础数据类型演示 -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>14-2 JavaScript 六种基础数据类型</title>
+    <style>
+        body { font-family: "Microsoft YaHei", sans-serif; max-width: 820px; margin: 30px auto; padding: 0 20px; color: #333; }
+        h1 { color: #2c5f2d; border-bottom: 3px solid #97bc62; padding-bottom: 10px; }
+        .cmq_meta { color: #666; font-size: 14px; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 25px; box-shadow: 0 2px 6px rgba(0,0,0,.1); }
+        th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid #ddd; font-size: 14px; }
+        th { background: #2c5f2d; color: #fff; }
+        tr:nth-child(even) { background: #f4f9f4; }
+        tr:hover { background: #e8f5e9; }
+        code { background: #eee; padding: 2px 6px; border-radius: 3px; font-family: Consolas, monospace; color: #c7254e; }
+        .cmq_output { background: #263238; color: #eeffff; padding: 15px; border-radius: 6px; font-family: Consolas, monospace; font-size: 13px; white-space: pre-wrap; max-height: 220px; overflow-y: auto; }
+        .cmq_extra { background: #fff8e1; border-left: 4px solid #ffc107; padding: 12px 16px; margin: 15px 0; }
+        .cmq_home { display: inline-block; margin-top: 20px; padding: 8px 18px; background: #2c5f2d; color: #fff; text-decoration: none; border-radius: 4px; }
+        .cmq_home:hover { background: #1e4620; }
+    </style>
+</head>
+<body>
+
+<h1>JavaScript 六种基础数据类型</h1>
+<p class="cmq_meta">姓名：蔡美琪 &nbsp;|&nbsp; 日期：2026-10-22</p>
+
+<table>
+    <thead>
+        <tr><th>类型</th><th>typeof 结果</th><th>示例值</th><th>说明</th></tr>
+    </thead>
+    <tbody id="cmq_table_body"></tbody>
+</table>
+
+<h3>控制台输出（同步显示）</h3>
+<div class="cmq_output" id="cmq_output"></div>
+
+<div class="cmq_extra">
+    <strong>拓展：</strong>ES6 新增 <code>Symbol</code>，ES2020 新增 <code>BigInt</code>，如今 JS 共有 8 种数据类型。
+</div>
+
+<a href="1.html" class="cmq_home">返回首页</a>
+
+<script>
+    var cmq_output = document.getElementById("cmq_output");
+    var cmq_table = document.getElementById("cmq_table_body");
+
+    function cmq_log(msg) {
+        cmq_output.textContent += msg + "\n";
+        console.log(msg);
+    }
+
+    function cmq_addRow(typeName, typeofResult, example, desc) {
+        var cmq_tr = document.createElement("tr");
+        cmq_tr.innerHTML =
+            "<td><code>" + typeName + "</code></td>" +
+            "<td><code>" + typeofResult + "</code></td>" +
+            "<td>" + example + "</td>" +
+            "<td>" + desc + "</td>";
+        cmq_table.appendChild(cmq_tr);
+    }
+
+    cmq_log("===== JavaScript 六种基础数据类型 =====");
+
+    // 1. Number 数字类型
+    var cmq_num1 = 10;
+    var cmq_num2 = 3.14;
+    var cmq_num3 = Infinity;
+    var cmq_num4 = NaN;
+    cmq_log("1. Number（数字）");
+    cmq_log("   var cmq_num1 = 10          → " + cmq_num1 + "  typeof: " + typeof cmq_num1);
+    cmq_log("   var cmq_num2 = 3.14        → " + cmq_num2 + "  typeof: " + typeof cmq_num2);
+    cmq_log("   var cmq_num3 = Infinity   → " + cmq_num3 + "  typeof: " + typeof cmq_num3);
+    cmq_log("   var cmq_num4 = NaN        → " + cmq_num4 + "  typeof: " + typeof cmq_num4);
+    cmq_addRow("Number", "number", "10, 3.14, Infinity, NaN", "整数、浮点数、特殊值 NaN 和 Infinity");
+
+    // 2. String 字符串类型
+    var cmq_str1 = "蔡美琪";
+    var cmq_str2 = 'Hello JS';
+    var cmq_str3 = "123";
+    cmq_log("2. String（字符串）");
+    cmq_log("   var cmq_str1 = \"蔡美琪\"    → " + cmq_str1 + "  typeof: " + typeof cmq_str1);
+    cmq_log("   var cmq_str2 = 'Hello JS' → " + cmq_str2 + "  typeof: " + typeof cmq_str2);
+    cmq_log("   var cmq_str3 = \"123\"      → " + cmq_str3 + "  typeof: " + typeof cmq_str3);
+    cmq_addRow("String", "string", "\"蔡美琪\", 'Hello', \"123\"", "用单引号、双引号包裹的文本");
+
+    // 3. Boolean 布尔类型
+    var cmq_bool1 = true;
+    var cmq_bool2 = false;
+    cmq_log("3. Boolean（布尔）");
+    cmq_log("   var cmq_bool1 = true   → " + cmq_bool1 + "  typeof: " + typeof cmq_bool1);
+    cmq_log("   var cmq_bool2 = false  → " + cmq_bool2 + "  typeof: " + typeof cmq_bool2);
+    cmq_addRow("Boolean", "boolean", "true, false", "只有 true 和 false 两个值，用于条件判断");
+
+    // 4. Undefined 未定义类型
+    var cmq_undef;
+    cmq_log("4. Undefined（未定义）");
+    cmq_log("   var cmq_undef;         → " + cmq_undef + "  typeof: " + typeof cmq_undef);
+    cmq_addRow("Undefined", "undefined", "undefined", "变量已声明但未赋值时的默认值");
+
+    // 5. Null 空类型
+    var cmq_null = null;
+    cmq_log("5. Null（空）");
+    cmq_log("   var cmq_null = null    → " + cmq_null + "  typeof: " + typeof cmq_null + "  ← 历史遗留 bug，typeof null 返回 object");
+    cmq_addRow("Null", "object（bug）", "null", "表示空值或不存在的对象引用，typeof null 返回 object 是历史遗留");
+
+    // 6. Object 对象类型
+    var cmq_obj = { name: "蔡美琪", age: 20 };
+    var cmq_arr = [1, 2, 3];
+    var cmq_func = function () { return "hello"; };
+    cmq_log("6. Object（对象）");
+    cmq_log("   var cmq_obj = {…}      → " + JSON.stringify(cmq_obj) + "  typeof: " + typeof cmq_obj);
+    cmq_log("   var cmq_arr = [1,2,3]  → " + JSON.stringify(cmq_arr) + "  typeof: " + typeof cmq_arr + "（数组本质也是对象）");
+    cmq_log("   var cmq_func = function(){} → typeof: " + typeof cmq_func + "（函数是特殊的对象）");
+    cmq_addRow("Object", "object / function", "{name:\"蔡美琪\"}, [1,2,3], function(){}", "对象、数组、函数都属于 Object 类型");
+
+    cmq_log("");
+    cmq_log("===== typeof 总结 =====");
+    cmq_log("typeof 123          → " + typeof 123);
+    cmq_log("typeof '蔡美琪'      → " + typeof "蔡美琪");
+    cmq_log("typeof true         → " + typeof true);
+    cmq_log("typeof undefined    → " + typeof undefined);
+    cmq_log("typeof null         → " + typeof null);
+    cmq_log("typeof {}           → " + typeof {});
+    cmq_log("typeof []           → " + typeof []);
+    cmq_log("typeof function(){} → " + typeof function () { });
+</script>
+
+</body>
+</html>
