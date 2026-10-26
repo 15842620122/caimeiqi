@@ -1,0 +1,444 @@
+<!-- 姓名：蔡美琪，日期：2026-10-26，功能名称：JavaScript 条件与循环程序结构演示 -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>15-2 JS 条件与循环 - 蔡美琪</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 50%, #a5d6a7 100%);
+            min-height: 100vh;
+            padding: 30px 20px;
+            color: #2e3d32;
+        }
+        .cmq_page { max-width: 880px; margin: 0 auto; }
+        .cmq_title {
+            text-align: center;
+            color: #2e7d32;
+            font-size: 30px;
+            margin-bottom: 6px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,.08);
+        }
+        .cmq_meta {
+            text-align: center;
+            color: #558b2f;
+            font-size: 14px;
+            margin-bottom: 22px;
+        }
+        .cmq_card {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 4px 18px rgba(46,125,50,.12);
+            padding: 22px 24px;
+            margin-bottom: 20px;
+            border-top: 4px solid #66bb6a;
+        }
+        .cmq_card h2 {
+            color: #2e7d32;
+            font-size: 20px;
+            margin-bottom: 14px;
+            padding-bottom: 8px;
+            border-bottom: 2px dashed #c5e1a5;
+        }
+        .cmq_card h3 {
+            color: #388e3c;
+            font-size: 16px;
+            margin: 14px 0 8px;
+        }
+        .cmq_code {
+            background: #1b3a1b;
+            color: #dcedc8;
+            padding: 14px 16px;
+            border-radius: 8px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            line-height: 1.75;
+            white-space: pre-wrap;
+            word-break: break-all;
+            margin-bottom: 10px;
+        }
+        .cmq_code .cmq_k { color: #80cbc4; }
+        .cmq_code .cmq_s { color: #ffcc80; }
+        .cmq_code .cmq_c { color: #90a4ae; font-style: italic; }
+        .cmq_btn {
+            display: inline-block;
+            padding: 7px 18px;
+            background: #43a047;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background .2s, transform .15s;
+            margin-right: 8px;
+        }
+        .cmq_btn:hover { background: #2e7d32; transform: translateY(-1px); }
+        .cmq_btn:active { transform: translateY(0); }
+        .cmq_btn_sec {
+            background: #8bc34a;
+        }
+        .cmq_btn_sec:hover { background: #689f38; }
+        .cmq_output {
+            background: #f1f8e9;
+            border: 1px solid #c5e1a5;
+            border-left: 4px solid #7cb342;
+            border-radius: 6px;
+            padding: 12px 14px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            color: #33691e;
+            min-height: 30px;
+            white-space: pre-wrap;
+            word-break: break-all;
+            margin-top: 8px;
+            line-height: 1.6;
+        }
+        .cmq_input_row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+            flex-wrap: wrap;
+        }
+        .cmq_input_row label {
+            font-size: 14px;
+            color: #558b2f;
+        }
+        .cmq_input_row input[type="number"],
+        .cmq_input_row input[type="text"],
+        .cmq_input_row select {
+            padding: 6px 10px;
+            border: 1px solid #aed581;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            background: #fff;
+            color: #2e3d32;
+            min-width: 80px;
+        }
+        .cmq_input_row input:focus, .cmq_input_row select:focus {
+            border-color: #43a047;
+            box-shadow: 0 0 0 3px rgba(67,160,71,.15);
+        }
+        .cmq_home {
+            display: inline-block;
+            margin-top: 14px;
+            padding: 8px 22px;
+            background: #2e7d32;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: background .2s;
+        }
+        .cmq_home:hover { background: #1b5e20; }
+        .cmq_sign {
+            text-align: right;
+            color: #558b2f;
+            font-size: 13px;
+            margin-top: 18px;
+        }
+        .cmq_flow {
+            background: #fffde7;
+            border: 1px dashed #fbc02d;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 13px;
+            color: #f57f17;
+            margin-bottom: 10px;
+            line-height: 1.8;
+        }
+        .cmq_flow strong { color: #e65100; }
+        .cmq_grid2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        @media (max-width: 600px) {
+            .cmq_grid2 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="cmq_page">
+    <h1 class="cmq_title">🌿 JavaScript 程序结构</h1>
+    <p class="cmq_meta">姓名：蔡美琪 · 日期：2026-10-26 · 15-2 条件与循环</p>
+
+    <!-- ========== 第一部分：条件语句 ========== -->
+    <div class="cmq_card">
+        <h2>一、条件语句（分支结构）</h2>
+        <p style="font-size:14px;color:#558b2f;margin-bottom:10px;">
+            根据不同条件执行不同代码块，控制程序的分支走向。
+        </p>
+
+        <h3>1. if 语句</h3>
+        <div class="cmq_code"><span class="cmq_c">// 单分支：条件为 true 时执行</span>
+<span class="cmq_k">var</span> cmq_age = <span class="cmq_s">18</span>;
+<span class="cmq_k">if</span> (cmq_age >= <span class="cmq_s">18</span>) {
+    cmqLog(<span class="cmq_s">"成年了 🎉"</span>);
+}</div>
+
+        <h3>2. if - else 语句</h3>
+        <div class="cmq_code"><span class="cmq_c">// 双分支：二选一</span>
+<span class="cmq_k">var</span> cmq_score = <span class="cmq_s">75</span>;
+<span class="cmq_k">if</span> (cmq_score >= <span class="cmq_s">60</span>) {
+    cmqLog(<span class="cmq_s">"及格 ✅"</span>);
+} <span class="cmq_k">else</span> {
+    cmqLog(<span class="cmq_s">"不及格 ❌"</span>);
+}</div>
+
+        <h3>3. if - else if - else 语句</h3>
+        <div class="cmq_code"><span class="cmq_c">// 多分支：依次判断</span>
+<span class="cmq_k">if</span> (cmq_score >= <span class="cmq_s">90</span>) {
+    cmqLog(<span class="cmq_s">"优秀 🏆"</span>);
+} <span class="cmq_k">else if</span> (cmq_score >= <span class="cmq_s">80</span>) {
+    cmqLog(<span class="cmq_s">"良好 👍"</span>);
+} <span class="cmq_k">else if</span> (cmq_score >= <span class="cmq_s">60</span>) {
+    cmqLog(<span class="cmq_s">"及格 🙂"</span>);
+} <span class="cmq_k">else</span> {
+    cmqLog(<span class="cmq_s">"加油 💪"</span>);
+}</div>
+
+        <h3>4. switch 语句</h3>
+        <div class="cmq_code"><span class="cmq_c">// 多分支：匹配值相等</span>
+<span class="cmq_k">var</span> cmq_day = <span class="cmq_s">3</span>;
+<span class="cmq_k">switch</span> (cmq_day) {
+    <span class="cmq_k">case</span> <span class="cmq_s">1</span>: cmqLog(<span class="cmq_s">"周一 🌅"</span>); <span class="cmq_k">break</span>;
+    <span class="cmq_k">case</span> <span class="cmq_s">2</span>: cmqLog(<span class="cmq_s">"周二 🌞"</span>); <span class="cmq_k">break</span>;
+    <span class="cmq_k">case</span> <span class="cmq_s">3</span>: cmqLog(<span class="cmq_s">"周三 🌤️"</span>); <span class="cmq_k">break</span>;
+    <span class="cmq_k">case</span> <span class="cmq_s">4</span>: cmqLog(<span class="cmq_s">"周四 ⛅"</span>); <span class="cmq_k">break</span>;
+    <span class="cmq_k">case</span> <span class="cmq_s">5</span>: cmqLog(<span class="cmq_s">"周五 🌆"</span>); <span class="cmq_k">break</span>;
+    <span class="cmq_k">default</span>: cmqLog(<span class="cmq_s">"周末 🎉"</span>);
+}</div>
+
+        <div class="cmq_flow">
+            <strong>switch 要点：</strong>每个 case 后面要跟 <strong>break</strong>，否则会"穿透"到下一个 case。
+            <strong>default</strong> 相当于 if-else 最后的 else。
+        </div>
+
+        <div class="cmq_input_row">
+            <label>输入分数 (0-100)：</label>
+            <input type="number" id="cmq_score_input" value="75" min="0" max="100">
+            <button class="cmq_btn" onclick="cmqRunIfElse()">运行 if-else</button>
+        </div>
+        <div class="cmq_output" id="cmq_out_ifelse">等待运行…</div>
+
+        <div class="cmq_input_row">
+            <label>输入星期 (1-7)：</label>
+            <input type="number" id="cmq_day_input" value="3" min="1" max="7">
+            <button class="cmq_btn" onclick="cmqRunSwitch()">运行 switch</button>
+        </div>
+        <div class="cmq_output" id="cmq_out_switch">等待运行…</div>
+    </div>
+
+    <!-- ========== 第二部分：循环语句 ========== -->
+    <div class="cmq_card">
+        <h2>二、循环语句（重复结构）</h2>
+        <p style="font-size:14px;color:#558b2f;margin-bottom:10px;">
+            重复执行一段代码，直到条件不再满足。
+        </p>
+
+        <div class="cmq_grid2">
+            <div>
+                <h3>1. for 循环（最常用）</h3>
+                <div class="cmq_code"><span class="cmq_c">// for(初始化; 条件; 更新)</span>
+<span class="cmq_k">for</span> (<span class="cmq_k">var</span> i = <span class="cmq_s">1</span>; i <= <span class="cmq_s">5</span>; i++) {
+    cmqLog(<span class="cmq_s">"第"</span> + i + <span class="cmq_s">"次"</span>);
+}</div>
+            </div>
+            <div>
+                <h3>2. while 循环</h3>
+                <div class="cmq_code"><span class="cmq_c">// 先判断，再执行</span>
+<span class="cmq_k">var</span> n = <span class="cmq_s">1</span>;
+<span class="cmq_k">while</span> (n <= <span class="cmq_s">3</span>) {
+    cmqLog(<span class="cmq_s">"n = "</span> + n);
+    n++;
+}</div>
+            </div>
+            <div>
+                <h3>3. do - while 循环</h3>
+                <div class="cmq_code"><span class="cmq_c">// 先执行，再判断（至少执行一次）</span>
+<span class="cmq_k">var</span> d = <span class="cmq_s">1</span>;
+<span class="cmq_k">do</span> {
+    cmqLog(<span class="cmq_s">"do: "</span> + d);
+    d++;
+} <span class="cmq_k">while</span> (d <= <span class="cmq_s">2</span>);</div>
+            </div>
+            <div>
+                <h3>4. for...of 循环（遍历数组）</h3>
+                <div class="cmq_code"><span class="cmq_k">var</span> fruits = [<span class="cmq_s">"🍎"</span>, <span class="cmq_s">"🍌"</span>, <span class="cmq_s">"🍇"</span>];
+<span class="cmq_k">for</span> (<span class="cmq_k">var</span> fruit <span class="cmq_k">of</span> fruits) {
+    cmqLog(fruit);
+}</div>
+            </div>
+        </div>
+
+        <h3>🔑 break 和 continue</h3>
+        <div class="cmq_code"><span class="cmq_c">// break：立即跳出整个循环</span>
+<span class="cmq_k">for</span> (<span class="cmq_k">var</span> i = <span class="cmq_s">1</span>; i <= <span class="cmq_s">10</span>; i++) {
+    <span class="cmq_k">if</span> (i === <span class="cmq_s">5</span>) <span class="cmq_k">break</span>;      <span class="cmq_c">// 到 5 就停</span>
+    cmqLog(<span class="cmq_s">"break: "</span> + i);
+}
+
+<span class="cmq_c">// continue：跳过本次，继续下一次</span>
+<span class="cmq_k">for</span> (<span class="cmq_k">var</span> j = <span class="cmq_s">1</span>; j <= <span class="cmq_s">6</span>; j++) {
+    <span class="cmq_k">if</span> (j % <span class="cmq_s">2</span> === <span class="cmq_s">0</span>) <span class="cmq_k">continue</span>; <span class="cmq_c">// 跳过偶数</span>
+    cmqLog(<span class="cmq_s">"continue: "</span> + j);
+}</div>
+
+        <div class="cmq_flow">
+            <strong>死循环风险：</strong>while / do-while 循环中，循环体内部<strong>必须改变条件变量</strong>，否则条件永远为 true，程序卡死！
+        </div>
+
+        <h3>🎯 实战：求 1~n 的和</h3>
+        <div class="cmq_input_row">
+            <label>n =</label>
+            <input type="number" id="cmq_n_input" value="10" min="1" max="9999">
+            <button class="cmq_btn" onclick="cmqRunFor()">用 for 计算</button>
+            <button class="cmq_btn cmq_btn_sec" onclick="cmqRunWhile()">用 while 计算</button>
+        </div>
+        <div class="cmq_output" id="cmq_out_loop">等待运行…</div>
+
+        <h3>🎯 实战：九九乘法表</h3>
+        <button class="cmq_btn" onclick="cmqRun99()">生成九九表</button>
+        <button class="cmq_btn cmq_btn_sec" onclick="cmqClear('cmq_out_99')">清空</button>
+        <div class="cmq_output" id="cmq_out_99" style="min-height:100px;white-space:pre;font-size:12px;">等待运行…</div>
+    </div>
+
+    <!-- ========== 第三部分：综合实战 ========== -->
+    <div class="cmq_card">
+        <h2>三、综合实战：猜数字游戏 🎮</h2>
+        <p style="font-size:14px;color:#558b2f;margin-bottom:10px;">
+            电脑随机生成 1~100 的整数，你输入猜测，程序用 <strong>if-else</strong> 判断大了/小了，用 <strong>while</strong> 循环直到猜对。
+        </p>
+        <button class="cmq_btn" onclick="cmqGuessStart()">🎲 开始猜数字</button>
+        <div class="cmq_output" id="cmq_out_guess">点击"开始猜数字"启动游戏…</div>
+    </div>
+
+    <a href="1.html" class="cmq_home">返回首页</a>
+    <p class="cmq_sign">蔡美琪 · 15-2 JavaScript 条件与循环</p>
+</div>
+
+<script>
+    var cmq_current_out = "";
+    function cmqLog(msg) {
+        cmq_current_out += msg + "\n";
+    }
+    function cmqShow(id) {
+        document.getElementById(id).textContent = cmq_current_out.trim();
+        cmq_current_out = "";
+    }
+    function cmqClear(id) {
+        document.getElementById(id).textContent = "";
+    }
+
+    function cmqRunIfElse() {
+        cmq_current_out = "";
+        var score = parseInt(document.getElementById("cmq_score_input").value) || 0;
+        cmqLog("分数：" + score);
+        if (score >= 90) {
+            cmqLog("评语：优秀 🏆");
+        } else if (score >= 80) {
+            cmqLog("评语：良好 👍");
+        } else if (score >= 60) {
+            cmqLog("评语：及格 🙂");
+        } else {
+            cmqLog("评语：加油 💪");
+        }
+        cmqShow("cmq_out_ifelse");
+    }
+
+    function cmqRunSwitch() {
+        cmq_current_out = "";
+        var day = parseInt(document.getElementById("cmq_day_input").value) || 1;
+        var name;
+        switch (day) {
+            case 1: name = "周一 🌅"; break;
+            case 2: name = "周二 🌞"; break;
+            case 3: name = "周三 🌤️"; break;
+            case 4: name = "周四 ⛅"; break;
+            case 5: name = "周五 🌆"; break;
+            case 6: name = "周六 🎊"; break;
+            case 7: name = "周日 🌿"; break;
+            default: name = "星期" + day + "？没这一天🤔";
+        }
+        cmqLog("数字 " + day + " 对应的是：" + name);
+        cmqShow("cmq_out_switch");
+    }
+
+    function cmqRunFor() {
+        cmq_current_out = "";
+        var n = parseInt(document.getElementById("cmq_n_input").value) || 0;
+        var sum = 0;
+        for (var i = 1; i <= n; i++) {
+            sum += i;
+        }
+        cmqLog("for 循环：1 + 2 + ... + " + n + " = " + sum);
+        cmqShow("cmq_out_loop");
+    }
+
+    function cmqRunWhile() {
+        cmq_current_out = "";
+        var n = parseInt(document.getElementById("cmq_n_input").value) || 0;
+        var sum = 0, i = 1;
+        while (i <= n) {
+            sum += i;
+            i++;
+        }
+        cmqLog("while 循环：1 + 2 + ... + " + n + " = " + sum);
+        cmqShow("cmq_out_loop");
+    }
+
+    function cmqRun99() {
+        var out = "";
+        for (var i = 1; i <= 9; i++) {
+            for (var j = 1; j <= i; j++) {
+                out += j + "×" + i + "=" + (i * j);
+                if (j < i) out += "\t";
+            }
+            out += "\n";
+        }
+        document.getElementById("cmq_out_99").textContent = out;
+    }
+
+    var cmq_guess_target = 0;
+    var cmq_guess_count = 0;
+    function cmqGuessStart() {
+        cmq_guess_target = Math.floor(Math.random() * 100) + 1;
+        cmq_guess_count = 0;
+        cmqGuessNext();
+    }
+    function cmqGuessNext() {
+        var input = prompt("我想了一个 1~100 的整数，猜猜是多少？（直接取消则放弃）");
+        if (input === null) {
+            document.getElementById("cmq_out_guess").textContent = "游戏已放弃 🫠";
+            return;
+        }
+        var num = parseInt(input);
+        if (isNaN(num) || num < 1 || num > 100) {
+            alert("请输入 1~100 之间的整数！");
+            cmqGuessNext();
+            return;
+        }
+        cmq_guess_count++;
+        if (num === cmq_guess_target) {
+            document.getElementById("cmq_out_guess").textContent =
+                "🎉 恭喜猜对！答案就是 " + cmq_guess_target + "，你用了 " + cmq_guess_count + " 次。";
+        } else if (num < cmq_guess_target) {
+            alert("太小了！再大一点 ⬆️");
+            cmqGuessNext();
+        } else {
+            alert("太大了！再小一点 ⬇️");
+            cmqGuessNext();
+        }
+    }
+
+    cmqRunIfElse();
+    cmqRunSwitch();
+    cmqRunFor();
+</script>
+</body>
+</html>
