@@ -1,0 +1,192 @@
+<!-- 姓名：蔡美琪，日期：2026-10-26，功能名称：数7游戏（100个盒子按数7规则显示） -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>15-1 数7游戏 - 蔡美琪</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            background: linear-gradient(135deg, #fdf6e3 0%, #f6e8c3 100%);
+            min-height: 100vh;
+            padding: 30px 20px;
+            color: #333;
+        }
+        .cmq_page {
+            max-width: 720px;
+            margin: 0 auto;
+        }
+        .cmq_heading {
+            text-align: center;
+            color: #b45309;
+            font-size: 28px;
+            margin-bottom: 8px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,.1);
+        }
+        .cmq_name {
+            text-align: center;
+            font-size: 18px;
+            color: #78350f;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+        .cmq_rule {
+            text-align: center;
+            font-size: 14px;
+            color: #6b5a3e;
+            margin-bottom: 22px;
+            line-height: 1.8;
+            background: rgba(255,255,255,.5);
+            padding: 12px 18px;
+            border-radius: 8px;
+        }
+        .cmq_grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 6px;
+            margin-bottom: 25px;
+        }
+        .cmq_box {
+            aspect-ratio: 1 / 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #ffffff;
+            border: 2px solid #d4a373;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #4b5563;
+            transition: transform .15s, box-shadow .15s;
+            cursor: default;
+        }
+        .cmq_box:hover {
+            transform: scale(1.08);
+            box-shadow: 0 4px 12px rgba(0,0,0,.15);
+        }
+        .cmq_box.cmq_special {
+            background: linear-gradient(135deg, #ef4444 0%, #f97316 100%);
+            border-color: #ea580c;
+            color: transparent;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,.2);
+            cursor: pointer;
+        }
+        .cmq_box.cmq_special:hover {
+            transform: scale(1.08);
+            box-shadow: 0 4px 12px rgba(239,68,68,.4);
+        }
+        .cmq_legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 18px;
+            font-size: 14px;
+        }
+        .cmq_legend span {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .cmq_legend i {
+            width: 18px;
+            height: 18px;
+            border-radius: 3px;
+            display: inline-block;
+            border: 2px solid #d4a373;
+        }
+        .cmq_legend i.cmq_legend_special {
+            background: linear-gradient(135deg, #ef4444 0%, #f97316 100%);
+            border-color: #ea580c;
+        }
+        .cmq_home {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 22px;
+            background: #b45309;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: background .2s;
+        }
+        .cmq_home:hover {
+            background: #92400e;
+        }
+        .cmq_counter {
+            text-align: center;
+            font-size: 14px;
+            color: #6b5a3e;
+            margin-bottom: 15px;
+        }
+        .cmq_counter b {
+            color: #b45309;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="cmq_page">
+    <h1 class="cmq_heading">🎲 数7游戏 🎲</h1>
+    <p class="cmq_name">蔡美琪 · 2026-10-26</p>
+    <p class="cmq_rule">
+        1 ~ 100 共 100 个盒子<br>
+        满足以下<strong>任一条件</strong> → 显示空盒子（红橙色）：<br>
+        ① 7 的倍数 &nbsp; ② 末尾数字是 7
+    </p>
+
+    <div class="cmq_counter" id="cmq_counter"></div>
+
+    <div class="cmq_grid" id="cmq_grid"></div>
+
+    <div class="cmq_legend">
+        <span><i></i> 普通盒子（显示数字）</span>
+        <span><i class="cmq_legend_special"></i> 数7盒子（空）</span>
+    </div>
+
+    <a href="1.html" class="cmq_home">返回首页</a>
+</div>
+
+<script>
+    var cmq_grid = document.getElementById("cmq_grid");
+    var cmq_counter = document.getElementById("cmq_counter");
+    var cmq_specialCount = 0;
+    var cmq_normalCount = 0;
+
+    function cmqIsSpecial(n) {
+        return (n % 7 === 0) || (n % 10 === 7);
+    }
+
+    for (var cmq_i = 1; cmq_i <= 100; cmq_i++) {
+        var cmq_div = document.createElement("div");
+        cmq_div.className = "cmq_box";
+
+        if (cmqIsSpecial(cmq_i)) {
+            cmq_div.classList.add("cmq_special");
+            cmq_specialCount++;
+            cmq_div.title = cmq_i + " → 数7盒子";
+        } else {
+            cmq_div.textContent = cmq_i;
+            cmq_normalCount++;
+        }
+
+        cmq_grid.appendChild(cmq_div);
+    }
+
+    cmq_counter.innerHTML =
+        "共 100 个盒子，其中 <b>" + cmq_specialCount + "</b> 个空盒子，" +
+        "<b>" + cmq_normalCount + "</b> 个显示数字";
+
+    console.log("===== 数7游戏 =====");
+    console.log("总盒子数：100");
+    console.log("空盒子数：" + cmq_specialCount);
+    console.log("数字盒子数：" + cmq_normalCount);
+    console.log("数7盒子：" +
+        Array.from({ length: 100 }, function (_, i) { return i + 1; })
+            .filter(cmqIsSpecial).join(", "));
+</script>
+
+</body>
+</html>
