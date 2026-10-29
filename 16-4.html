@@ -1,0 +1,229 @@
+<!-- 姓名：蔡美琪，日期：2026-10-29，功能名称：Tab 切换排行榜（新闻/证券/理财/博客） -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>16-4 Tab 切换排行榜</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    background: #f5f6f8;
+    padding: 40px 20px;
+    color: #333;
+  }
+  a.cmq_home {
+    display: inline-block;
+    margin-bottom: 20px;
+    color: #2b5797;
+    text-decoration: none;
+    font-size: 14px;
+  }
+  a.cmq_home:hover { text-decoration: underline; }
+
+  .cmq_card {
+    max-width: 780px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 14px rgba(0,0,0,.06);
+    overflow: hidden;
+  }
+
+  .cmq_header {
+    display: flex;
+    align-items: center;
+    padding: 0 28px;
+    border-bottom: 1px solid #eaecef;
+  }
+
+  .cmq_title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1a1a1a;
+    padding: 22px 0;
+    margin-right: 40px;
+    white-space: nowrap;
+  }
+
+  .cmq_tabs {
+    display: flex;
+    flex: 1;
+  }
+
+  .cmq_tab {
+    padding: 22px 26px;
+    font-size: 17px;
+    font-weight: 500;
+    color: #666;
+    cursor: pointer;
+    position: relative;
+    transition: color .2s;
+    user-select: none;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+  }
+  .cmq_tab:hover { color: #2b5797; }
+
+  .cmq_tab.cmq_active {
+    color: #2b5797;
+    font-weight: 700;
+  }
+  .cmq_tab.cmq_active::after {
+    content: "";
+    position: absolute;
+    left: 16px; right: 16px;
+    bottom: 0;
+    height: 3px;
+    background: #2b5797;
+    border-radius: 2px;
+  }
+
+  .cmq_list { list-style: none; }
+
+  .cmq_item {
+    display: flex;
+    align-items: center;
+    padding: 14px 28px;
+    border-bottom: 1px solid #f2f2f2;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .cmq_item:last-child { border-bottom: none; }
+  .cmq_item:hover { background: #fafbfe; }
+
+  .cmq_rank {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    background: #d9363e;
+    border-radius: 3px;
+    margin-right: 16px;
+    font-family: "Arial", sans-serif;
+  }
+  .cmq_rank.cmq_top1 { background: #d9363e; }
+  .cmq_rank.cmq_top2 { background: #e8584c; }
+  .cmq_rank.cmq_top3 { background: #ed7b5a; }
+
+  .cmq_text {
+    flex: 1;
+    font-size: 15px;
+    color: #222;
+    line-height: 1.5;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .cmq_panel {
+    min-height: 460px;
+  }
+</style>
+</head>
+<body>
+
+<a class="cmq_home" href="1.html">← 返回首页</a>
+
+<div class="cmq_card">
+  <div class="cmq_header">
+    <div class="cmq_title">排行榜</div>
+    <div class="cmq_tabs" id="cmq_tabs">
+      <button class="cmq_tab cmq_active" data-tab="news">新闻</button>
+      <button class="cmq_tab" data-tab="stock">证券</button>
+      <button class="cmq_tab" data-tab="finance">理财</button>
+      <button class="cmq_tab" data-tab="blog">博客</button>
+    </div>
+  </div>
+  <div class="cmq_panel">
+    <ul class="cmq_list" id="cmq_list"></ul>
+  </div>
+</div>
+
+<script>
+  var cmq_data = {
+    news: [
+      '构建"股市+债市"稳市机制！央行新工具来了',
+      '美媒：美军已准备好再打击伊朗 特朗普或中期选举后',
+      '姆巴佩发表涉中国不当言论，多家品牌终止合作，媒',
+      '东鹏饮料集团：零容忍伤害民族感情行为，终止与姆',
+      '300672，业绩暴增超5600%！10股业绩大增（附股）',
+      '史上最大IPO要来了！7位创始人身家均超130亿美元',
+      '外交部：对英国警方任意、过度执法行为表示强烈不',
+      '1000000美元！特朗普重金悬赏',
+      '张一鸣以6700亿元刷新中国首富财富纪录！《2026胡',
+      'Gucci卖不动了 开云今年将关掉至少125家门店'
+    ],
+    stock: [
+      'A股三大指数集体高开，半导体板块领涨',
+      '中信证券：美联储降息预期升温，外资加速流入A股',
+      '贵州茅台盘中突破1800元，市值重回2.2万亿',
+      '宁德时代发布新一代麒麟电池，续航突破1000公里',
+      '比亚迪11月销量超30万辆，同比增长45%',
+      '央行开展2000亿MLF操作，利率维持2.50%不变',
+      '房地产板块异动拉升，多只概念股涨停',
+      '科创50指数涨幅超2%，科创芯片ETF放量上涨',
+      '中国平安回购股份累计超100亿元',
+      '证监会发布新规，进一步规范上市公司减持行为'
+    ],
+    finance: [
+      '余额宝收益率重回2.0%，宝宝类理财回暖',
+      '招商银行推出新一代智能投顾，年化收益目标6%',
+      '国债逆回购操作指南：年末资金面紧张时收益飙升',
+      '基金定投止盈策略：目标收益率设置多少合适？',
+      '黄金价格突破2700美元，创历史新高',
+      '银行存款利率再下调，大额存单还值得买吗？',
+      '蚂蚁基金推出"养老目标"组合，助力长期投资',
+      'A股ETF规模突破5万亿元，指数投资成主流',
+      '可转债打新热度不减，中签收益稳赚不赔？',
+      '数字人民币试点再扩围，理财购买场景落地'
+    ],
+    blog: [
+      '从0到1搭一个个人博客，我的完整技术选型',
+      '写博客三年，我总结了这5条流量密码',
+      '为什么我坚持每周写一篇技术博客？',
+      '博客评论区的那些神回复，看完笑喷了',
+      '用AI帮我写博客，结果差点被粉丝发现',
+      '独立博客 vs 公众号，到底哪个更值得做？',
+      '我的博客月入过万，分享变现的3个渠道',
+      '博客被百度K站后，我是如何重回首页的',
+      '写博客的人，后来都怎么样了？',
+      '2026年了，还有人在认真写博客吗？'
+    ]
+  };
+
+  var cmq_rankClass = ['cmq_top1', 'cmq_top2', 'cmq_top3'];
+
+  function cmq_render(tab) {
+    var items = cmq_data[tab] || [];
+    var html = '';
+    for (var i = 0; i < items.length; i++) {
+      var cls = i < 3 ? cmq_rankClass[i] : '';
+      html += '<li class="cmq_item">'
+            +   '<span class="cmq_rank ' + cls + '">' + (i + 1) + '</span>'
+            +   '<span class="cmq_text">' + items[i] + '</span>'
+            + '</li>';
+    }
+    document.getElementById('cmq_list').innerHTML = html;
+  }
+
+  var cmq_tabs = document.getElementById('cmq_tabs');
+  cmq_tabs.addEventListener('click', function (e) {
+    var btn = e.target.closest('.cmq_tab');
+    if (!btn) return;
+    var all = cmq_tabs.querySelectorAll('.cmq_tab');
+    for (var i = 0; i < all.length; i++) all[i].classList.remove('cmq_active');
+    btn.classList.add('cmq_active');
+    cmq_render(btn.getAttribute('data-tab'));
+  });
+
+  cmq_render('news');
+</script>
+
+</body>
+</html>
