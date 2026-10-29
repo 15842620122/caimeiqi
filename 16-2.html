@@ -1,0 +1,652 @@
+<!-- 姓名：蔡美琪，日期：2026-10-29，功能名称：JavaScript 对象与字符串形象展示 -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>16-2 JS 对象与字符串 - 蔡美琪</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 50%, #fed7aa 100%);
+            min-height: 100vh;
+            padding: 26px 20px;
+            color: #431407;
+        }
+        .cmq_page { max-width: 920px; margin: 0 auto; }
+        .cmq_title { text-align: center; color: #9a3412; font-size: 28px; margin-bottom: 4px; }
+        .cmq_meta { text-align: center; color: #ea580c; font-size: 13px; margin-bottom: 18px; }
+
+        /* ====== 顶部双面板 ====== */
+        .cmq_board_row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        @media (max-width: 680px) { .cmq_board_row { grid-template-columns: 1fr; } }
+
+        .cmq_board {
+            background: #fff;
+            border-radius: 14px;
+            padding: 18px;
+            box-shadow: 0 4px 18px rgba(234,88,12,.12);
+            border-top: 4px solid #ea580c;
+        }
+        .cmq_board h2 {
+            color: #9a3412;
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+
+        /* --- 对象背包 --- */
+        .cmq_obj_box {
+            background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+            border: 2px dashed #fb923c;
+            border-radius: 10px;
+            padding: 14px;
+            min-height: 110px;
+        }
+        .cmq_prop {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #fff;
+            border: 1px solid #fdba74;
+            border-radius: 20px;
+            padding: 4px 12px;
+            margin: 4px;
+            font-size: 13px;
+            transition: transform .3s, background .3s;
+        }
+        .cmq_prop.cmq_new {
+            animation: cmqPop .45s ease;
+            background: #fed7aa;
+            border-color: #ea580c;
+        }
+        .cmq_prop .cmq_k { color: #9a3412; font-weight: bold; }
+        .cmq_prop .cmq_eq { color: #fb923c; }
+        .cmq_prop .cmq_v { color: #166534; font-family: Consolas, monospace; }
+        .cmq_prop .cmq_del {
+            color: #dc2626; cursor: pointer; margin-left: 4px;
+            font-size: 12px; font-weight: bold;
+        }
+        @keyframes cmqPop {
+            0% { transform: scale(0); }
+            60% { transform: scale(1.15); }
+            100% { transform: scale(1); }
+        }
+
+        /* --- 字符串字符墙 --- */
+        .cmq_str_wall {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px;
+            padding: 12px;
+            background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+            border: 2px dashed #fb923c;
+            border-radius: 10px;
+            min-height: 60px;
+        }
+        .cmq_ch {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 26px;
+            height: 42px;
+            background: #fff;
+            border: 1px solid #fdba74;
+            border-radius: 4px;
+            transition: all .25s;
+        }
+        .cmq_ch .cmq_c {
+            font-size: 17px;
+            font-weight: bold;
+            color: #9a3412;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: Consolas, monospace;
+        }
+        .cmq_ch .cmq_i {
+            font-size: 9px;
+            color: #ea580c;
+            background: #ffedd5;
+            width: 100%;
+            text-align: center;
+            border-top: 1px solid #fdba74;
+            padding: 1px 0;
+        }
+        .cmq_ch.cmq_hl {
+            background: #fef08a;
+            border-color: #eab308;
+            box-shadow: 0 0 0 2px #facc15;
+        }
+        .cmq_ch.cmq_hl .cmq_c { color: #854d0e; }
+
+        /* ====== 通用卡片 ====== */
+        .cmq_card {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 3px 14px rgba(234,88,12,.1);
+            padding: 18px 20px;
+            margin-bottom: 16px;
+            border-left: 4px solid #fb923c;
+        }
+        .cmq_card h2 {
+            color: #9a3412;
+            font-size: 17px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px dashed #fed7aa;
+        }
+        .cmq_card h3 {
+            color: #c2410c;
+            font-size: 15px;
+            margin: 12px 0 6px;
+        }
+        .cmq_two {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        @media (max-width: 620px) { .cmq_two { grid-template-columns: 1fr; } }
+
+        .cmq_row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+        .cmq_btn {
+            padding: 7px 14px;
+            background: #ea580c;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background .2s, transform .15s;
+            font-family: inherit;
+        }
+        .cmq_btn:hover { background: #c2410c; transform: translateY(-1px); }
+        .cmq_btn:active { transform: translateY(0); }
+        .cmq_btn_sec { background: #fdba74; color: #7c2d12; }
+        .cmq_btn_sec:hover { background: #fb923c; color: #fff; }
+        .cmq_btn_reset { background: #10b981; }
+        .cmq_btn_reset:hover { background: #059669; }
+
+        .cmq_code {
+            background: #431407;
+            color: #fed7aa;
+            padding: 12px 14px;
+            border-radius: 8px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12.5px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            margin-top: 6px;
+        }
+        .cmq_code .cmq_k { color: #fcd34d; }
+        .cmq_code .cmq_s { color: #67e8f9; }
+        .cmq_code .cmq_n { color: #fda4af; }
+        .cmq_code .cmq_c { color: #fb923c; font-style: italic; }
+
+        .cmq_out {
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            border-left: 4px solid #f97316;
+            border-radius: 6px;
+            padding: 10px 14px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            color: #7c2d12;
+            min-height: 28px;
+            margin-top: 8px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .cmq_out .cmq_ret { color: #059669; font-weight: bold; }
+        .cmq_out .cmq_bool_t { color: #059669; font-weight: bold; }
+        .cmq_out .cmq_bool_f { color: #dc2626; font-weight: bold; }
+
+        .cmq_input_row {
+            display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-top: 6px;
+        }
+        .cmq_input_row label { font-size: 13px; color: #c2410c; }
+        .cmq_input_row input[type="text"],
+        .cmq_input_row input[type="number"] {
+            padding: 5px 10px;
+            border: 1px solid #fdba74;
+            border-radius: 6px;
+            font-size: 13px;
+            outline: none;
+            background: #fff;
+            color: #431407;
+            font-family: Consolas, monospace;
+        }
+        .cmq_input_row input:focus {
+            border-color: #ea580c;
+            box-shadow: 0 0 0 3px rgba(234,88,12,.15);
+        }
+
+        .cmq_home {
+            display: inline-block; margin-top: 14px; padding: 8px 22px;
+            background: #9a3412; color: #fff; text-decoration: none;
+            border-radius: 6px; font-size: 14px; transition: background .2s;
+        }
+        .cmq_home:hover { background: #7c2d12; }
+        .cmq_sign { text-align: right; color: #ea580c; font-size: 12px; margin-top: 16px; }
+
+        .cmq_tag {
+            display: inline-block; padding: 1px 8px; border-radius: 4px;
+            font-size: 11px; margin-left: 4px;
+        }
+        .cmq_tag_mut { background: #fee2e2; color: #b91c1c; }
+        .cmq_tag_immu { background: #dcfce7; color: #166534; }
+    </style>
+</head>
+<body>
+<div class="cmq_page">
+    <h1 class="cmq_title">🎒 对象 &amp; 📜 字符串</h1>
+    <p class="cmq_meta">姓名：蔡美琪 · 日期：2026-10-29 · 16-2 形象演示</p>
+
+    <!-- ========== 双面板可视化 ========== -->
+    <div class="cmq_board_row">
+        <div class="cmq_board">
+            <h2>🎒 当前对象 <code style="background:#ffedd5;padding:2px 8px;border-radius:4px;font-size:12px;color:#9a3412;">cmq_person</code></h2>
+            <div class="cmq_obj_box" id="cmq_obj_box"></div>
+            <div class="cmq_row" style="margin-top:10px;">
+                <button class="cmq_btn cmq_btn_reset" onclick="cmqObjReset()">🔄 重置</button>
+                <span style="font-size:12px;color:#ea580c;">点属性旁 × 可删除</span>
+            </div>
+        </div>
+
+        <div class="cmq_board">
+            <h2>📜 当前字符串 <code style="background:#ffedd5;padding:2px 8px;border-radius:4px;font-size:12px;color:#9a3412;" id="cmq_str_head"></code></h2>
+            <div class="cmq_str_wall" id="cmq_str_wall"></div>
+            <div class="cmq_row" style="margin-top:10px;">
+                <button class="cmq_btn cmq_btn_reset" onclick="cmqStrReset()">🔄 重置</button>
+                <input type="text" id="cmq_str_input" value="Hello JavaScript!" style="width:160px;" oninput="cmqSetStr(this.value)">
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== 第一部分：对象 ========== -->
+    <div class="cmq_card">
+        <h2>一、对象（Object）</h2>
+
+        <h3>1. 创建对象</h3>
+        <div class="cmq_code"><span class="cmq_c">// 方式一：字面量（最常用）</span>
+<span class="cmq_k">var</span> cmq_person = { name: <span class="cmq_s">"小美"</span>, age: <span class="cmq_n">20</span>, hobby: <span class="cmq_s">"画画"</span> };
+
+<span class="cmq_c">// 方式二：new Object()</span>
+<span class="cmq_k">var</span> cmq_o = <span class="cmq_k">new</span> Object();
+cmq_o.name = <span class="cmq_s">"小美"</span>;</div>
+
+        <h3>2. 读 &amp; 写属性</h3>
+        <div class="cmq_code"><span class="cmq_c">// 点语法</span>
+cmq_person.name        <span class="cmq_c">// "小美"</span>
+cmq_person.age = <span class="cmq_n">21</span>;       <span class="cmq_c">// 修改</span>
+
+<span class="cmq_c">// 中括号语法（属性名是变量/特殊字符时）</span>
+<span class="cmq_k">var</span> k = <span class="cmq_s">"hobby"</span>;
+cmq_person[k]          <span class="cmq_c">// "画画"</span>
+cmq_person[<span class="cmq_s">"city"</span>] = <span class="cmq_s">"北京"</span>;  <span class="cmq_c">// 动态添加</span></div>
+
+        <div class="cmq_input_row">
+            <label>属性名</label>
+            <input type="text" id="cmq_op_k" value="city" style="width:80px;">
+            <label>属性值</label>
+            <input type="text" id="cmq_op_v" value="北京" style="width:100px;">
+            <button class="cmq_btn" onclick="cmqObjSet()">添加/修改属性</button>
+            <button class="cmq_btn cmq_btn_sec" onclick="cmqObjGet()">读取 name</button>
+        </div>
+        <div class="cmq_out" id="cmq_out_objrw">等待运行…</div>
+
+        <h3>3. 删除属性 delete <span class="cmq_tag cmq_tag_mut">修改</span></h3>
+        <div class="cmq_code"><span class="cmq_k">delete</span> cmq_person.hobby;  <span class="cmq_c">// 彻底移除</span></div>
+        <div class="cmq_row">
+            <button class="cmq_btn" onclick="cmqObjDel()">删除 hobby</button>
+            <button class="cmq_btn cmq_btn_sec" onclick="cmqObjHas()">有没有 hobby？</button>
+        </div>
+        <div class="cmq_out" id="cmq_out_objdel">等待运行…</div>
+
+        <h3>4. Object.keys / values / entries <span class="cmq_tag cmq_tag_immu">不修改</span></h3>
+        <div class="cmq_code">Object.keys(cmq_person);    <span class="cmq_c">// ["name","age","hobby"]</span>
+Object.values(cmq_person);  <span class="cmq_c">// ["小美",20,"画画"]</span>
+Object.entries(cmq_person); <span class="cmq_c">// [["name","小美"],["age",20],...]</span></div>
+        <div class="cmq_row">
+            <button class="cmq_btn" onclick="cmqObjKeys()">Object.keys()</button>
+            <button class="cmq_btn cmq_btn_sec" onclick="cmqObjVals()">Object.values()</button>
+            <button class="cmq_btn" onclick="cmqObjEnt()">Object.entries()</button>
+        </div>
+        <div class="cmq_out" id="cmq_out_objkv">等待运行…</div>
+
+        <h3>5. 合并 &amp; 展开 &amp; 解构</h3>
+        <div class="cmq_code"><span class="cmq_c">// Object.assign 合并</span>
+<span class="cmq_k">var</span> cmq_p2 = Object.assign({}, cmq_person, { age: <span class="cmq_n">22</span>, city: <span class="cmq_s">"上海"</span> });
+
+<span class="cmq_c">// 展开运算符（更现代）</span>
+<span class="cmq_k">var</span> cmq_p3 = { ...cmq_person, age: <span class="cmq_n">22</span> };
+
+<span class="cmq_c">// 解构赋值</span>
+<span class="cmq_k">var</span> { name, age } = cmq_person;</div>
+        <div class="cmq_row">
+            <button class="cmq_btn" onclick="cmqObjAssign()">assign 合并</button>
+            <button class="cmq_btn cmq_btn_sec" onclick="cmqObjSpread()">... 展开复制</button>
+            <button class="cmq_btn" onclick="cmqObjDest()">解构 name,age</button>
+        </div>
+        <div class="cmq_out" id="cmq_out_objmerge">等待运行…</div>
+    </div>
+
+    <!-- ========== 第二部分：字符串 ========== -->
+    <div class="cmq_card">
+        <h2>二、字符串（String）<span class="cmq_tag cmq_tag_immu">⚠️ 不可变！所有方法返回新串</span></h2>
+
+        <h3>1. length &amp; 索引访问</h3>
+        <div class="cmq_code"><span class="cmq_k">var</span> cmq_s = <span class="cmq_s">"Hello"</span>;
+cmq_s.length       <span class="cmq_c">// 5</span>
+cmq_s[<span class="cmq_n">0</span>]            <span class="cmq_c">// "H"</span>
+cmq_s.charAt(<span class="cmq_n">4</span>)      <span class="cmq_c">// "o"</span></div>
+        <div class="cmq_row">
+            <button class="cmq_btn" onclick="cmqStrLen()">.length</button>
+            <button class="cmq_btn cmq_btn_sec" onclick="cmqStrCharAt()">charAt(0)</button>
+        </div>
+        <div class="cmq_out" id="cmq_out_strlen">等待运行…</div>
+
+        <h3>2. 查找：indexOf / includes / startsWith / endsWith</h3>
+        <div class="cmq_code">cmq_s.indexOf(<span class="cmq_s">"lo"</span>)       <span class="cmq_c">// 3  找到的位置，否则 -1</span>
+cmq_s.includes(<span class="cmq_s">"Java"</span>)   <span class="cmq_c">// true / false</span>
+cmq_s.startsWith(<span class="cmq_s">"He"</span>)   <span class="cmq_c">// true</span>
+cmq_s.endsWith(<span class="cmq_s">"!"</span>)     <span class="cmq_c">// true</span></div>
+        <div class="cmq_input_row">
+            <label>查找</label><input type="text" id="cmq_ndl" value="Java" style="width:90px;">
+            <button class="cmq_btn" onclick="cmqStrIndexOf()">indexOf</button>
+            <button class="cmq_btn cmq_btn_sec" onclick="cmqStrIncludes()">includes</button>
+            <button class="cmq_btn" onclick="cmqStrStartsWith()">startsWith</button>
+            <button class="cmq_btn cmq_btn_sec" onclick="cmqStrEndsWith()">endsWith</button>
+        </div>
+        <div class="cmq_out" id="cmq_out_strfind">等待运行…</div>
+
+        <h3>3. 截取：slice / substring / substr</h3>
+        <div class="cmq_code"><span class="cmq_c">// slice(起, 止)  含头不含尾，支持负数</span>
+cmq_s.slice(<span class="cmq_n">0</span>, <span class="cmq_n">5</span>)    <span class="cmq_c">// "Hello"</span>
+cmq_s.slice(<span class="cmq_n">-6</span>)         <span class="cmq_c">// "JavaScript!"  倒数第6个到末尾</span>
+
+<span class="cmq_c">// substring(起, 止)  不支持负数，小的自动当起点</span>
+<span class="cmq_c">// substr(起, 长度)    老方法，尽量用 slice</span></div>
+        <div class="cmq_input_row">
+            <label>起</label><input type="number" id="cmq_sl_s" value="0" style="width:60px;">
+            <label>止</label><input type="number" id="cmq_sl_e" value="5" style="width:60px;">
+            <button class="cmq_btn" onclick="cmqStrSlice()">slice(起,止)</button>
+            <button class="cmq_btn cmq_btn_sec" onclick="cmqStrSliceNeg()">slice(-6) 倒数</button>
+        </div>
+        <div class="cmq_out" id="cmq_out_strslice">等待运行…</div>
+
+        <h3>4. 大小写 &amp; 空白</h3>
+        <div class="cmq_code">cmq_s.toUpperCase()   <span class="cmq_c">// 全大写</span>
+cmq_s.toLowerCase()   <span class="cmq_c">// 全小写</span>
+<span class="cmq_s">"  Hi  "</span>.trim()        <span class="cmq_c">// "Hi"  去两端空格</span></div>
+        <div class="cmq_row">
+            <button class="cmq_btn" onclick="cmqStrUp()">toUpperCase</button>
+            <button class="cmq_btn cmq_btn_sec" onclick="cmqStrLow()">toLowerCase</button>
+            <button class="cmq_btn" onclick="cmqStrTrim()">trim 演示</button>
+        </div>
+        <div class="cmq_out" id="cmq_out_strcase">等待运行…</div>
+
+        <h3>5. replace / split / concat</h3>
+        <div class="cmq_code"><span class="cmq_c">// replace(找什么, 换成什么)</span>
+cmq_s.replace(<span class="cmq_s">"JavaScript"</span>, <span class="cmq_s">"JS"</span>)
+
+<span class="cmq_c">// split(分隔符) → 数组</span>
+<span class="cmq_s">"a,b,c"</span>.split(<span class="cmq_s">","</span>)   <span class="cmq_c">// ["a","b","c"]</span>
+
+<span class="cmq_c">// concat 拼接（不如用 +）</span>
+<span class="cmq_s">"Hi "</span> + <span class="cmq_s">"小美"</span>        <span class="cmq_c">// "Hi 小美"</span></div>
+        <div class="cmq_input_row">
+            <label>找</label><input type="text" id="cmq_rp_f" value="JavaScript" style="width:110px;">
+            <label>换</label><input type="text" id="cmq_rp_t" value="JS" style="width:60px;">
+            <button class="cmq_btn" onclick="cmqStrReplace()">replace</button>
+            <button class="cmq_btn cmq_btn_sec" onclick="cmqStrSplit()">split(" ")</button>
+        </div>
+        <div class="cmq_out" id="cmq_out_strrep">等待运行…</div>
+
+        <h3>6. 模板字符串（反引号 `）✨</h3>
+        <div class="cmq_code"><span class="cmq_k">var</span> name = <span class="cmq_s">"小美"</span>, age = <span class="cmq_n">20</span>;
+<span class="cmq_k">var</span> s = `我叫 ${name}，今年 ${age} 岁。`;
+<span class="cmq_c">// 比 "我叫 " + name + "，今年 " + age + " 岁。" 清爽多了</span></div>
+        <div class="cmq_row">
+            <button class="cmq_btn" onclick="cmqStrTpl()">生成模板字符串</button>
+        </div>
+        <div class="cmq_out" id="cmq_out_strtpl">等待运行…</div>
+    </div>
+
+    <a href="1.html" class="cmq_home">返回首页</a>
+    <p class="cmq_sign">蔡美琪 · 16-2 JavaScript 对象 &amp; 字符串</p>
+</div>
+
+<script>
+    // ========== 对象部分 ==========
+    var cmq_obj = { name: "小美", age: 20, hobby: "画画" };
+    var cmq_obj_prev = {};
+
+    function cmqObjRender(newKey) {
+        var box = document.getElementById("cmq_obj_box");
+        var keys = Object.keys(cmq_obj);
+        if (keys.length === 0) {
+            box.innerHTML = '<span style="color:#a16207;font-style:italic;">(空对象 {})</span>';
+            document.getElementById("cmq_obj_head").textContent = "{}";
+            return;
+        }
+        var html = "";
+        keys.forEach(function (k) {
+            var isNew = (k === newKey);
+            var cls = isNew ? " cmq_new" : "";
+            var v = cmq_obj[k];
+            var display = (typeof v === "string") ? '"' + v + '"' : v;
+            html += '<span class="cmq_prop' + cls + '">'
+                 + '<span class="cmq_k">' + k + '</span>'
+                 + '<span class="cmq_eq">:</span>'
+                 + '<span class="cmq_v">' + display + '</span>'
+                 + '<span class="cmq_del" onclick="cmqObjDelKey(\'' + k.replace(/'/g, "\\'") + '\')" title="删除">✕</span>'
+                 + '</span>';
+        });
+        box.innerHTML = html;
+        document.getElementById("cmq_obj_head").textContent =
+            "{ " + keys.map(function (k) { return k + ":" + JSON.stringify(cmq_obj[k]); }).join(", ") + " }";
+    }
+
+    function cmqObjReset() {
+        cmq_obj = { name: "小美", age: 20, hobby: "画画" };
+        cmqObjRender();
+        cmqMsg("objrw", "✅ 对象已重置");
+    }
+    function cmqMsg(id, t) { document.getElementById("cmq_out_" + id).textContent = t; }
+    function cmqRet(id, t) {
+        document.getElementById("cmq_out_" + id).innerHTML = t;
+    }
+
+    function cmqObjSet() {
+        var k = document.getElementById("cmq_op_k").value.trim();
+        var v = document.getElementById("cmq_op_v").value.trim();
+        if (k === "") { alert("属性名不能为空！"); return; }
+        var num = Number(v);
+        cmq_obj[k] = isNaN(num) || v === "" ? v : num;
+        cmqObjRender(k);
+        cmqRet("objrw", "✅ 已设置 " + k + " = " + JSON.stringify(cmq_obj[k])
+            + "<br>当前对象：<span class='cmq_ret'>" + JSON.stringify(cmq_obj) + "</span>");
+    }
+    function cmqObjGet() {
+        cmqRet("objrw", "📖 cmq_person.name = <span class='cmq_ret'>"
+            + JSON.stringify(cmq_obj.name) + "</span>");
+    }
+    function cmqObjDel() { cmqObjDelKey("hobby"); }
+    function cmqObjDelKey(k) {
+        if (!(k in cmq_obj)) { cmqMsg("objdel", "❌ 没有属性 " + k); return; }
+        var old = cmq_obj[k];
+        delete cmq_obj[k];
+        cmqObjRender();
+        cmqRet("objdel", "🗑️ delete " + k + "（原值 " + JSON.stringify(old) + "）"
+            + "<br>现在：<span class='cmq_ret'>" + JSON.stringify(cmq_obj) + "</span>");
+    }
+    function cmqObjHas() {
+        var r = "hobby" in cmq_obj;
+        cmqRet("objdel", r
+            ? "✅ <span class='cmq_bool_t'>true</span> — 对象有 hobby 属性"
+            : "❌ <span class='cmq_bool_f'>false</span> — 对象没有 hobby 属性");
+    }
+    function cmqObjKeys() {
+        cmqRet("objkv", "Object.keys = <span class='cmq_ret'>"
+            + JSON.stringify(Object.keys(cmq_obj)) + "</span>");
+    }
+    function cmqObjVals() {
+        cmqRet("objkv", "Object.values = <span class='cmq_ret'>"
+            + JSON.stringify(Object.values(cmq_obj)) + "</span>");
+    }
+    function cmqObjEnt() {
+        cmqRet("objkv", "Object.entries = <span class='cmq_ret'>"
+            + JSON.stringify(Object.entries(cmq_obj)) + "</span>");
+    }
+    function cmqObjAssign() {
+        var merged = Object.assign({}, cmq_obj, { age: 99, city: "北京" });
+        cmqRet("objmerge", "Object.assign 合并后：<span class='cmq_ret'>"
+            + JSON.stringify(merged) + "</span>"
+            + "<br>原对象未变：" + JSON.stringify(cmq_obj));
+    }
+    function cmqObjSpread() {
+        var copy = { ...cmq_obj, age: 99 };
+        cmqRet("objmerge", "{ ...obj, age:99 } → <span class='cmq_ret'>"
+            + JSON.stringify(copy) + "</span>"
+            + "<br>原对象未变：" + JSON.stringify(cmq_obj));
+    }
+    function cmqObjDest() {
+        var { name, age } = cmq_obj;
+        cmqRet("objmerge", "解构得到 name=<span class='cmq_ret'>"
+            + JSON.stringify(name) + "</span>, age=<span class='cmq_ret'>"
+            + age + "</span>");
+    }
+
+    // ========== 字符串部分 ==========
+    var cmq_str = "Hello JavaScript!";
+
+    function cmqStrRender(hlStart, hlEnd) {
+        var wall = document.getElementById("cmq_str_wall");
+        document.getElementById("cmq_str_head").textContent =
+            '"' + cmq_str + '"   length=' + cmq_str.length;
+        var html = "";
+        for (var i = 0; i < cmq_str.length; i++) {
+            var c = cmq_str[i];
+            var cls = "";
+            if (hlStart !== undefined && hlEnd !== undefined && i >= hlStart && i < hlEnd) {
+                cls = " cmq_hl";
+            }
+            var show = c === " " ? "␣" : c;
+            html += '<div class="cmq_ch' + cls + '">'
+                 + '<div class="cmq_c">' + show + '</div>'
+                 + '<div class="cmq_i">' + i + '</div>'
+                 + '</div>';
+        }
+        wall.innerHTML = html;
+    }
+    function cmqStrReset() { cmqSetStr("Hello JavaScript!"); }
+    function cmqSetStr(s) { cmq_str = s; cmqStrRender(); }
+
+    function cmqStrLen() {
+        cmqRet("strlen", '"' + cmq_str + '".length = <span class="cmq_ret">'
+            + cmq_str.length + '</span>');
+    }
+    function cmqStrCharAt() {
+        cmqRet("strlen", 'charAt(0) = <span class="cmq_ret">"'
+            + cmq_str.charAt(0) + '"</span>'
+            + '<br>[0] = <span class="cmq_ret">"' + cmq_str[0] + '"</span>');
+    }
+
+    function cmqStrIndexOf() {
+        var ndl = document.getElementById("cmq_ndl").value;
+        var r = cmq_str.indexOf(ndl);
+        if (r >= 0) {
+            cmqStrRender(r, r + ndl.length);
+            cmqRet("strfind", 'indexOf("' + ndl + '") = <span class="cmq_ret">'
+                + r + '</span>  ✅ 已高亮');
+        } else {
+            cmqStrRender();
+            cmqRet("strfind", 'indexOf("' + ndl + '") = <span class="cmq_bool_f">-1</span> 没找到');
+        }
+    }
+    function cmqStrIncludes() {
+        var ndl = document.getElementById("cmq_ndl").value;
+        var r = cmq_str.includes(ndl);
+        cmqRet("strfind", 'includes("' + ndl + '") = '
+            + (r ? '<span class="cmq_bool_t">true</span>' : '<span class="cmq_bool_f">false</span>'));
+    }
+    function cmqStrStartsWith() {
+        var ndl = document.getElementById("cmq_ndl").value;
+        var r = cmq_str.startsWith(ndl);
+        cmqRet("strfind", 'startsWith("' + ndl + '") = '
+            + (r ? '<span class="cmq_bool_t">true</span>' : '<span class="cmq_bool_f">false</span>'));
+    }
+    function cmqStrEndsWith() {
+        var ndl = document.getElementById("cmq_ndl").value;
+        var r = cmq_str.endsWith(ndl);
+        cmqRet("strfind", 'endsWith("' + ndl + '") = '
+            + (r ? '<span class="cmq_bool_t">true</span>' : '<span class="cmq_bool_f">false</span>'));
+    }
+
+    function cmqStrSlice() {
+        var s = parseInt(document.getElementById("cmq_sl_s").value);
+        var e = parseInt(document.getElementById("cmq_sl_e").value);
+        var r = cmq_str.slice(s, e);
+        var as = s < 0 ? cmq_str.length + s : s;
+        var ae = e < 0 ? cmq_str.length + e : e;
+        cmqStrRender(as, ae);
+        cmqRet("strslice", 'slice(' + s + ',' + e + ') = <span class="cmq_ret">"'
+            + r + '"</span>');
+    }
+    function cmqStrSliceNeg() {
+        var r = cmq_str.slice(-6);
+        var startIdx = cmq_str.length - 6;
+        if (startIdx < 0) startIdx = 0;
+        cmqStrRender(startIdx, cmq_str.length);
+        cmqRet("strslice", 'slice(-6) = <span class="cmq_ret">"' + r
+            + '"</span>  （倒数第6个到末尾）');
+    }
+
+    function cmqStrUp() {
+        cmqRet("strcase", 'toUpperCase() = <span class="cmq_ret">"'
+            + cmq_str.toUpperCase() + '"</span>');
+    }
+    function cmqStrLow() {
+        cmqRet("strcase", 'toLowerCase() = <span class="cmq_ret">"'
+            + cmq_str.toLowerCase() + '"</span>');
+    }
+    function cmqStrTrim() {
+        var s = "   蔡美琪   ";
+        cmqRet("strcase", '原字符串 "' + s + '"'
+            + '<br>trim() = <span class="cmq_ret">"' + s.trim() + '"</span>');
+    }
+
+    function cmqStrReplace() {
+        var f = document.getElementById("cmq_rp_f").value;
+        var t = document.getElementById("cmq_rp_t").value;
+        var r = cmq_str.replace(f, t);
+        cmqRet("strrep", 'replace("' + f + '","' + t + '")'
+            + '<br>= <span class="cmq_ret">"' + r + '"</span>');
+    }
+    function cmqStrSplit() {
+        var r = cmq_str.split(" ");
+        cmqRet("strrep", 'split(" ") = <span class="cmq_ret">'
+            + JSON.stringify(r) + '</span>  （得到 ' + r.length + ' 段）');
+    }
+
+    function cmqStrTpl() {
+        var name = "小美", age = 20;
+        var h = "画画";
+        var r = `我叫 ${name}，今年 ${age} 岁，爱好是${h}。`;
+        cmqRet("strtpl", "`我叫 ${name}，今年 ${age} 岁，爱好是${h}。`"
+            + "<br>= <span class='cmq_ret'>\"" + r + "\"</span>");
+    }
+
+    cmqObjRender();
+    cmqStrRender();
+</script>
+</body>
+</html>
