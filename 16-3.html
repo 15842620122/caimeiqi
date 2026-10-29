@@ -1,0 +1,257 @@
+<!-- 姓名：蔡美琪，日期：2026-10-29，功能名称：携程侧边栏图标菜单模拟 -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>16-3 携程侧边栏 - 蔡美琪</title>
+    <link rel="stylesheet" href="./font/iconfont.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            background: #f2f3f5;
+            min-height: 100vh;
+            padding: 30px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        .cmq_wrap {
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        /* ========== 左侧：侧边栏 ========== */
+        .cmq_sidebar {
+            width: 220px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0,0,0,.08);
+            overflow: hidden;
+        }
+        .cmq_sidebar .cmq_logo {
+            padding: 20px 22px 14px;
+            border-bottom: 1px solid #f0f1f3;
+        }
+        .cmq_sidebar .cmq_logo a {
+            display: block;
+            font-size: 20px;
+            font-weight: bold;
+            color: #ff6f00;
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+
+        .cmq_menu { list-style: none; }
+        .cmq_menu li {
+            border-bottom: 1px solid #f7f8fa;
+        }
+        .cmq_menu li:last-child { border-bottom: none; }
+
+        .cmq_menu a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 22px;
+            text-decoration: none;
+            color: #333;
+            font-size: 15px;
+            position: relative;
+            transition: background .2s, color .2s;
+        }
+        .cmq_menu a:hover {
+            background: #fff3e6;
+            color: #ff6f00;
+        }
+        .cmq_menu a:hover .iconfont,
+        .cmq_menu a:hover .cmq_svg_icon {
+            color: #ff6f00;
+            fill: #ff6f00;
+        }
+
+        .cmq_menu .iconfont {
+            font-size: 20px;
+            color: #555;
+            width: 22px;
+            text-align: center;
+            flex-shrink: 0;
+            transition: color .2s;
+        }
+        .cmq_svg_icon {
+            width: 20px;
+            height: 20px;
+            fill: #555;
+            flex-shrink: 0;
+            transition: fill .2s;
+        }
+
+        .cmq_menu .cmq_text {
+            flex: 1;
+        }
+        .cmq_menu .cmq_badge {
+            position: absolute;
+            right: 18px;
+            background: #ff6f00;
+            color: #fff;
+            font-size: 11px;
+            padding: 1px 6px;
+            border-radius: 8px;
+            font-weight: bold;
+            letter-spacing: .5px;
+        }
+
+        .cmq_divider {
+            height: 8px;
+            background: #f7f8fa;
+        }
+
+        /* ========== 右侧：图例说明 ========== */
+        .cmq_legend {
+            width: 340px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0,0,0,.08);
+            padding: 22px 24px;
+        }
+        .cmq_legend h2 {
+            font-size: 16px;
+            color: #ff6f00;
+            border-bottom: 2px solid #ffe0b3;
+            padding-bottom: 10px;
+            margin-bottom: 14px;
+        }
+        .cmq_legend h3 {
+            font-size: 13px;
+            color: #ff6f00;
+            margin: 14px 0 8px;
+        }
+        .cmq_legend table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        .cmq_legend th, .cmq_legend td {
+            padding: 6px 4px;
+            border-bottom: 1px dashed #eee;
+            text-align: left;
+        }
+        .cmq_legend td:first-child {
+            color: #ff6f00;
+            font-family: Consolas, monospace;
+        }
+        .cmq_legend td .iconfont { font-size: 17px; }
+        .cmq_tag {
+            display: inline-block;
+            padding: 1px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            margin-left: 4px;
+        }
+        .cmq_tag_if { background: #e8f5e9; color: #2e7d32; }
+        .cmq_tag_svg { background: #e3f2fd; color: #1565c0; }
+
+        .cmq_home {
+            display: inline-block;
+            margin-top: 16px;
+            padding: 8px 22px;
+            background: #ff6f00;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: background .2s;
+        }
+        .cmq_home:hover { background: #e65c00; }
+        .cmq_sign { text-align: right; color: #888; font-size: 12px; margin-top: 14px; }
+
+        @media (max-width: 600px) {
+            body { padding: 15px; }
+            .cmq_wrap { gap: 20px; }
+            .cmq_sidebar, .cmq_legend { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+<div class="cmq_wrap">
+
+    <!-- ========== 携程侧边栏 ========== -->
+    <aside class="cmq_sidebar">
+        <div class="cmq_logo">
+            <a href="#">🔸 携程旅行</a>
+        </div>
+        <ul class="cmq_menu">
+
+            <!-- 第一组：主营服务 -->
+            <li><a href="#"><i class="iconfont icon-fuwu"></i><span class="cmq_text">酒店</span></a></li>
+            <li><a href="#"><svg class="cmq_svg_icon" viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2 1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg><span class="cmq_text">机票</span></a></li>
+            <li><a href="#"><svg class="cmq_svg_icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm7 12H5v-2h14v2zm0-4H5V8h14v2z"/></svg><span class="cmq_text">火车票</span></a></li>
+            <li><a href="#"><i class="iconfont icon-dingwei"></i><span class="cmq_text">旅游</span></a></li>
+            <li><a href="#"><i class="iconfont icon-tuku"></i><span class="cmq_text">门票 · 活动</span></a></li>
+            <li><a href="#"><i class="iconfont icon-fenlei"></i><span class="cmq_text">汽车 · 船票</span></a></li>
+            <li><a href="#"><svg class="cmq_svg_icon" viewBox="0 0 24 24"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/></svg><span class="cmq_text">用车</span></a></li>
+
+            <li class="cmq_divider"></li>
+
+            <!-- 第二组：特色服务 -->
+            <li><a href="#"><i class="iconfont icon-gongneng"></i><span class="cmq_text">AI 行程助手</span><span class="cmq_badge">NEW</span></a></li>
+            <li><a href="#"><i class="iconfont icon-zixun"></i><span class="cmq_text">攻略 · 景点</span></a></li>
+            <li><a href="#"><svg class="cmq_svg_icon" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg><span class="cmq_text">旅游地图</span></a></li>
+
+            <li class="cmq_divider"></li>
+
+            <!-- 第三组：商城金融 -->
+            <li><a href="#"><i class="iconfont icon-dianshang"></i><span class="cmq_text">全球购</span></a></li>
+            <li><a href="#"><svg class="cmq_svg_icon" viewBox="0 0 24 24"><path d="M20 6h-2.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3-1.05 0-1.96.54-2.5 1.35l-.5.67-.5-.68C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-5-2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM9 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm11 15H4v-2h16v2zm0-5H4V8h5.08L7 10.83 8.62 12 11 8.76l1-1.36 1 1.36L15.38 12 17 10.83 14.92 8H20v6z"/></svg><span class="cmq_text">礼品卡</span></a></li>
+            <li><a href="#"><svg class="cmq_svg_icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg><span class="cmq_text">携程金融</span></a></li>
+
+            <li class="cmq_divider"></li>
+
+            <!-- 第四组：其他 -->
+            <li><a href="#"><i class="iconfont icon-yanghu"></i><span class="cmq_text">企业商旅</span></a></li>
+            <li><a href="#"><i class="iconfont icon-liaotian"></i><span class="cmq_text">老友会</span></a></li>
+            <li><a href="#"><i class="iconfont icon-about"></i><span class="cmq_text">关于携程</span></a></li>
+
+        </ul>
+    </aside>
+
+    <!-- ========== 右侧：图例 ========== -->
+    <div class="cmq_legend">
+        <h2>🧭 图标来源对照表</h2>
+
+        <h3>font/iconfont.css 提供 <span class="cmq_tag cmq_tag_if">iconfont</span></h3>
+        <table>
+            <tr><th>类名</th><th>用途</th><th>图标</th></tr>
+            <tr><td>icon-fuwu</td><td>酒店</td><td><i class="iconfont icon-fuwu"></i></td></tr>
+            <tr><td>icon-dingwei</td><td>旅游</td><td><i class="iconfont icon-dingwei"></i></td></tr>
+            <tr><td>icon-tuku</td><td>门票 · 活动</td><td><i class="iconfont icon-tuku"></i></td></tr>
+            <tr><td>icon-fenlei</td><td>汽车 · 船票</td><td><i class="iconfont icon-fenlei"></i></td></tr>
+            <tr><td>icon-gongneng</td><td>AI 行程助手</td><td><i class="iconfont icon-gongneng"></i></td></tr>
+            <tr><td>icon-zixun</td><td>攻略 · 景点</td><td><i class="iconfont icon-zixun"></i></td></tr>
+            <tr><td>icon-dianshang</td><td>全球购</td><td><i class="iconfont icon-dianshang"></i></td></tr>
+            <tr><td>icon-yanghu</td><td>企业商旅</td><td><i class="iconfont icon-yanghu"></i></td></tr>
+            <tr><td>icon-liaotian</td><td>老友会</td><td><i class="iconfont icon-liaotian"></i></td></tr>
+            <tr><td>icon-about</td><td>关于携程</td><td><i class="iconfont icon-about"></i></td></tr>
+        </table>
+
+        <h3>inline SVG 补充 <span class="cmq_tag cmq_tag_svg">svg</span>（iconfont 中无合适图标）</h3>
+        <table>
+            <tr><th>用途</th><th>说明</th></tr>
+            <tr><td>机票 ✈️</td><td>飞机轮廓</td></tr>
+            <tr><td>火车票 🚄</td><td>简化火车头</td></tr>
+            <tr><td>用车 🚗</td><td>汽车轮廓</td></tr>
+            <tr><td>旅游地图 🗺️</td><td>定位针</td></tr>
+            <tr><td>礼品卡 🎁</td><td>礼物盒</td></tr>
+            <tr><td>携程金融 💳</td><td>信用卡</td></tr>
+        </table>
+
+        <a href="1.html" class="cmq_home">返回首页</a>
+        <p class="cmq_sign">蔡美琪 · 16-3 携程侧边栏图标菜单</p>
+    </div>
+
+</div>
+</body>
+</html>
