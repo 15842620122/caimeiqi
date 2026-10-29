@@ -1,0 +1,688 @@
+<!-- 姓名：蔡美琪，日期：2026-10-29，功能名称：JavaScript 主要数组方法形象展示 -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>16-1 JS 数组方法 - 蔡美琪</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 50%, #c7d2fe 100%);
+            min-height: 100vh;
+            padding: 28px 20px;
+            color: #1e1b4b;
+        }
+        .cmq_page { max-width: 900px; margin: 0 auto; }
+        .cmq_title {
+            text-align: center;
+            color: #3730a3;
+            font-size: 28px;
+            margin-bottom: 4px;
+        }
+        .cmq_meta { text-align: center; color: #6366f1; font-size: 13px; margin-bottom: 18px; }
+
+        /* ====== 顶部可视化数组 ====== */
+        .cmq_board {
+            background: #fff;
+            border-radius: 14px;
+            padding: 22px;
+            margin-bottom: 22px;
+            box-shadow: 0 4px 20px rgba(55,48,163,.12);
+            border-top: 4px solid #6366f1;
+        }
+        .cmq_board h2 {
+            color: #3730a3;
+            font-size: 17px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .cmq_array {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: flex-end;
+            min-height: 90px;
+            padding: 14px;
+            background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+            border-radius: 10px;
+            border: 2px dashed #c4b5fd;
+        }
+        .cmq_slot {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            transition: transform .3s, opacity .3s;
+        }
+        .cmq_slot .cmq_box {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #818cf8, #6366f1);
+            color: #fff;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 17px;
+            box-shadow: 0 3px 8px rgba(99,102,241,.35);
+            transition: transform .3s;
+        }
+        .cmq_slot .cmq_idx {
+            font-size: 11px;
+            color: #6366f1;
+            background: #fff;
+            border: 1px solid #c4b5fd;
+            border-radius: 4px;
+            padding: 1px 5px;
+            min-width: 22px;
+            text-align: center;
+        }
+        .cmq_slot.cmq_new .cmq_box {
+            animation: cmqPop .45s ease;
+            background: linear-gradient(135deg, #f472b6, #ec4899);
+            box-shadow: 0 3px 12px rgba(236,72,153,.45);
+        }
+        .cmq_slot.cmq_old .cmq_box { opacity: .3; transform: scale(.85); }
+        @keyframes cmqPop {
+            0% { transform: scale(0); }
+            60% { transform: scale(1.25); }
+            100% { transform: scale(1); }
+        }
+        .cmq_empty {
+            color: #a5b4fc;
+            font-style: italic;
+            padding: 20px;
+        }
+
+        /* ====== 卡片 ====== */
+        .cmq_card {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 3px 14px rgba(55,48,163,.1);
+            padding: 18px 20px;
+            margin-bottom: 16px;
+            border-left: 4px solid #818cf8;
+        }
+        .cmq_card h2 {
+            color: #3730a3;
+            font-size: 17px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px dashed #e0e7ff;
+        }
+        .cmq_card h3 {
+            color: #4338ca;
+            font-size: 15px;
+            margin: 12px 0 6px;
+        }
+        .cmq_row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+        .cmq_btn {
+            padding: 7px 16px;
+            background: #6366f1;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background .2s, transform .15s;
+            font-family: inherit;
+        }
+        .cmq_btn:hover { background: #4f46e5; transform: translateY(-1px); }
+        .cmq_btn:active { transform: translateY(0); }
+        .cmq_btn_sec { background: #a5b4fc; color: #312e81; }
+        .cmq_btn_sec:hover { background: #818cf8; color: #fff; }
+        .cmq_btn_reset { background: #f59e0b; }
+        .cmq_btn_reset:hover { background: #d97706; }
+
+        .cmq_code {
+            background: #1e1b4b;
+            color: #c7d2fe;
+            padding: 12px 14px;
+            border-radius: 8px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12.5px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            margin-top: 8px;
+        }
+        .cmq_code .cmq_k { color: #fbbf24; }
+        .cmq_code .cmq_s { color: #a5f3fc; }
+        .cmq_code .cmq_n { color: #fca5a5; }
+        .cmq_code .cmq_c { color: #6366f1; font-style: italic; }
+
+        .cmq_out {
+            background: #f5f3ff;
+            border: 1px solid #ddd6fe;
+            border-left: 4px solid #8b5cf6;
+            border-radius: 6px;
+            padding: 10px 14px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            color: #312e81;
+            min-height: 30px;
+            margin-top: 8px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .cmq_out .cmq_ret { color: #059669; font-weight: bold; }
+        .cmq_out .cmq_bool_t { color: #059669; font-weight: bold; }
+        .cmq_out .cmq_bool_f { color: #dc2626; font-weight: bold; }
+
+        .cmq_input_row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+        .cmq_input_row label { font-size: 13px; color: #4338ca; }
+        .cmq_input_row input[type="number"],
+        .cmq_input_row input[type="text"] {
+            padding: 5px 10px;
+            border: 1px solid #c4b5fd;
+            border-radius: 6px;
+            font-size: 14px;
+            width: 90px;
+            outline: none;
+            background: #fff;
+            color: #1e1b4b;
+        }
+        .cmq_input_row input:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99,102,241,.15);
+        }
+
+        .cmq_tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            margin-right: 6px;
+        }
+        .cmq_tag_mut { background: #fee2e2; color: #b91c1c; }
+        .cmq_tag_immu { background: #dcfce7; color: #166534; }
+
+        .cmq_home {
+            display: inline-block;
+            margin-top: 14px;
+            padding: 8px 22px;
+            background: #3730a3;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: background .2s;
+        }
+        .cmq_home:hover { background: #1e1b4b; }
+        .cmq_sign { text-align: right; color: #6366f1; font-size: 12px; margin-top: 16px; }
+
+        .cmq_two {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        @media (max-width: 620px) {
+            .cmq_two { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="cmq_page">
+    <h1 class="cmq_title">📦 JavaScript 数组方法</h1>
+    <p class="cmq_meta">姓名：蔡美琪 · 日期：2026-10-29 · 16-1 形象演示</p>
+
+    <!-- ========== 可视化数组 ========== -->
+    <div class="cmq_board">
+        <h2>🎯 当前数组 <code style="background:#f5f3ff;padding:2px 8px;border-radius:4px;font-size:13px;color:#3730a3;">cmq_arr = [<span id="cmq_arr_raw">1,2,3,4,5</span>]</code></h2>
+        <div class="cmq_array" id="cmq_arr_boxes"></div>
+        <div style="margin-top:12px;" class="cmq_row">
+            <button class="cmq_btn cmq_btn_reset" onclick="cmqReset()">🔄 重置为 [1,2,3,4,5]</button>
+            <span class="cmq_tag cmq_tag_mut">🔴 会修改原数组</span>
+            <span class="cmq_tag cmq_tag_immu">🟢 不修改原数组（返回新值）</span>
+        </div>
+    </div>
+
+    <!-- ========== 1. 增删改 ========== -->
+    <div class="cmq_card">
+        <h2>一、增删改元素 <span class="cmq_tag cmq_tag_mut">修改原数组</span></h2>
+
+        <div class="cmq_two">
+            <div>
+                <h3>push() 末尾追加</h3>
+                <div class="cmq_code"><span class="cmq_k">cmq_arr</span>.push(<span class="cmq_n">6</span>, <span class="cmq_n">7</span>);
+<span class="cmq_c">// 返回新长度</span></div>
+                <div class="cmq_row">
+                    <input type="text" id="cmq_push_val" value="6,7" style="width:120px;" placeholder="用逗号分隔">
+                    <button class="cmq_btn" onclick="cmqPush()">push()</button>
+                </div>
+                <div class="cmq_out" id="cmq_out_push">等待运行…</div>
+            </div>
+
+            <div>
+                <h3>pop() 末尾删除</h3>
+                <div class="cmq_code"><span class="cmq_k">cmq_arr</span>.pop();
+<span class="cmq_c">// 返回被删元素</span></div>
+                <div class="cmq_row">
+                    <button class="cmq_btn" onclick="cmqPop()">pop()</button>
+                </div>
+                <div class="cmq_out" id="cmq_out_pop">等待运行…</div>
+            </div>
+
+            <div>
+                <h3>unshift() 开头插入</h3>
+                <div class="cmq_code"><span class="cmq_k">cmq_arr</span>.unshift(<span class="cmq_n">0</span>);
+<span class="cmq_c">// 返回新长度</span></div>
+                <div class="cmq_row">
+                    <input type="text" id="cmq_unshift_val" value="0" style="width:120px;">
+                    <button class="cmq_btn" onclick="cmqUnshift()">unshift()</button>
+                </div>
+                <div class="cmq_out" id="cmq_out_unshift">等待运行…</div>
+            </div>
+
+            <div>
+                <h3>shift() 开头删除</h3>
+                <div class="cmq_code"><span class="cmq_k">cmq_arr</span>.shift();
+<span class="cmq_c">// 返回被删元素</span></div>
+                <div class="cmq_row">
+                    <button class="cmq_btn" onclick="cmqShift()">shift()</button>
+                </div>
+                <div class="cmq_out" id="cmq_out_shift">等待运行…</div>
+            </div>
+        </div>
+
+        <h3 style="margin-top:14px;">splice() 万能增删改</h3>
+        <div class="cmq_code"><span class="cmq_c">// splice(start, deleteCount, item1, item2, ...)</span>
+<span class="cmq_k">cmq_arr</span>.splice(<span class="cmq_n">2</span>, <span class="cmq_n">1</span>, <span class="cmq_n">99</span>);
+<span class="cmq_c">// 从索引2开始删1个，插入99</span></div>
+        <div class="cmq_row">
+            <label>起点</label><input type="number" id="cmq_sp_start" value="2" style="width:60px;">
+            <label>删除数</label><input type="number" id="cmq_sp_del" value="1" style="width:60px;">
+            <label>插入值</label><input type="text" id="cmq_sp_ins" value="99" style="width:100px;">
+            <button class="cmq_btn" onclick="cmqSplice()">splice()</button>
+        </div>
+        <div class="cmq_out" id="cmq_out_splice">等待运行…</div>
+    </div>
+
+    <!-- ========== 2. 查找 ========== -->
+    <div class="cmq_card">
+        <h2>二、查找元素 <span class="cmq_tag cmq_tag_immu">不修改</span></h2>
+
+        <div class="cmq_two">
+            <div>
+                <h3>indexOf() 查找索引</h3>
+                <div class="cmq_code"><span class="cmq_k">cmq_arr</span>.indexOf(<span class="cmq_n">3</span>);
+<span class="cmq_c">// 找到返回索引，否则 -1</span></div>
+                <div class="cmq_row">
+                    <input type="number" id="cmq_iof_val" value="3" style="width:80px;">
+                    <button class="cmq_btn" onclick="cmqIndexOf()">indexOf()</button>
+                </div>
+                <div class="cmq_out" id="cmq_out_iof">等待运行…</div>
+            </div>
+
+            <div>
+                <h3>includes() 是否包含</h3>
+                <div class="cmq_code"><span class="cmq_k">cmq_arr</span>.includes(<span class="cmq_n">3</span>);
+<span class="cmq_c">// 返回 true / false</span></div>
+                <div class="cmq_row">
+                    <input type="number" id="cmq_inc_val" value="3" style="width:80px;">
+                    <button class="cmq_btn" onclick="cmqIncludes()">includes()</button>
+                </div>
+                <div class="cmq_out" id="cmq_out_inc">等待运行…</div>
+            </div>
+
+            <div>
+                <h3>find() 找第一个符合的元素</h3>
+                <div class="cmq_code"><span class="cmq_k">cmq_arr</span>.<span class="cmq_k">find</span>(x => x > <span class="cmq_n">3</span>);
+<span class="cmq_c">// 返回元素本身，否则 undefined</span></div>
+                <div class="cmq_row">
+                    <label>x ></label><input type="number" id="cmq_fd_val" value="3" style="width:70px;">
+                    <button class="cmq_btn" onclick="cmqFind()">find()</button>
+                </div>
+                <div class="cmq_out" id="cmq_out_fd">等待运行…</div>
+            </div>
+
+            <div>
+                <h3>findIndex() 找索引</h3>
+                <div class="cmq_code"><span class="cmq_k">cmq_arr</span>.findIndex(x => x > <span class="cmq_n">3</span>);
+<span class="cmq_c">// 返回索引，否则 -1</span></div>
+                <div class="cmq_row">
+                    <label>x ></label><input type="number" id="cmq_fi_val" value="3" style="width:70px;">
+                    <button class="cmq_btn" onclick="cmqFindIndex()">findIndex()</button>
+                </div>
+                <div class="cmq_out" id="cmq_out_fi">等待运行…</div>
+            </div>
+
+            <div>
+                <h3>some() 有一个满足？</h3>
+                <div class="cmq_code"><span class="cmq_k">cmq_arr</span>.some(x => x % <span class="cmq_n">2</span> === <span class="cmq_n">0</span>);
+<span class="cmq_c">// 至少一个满足则 true</span></div>
+                <div class="cmq_row">
+                    <label>x 能被</label><input type="number" id="cmq_sm_val" value="2" style="width:60px;"><label>整除</label>
+                    <button class="cmq_btn" onclick="cmqSome()">some()</button>
+                </div>
+                <div class="cmq_out" id="cmq_out_sm">等待运行…</div>
+            </div>
+
+            <div>
+                <h3>every() 全部满足？</h3>
+                <div class="cmq_code"><span class="cmq_k">cmq_arr</span>.every(x => x > <span class="cmq_n">0</span>);
+<span class="cmq_c">// 全部满足才 true</span></div>
+                <div class="cmq_row">
+                    <label>x ></label><input type="number" id="cmq_ev_val" value="0" style="width:60px;">
+                    <button class="cmq_btn" onclick="cmqEvery()">every()</button>
+                </div>
+                <div class="cmq_out" id="cmq_out_ev">等待运行…</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== 3. 遍历转换 ========== -->
+    <div class="cmq_card">
+        <h2>三、遍历 & 转换 <span class="cmq_tag cmq_tag_immu">返回新数组/值</span></h2>
+
+        <div class="cmq_two">
+            <div>
+                <h3>map() 映射每个元素</h3>
+                <div class="cmq_code"><span class="cmq_k">cmq_arr</span>.map(x => x * <span class="cmq_n">2</span>);
+<span class="cmq_c">// 每个元素乘 2，返回新数组</span></div>
+                <div class="cmq_row">
+                    <label>每个 ×</label><input type="number" id="cmq_mp_val" value="2" style="width:70px;">
+                    <button class="cmq_btn" onclick="cmqMap()">map()</button>
+                </div>
+                <div class="cmq_out" id="cmq_out_mp">等待运行…</div>
+            </div>
+
+            <div>
+                <h3>filter() 过滤</h3>
+                <div class="cmq_code"><span class="cmq_k">cmq_arr</span>.filter(x => x % <span class="cmq_n">2</span> === <span class="cmq_n">1</span>);
+<span class="cmq_c">// 只保留奇数</span></div>
+                <div class="cmq_row">
+                    <label>保留 x %</label><input type="number" id="cmq_ft_div" value="2" style="width:60px;"><label>==</label><input type="number" id="cmq_ft_mod" value="1" style="width:60px;">
+                    <button class="cmq_btn" onclick="cmqFilter()">filter()</button>
+                </div>
+                <div class="cmq_out" id="cmq_out_ft">等待运行…</div>
+            </div>
+
+            <div>
+                <h3>reduce() 累积求和</h3>
+                <div class="cmq_code"><span class="cmq_k">cmq_arr</span>.reduce((a, b) => a + b, <span class="cmq_n">0</span>);
+<span class="cmq_c">// 求和，0 为初始值</span></div>
+                <div class="cmq_row">
+                    <label>初始值</label><input type="number" id="cmq_rd_val" value="0" style="width:70px;">
+                    <button class="cmq_btn" onclick="cmqReduce()">reduce()</button>
+                </div>
+                <div class="cmq_out" id="cmq_out_rd">等待运行…</div>
+            </div>
+
+            <div>
+                <h3>forEach() 遍历执行</h3>
+                <div class="cmq_code"><span class="cmq_k">cmq_arr</span>.forEach((x, i) => {
+    cmqLog(i + <span class="cmq_s">":"</span> + x);
+});
+<span class="cmq_c">// 无返回值，只是执行</span></div>
+                <div class="cmq_row">
+                    <button class="cmq_btn" onclick="cmqForEach()">forEach()</button>
+                </div>
+                <div class="cmq_out" id="cmq_out_fe">等待运行…</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== 4. 排序 & 其他 ========== -->
+    <div class="cmq_card">
+        <h2>四、排序 & 其他实用方法</h2>
+
+        <div class="cmq_two">
+            <div>
+                <h3>sort() 排序 <span class="cmq_tag cmq_tag_mut">修改</span></h3>
+                <div class="cmq_code"><span class="cmq_k">cmq_arr</span>.sort((a, b) => a - b);
+<span class="cmq_c">// 升序。注意：默认按字符串排！</span></div>
+                <div class="cmq_row">
+                    <button class="cmq_btn" onclick="cmqSortAsc()">升序 ↑</button>
+                    <button class="cmq_btn cmq_btn_sec" onclick="cmqSortDesc()">降序 ↓</button>
+                </div>
+                <div class="cmq_out" id="cmq_out_sort">等待运行…</div>
+            </div>
+
+            <div>
+                <h3>reverse() 反转 <span class="cmq_tag cmq_tag_mut">修改</span></h3>
+                <div class="cmq_code"><span class="cmq_k">cmq_arr</span>.reverse();</div>
+                <div class="cmq_row">
+                    <button class="cmq_btn" onclick="cmqReverse()">reverse()</button>
+                </div>
+                <div class="cmq_out" id="cmq_out_rev">等待运行…</div>
+            </div>
+
+            <div>
+                <h3>slice() 切片 <span class="cmq_tag cmq_tag_immu">不修改</span></h3>
+                <div class="cmq_code"><span class="cmq_k">cmq_arr</span>.slice(<span class="cmq_n">1</span>, <span class="cmq_n">4</span>);
+<span class="cmq_c">// [start, end) 含头不含尾</span></div>
+                <div class="cmq_row">
+                    <label>起</label><input type="number" id="cmq_sl_s" value="1" style="width:60px;">
+                    <label>止</label><input type="number" id="cmq_sl_e" value="4" style="width:60px;">
+                    <button class="cmq_btn" onclick="cmqSlice()">slice()</button>
+                </div>
+                <div class="cmq_out" id="cmq_out_sl">等待运行…</div>
+            </div>
+
+            <div>
+                <h3>concat() / join()</h3>
+                <div class="cmq_code"><span class="cmq_k">cmq_arr</span>.concat([<span class="cmq_n">6</span>, <span class="cmq_n">7</span>]);
+<span class="cmq_k">cmq_arr</span>.join(<span class="cmq_s">"-"</span>);</div>
+                <div class="cmq_row">
+                    <button class="cmq_btn" onclick="cmqConcat()">concat()</button>
+                    <button class="cmq_btn cmq_btn_sec" onclick="cmqJoin()">join("-")</button>
+                </div>
+                <div class="cmq_out" id="cmq_out_cc">等待运行…</div>
+            </div>
+        </div>
+    </div>
+
+    <a href="1.html" class="cmq_home">返回首页</a>
+    <p class="cmq_sign">蔡美琪 · 16-1 JavaScript 数组方法</p>
+</div>
+
+<script>
+    var cmq_arr = [1, 2, 3, 4, 5];
+    var cmq_prev = [];
+
+    function cmqRender(newIdxList) {
+        var box = document.getElementById("cmq_arr_boxes");
+        document.getElementById("cmq_arr_raw").textContent = cmq_arr.join(",");
+        if (cmq_arr.length === 0) {
+            box.innerHTML = '<div class="cmq_empty">数组为空 🍃</div>';
+            return;
+        }
+        var html = "";
+        var prevSet = {};
+        cmq_prev.forEach(function (v, i) { prevSet[v + "@" + i] = true; });
+        var isNewMap = {};
+        if (newIdxList) { newIdxList.forEach(function (i) { isNewMap[i] = true; }); }
+
+        cmq_arr.forEach(function (v, i) {
+            var cls = "";
+            if (isNewMap[i]) cls = " cmq_new";
+            else if (!prevSet[v + "@" + i]) cls = " cmq_new";
+            html += '<div class="cmq_slot' + cls + '">';
+            html += '<div class="cmq_box">' + v + '</div>';
+            html += '<div class="cmq_idx">' + i + '</div>';
+            html += '</div>';
+        });
+        box.innerHTML = html;
+        cmq_prev = cmq_arr.slice();
+    }
+
+    function cmqReset() {
+        cmq_arr = [1, 2, 3, 4, 5];
+        cmq_prev = [];
+        cmqRender([]);
+        cmqMsg("reset", "✅ 数组已重置为 [1,2,3,4,5]");
+    }
+
+    function cmqMsg(id, text) {
+        document.getElementById("cmq_out_" + id).textContent = text;
+    }
+    function cmqRet(id, ret, note) {
+        var s = "返回值：" + (typeof ret === "boolean"
+            ? (ret ? '<span class="cmq_bool_t">' + ret + '</span>' : '<span class="cmq_bool_f">' + ret + '</span>')
+            : '<span class="cmq_ret">' + JSON.stringify(ret) + '</span>');
+        if (note) s += "\n说明：" + note;
+        document.getElementById("cmq_out_" + id).innerHTML = s;
+    }
+
+    function cmqParse(s) {
+        s = s.trim();
+        if (s === "") return [];
+        return s.split(",").map(function (x) {
+            x = x.trim();
+            var n = Number(x);
+            return isNaN(n) ? (x.replace(/^['"]|['"]$/g, "")) : n;
+        });
+    }
+
+    // ====== 1. 增删改 ======
+    function cmqPush() {
+        var vals = cmqParse(document.getElementById("cmq_push_val").value);
+        var before = cmq_arr.length;
+        var r = cmq_arr.push.apply(cmq_arr, vals);
+        var newIdx = [];
+        for (var i = before; i < cmq_arr.length; i++) newIdx.push(i);
+        cmqRender(newIdx);
+        cmqRet("push", r, "数组变为 [" + cmq_arr.join(",") + "]");
+    }
+
+    function cmqPop() {
+        var r = cmq_arr.pop();
+        cmqRender();
+        cmqRet("pop", r, "数组变为 [" + cmq_arr.join(",") + "]");
+    }
+
+    function cmqUnshift() {
+        var vals = cmqParse(document.getElementById("cmq_unshift_val").value);
+        var r = cmq_arr.unshift.apply(cmq_arr, vals);
+        var newIdx = [];
+        for (var i = 0; i < vals.length; i++) newIdx.push(i);
+        cmqRender(newIdx);
+        cmqRet("unshift", r, "数组变为 [" + cmq_arr.join(",") + "]");
+    }
+
+    function cmqShift() {
+        var r = cmq_arr.shift();
+        cmqRender();
+        cmqRet("shift", r, "数组变为 [" + cmq_arr.join(",") + "]");
+    }
+
+    function cmqSplice() {
+        var start = parseInt(document.getElementById("cmq_sp_start").value) || 0;
+        var del = parseInt(document.getElementById("cmq_sp_del").value) || 0;
+        var ins = cmqParse(document.getElementById("cmq_sp_ins").value);
+        var r = cmq_arr.splice.apply(cmq_arr, [start, del].concat(ins));
+        var newIdx = [];
+        for (var i = start; i < start + ins.length; i++) newIdx.push(i);
+        cmqRender(newIdx);
+        cmqRet("splice", r, "删除了 " + r.length + " 个元素，数组变为 [" + cmq_arr.join(",") + "]");
+    }
+
+    // ====== 2. 查找 ======
+    function cmqIndexOf() {
+        var v = Number(document.getElementById("cmq_iof_val").value);
+        var r = cmq_arr.indexOf(v);
+        cmqRet("iof", r, r >= 0 ? "找到索引 " + r : "数组中没有 " + v);
+    }
+    function cmqIncludes() {
+        var v = Number(document.getElementById("cmq_inc_val").value);
+        var r = cmq_arr.includes(v);
+        cmqRet("inc", r, r ? "数组包含 " + v : "数组不包含 " + v);
+    }
+    function cmqFind() {
+        var v = Number(document.getElementById("cmq_fd_val").value);
+        var r = cmq_arr.find(function (x) { return x > v; });
+        cmqRet("fd", r === undefined ? "undefined" : r,
+            r !== undefined ? "第一个大于 " + v + " 的元素" : "没有元素大于 " + v);
+    }
+    function cmqFindIndex() {
+        var v = Number(document.getElementById("cmq_fi_val").value);
+        var r = cmq_arr.findIndex(function (x) { return x > v; });
+        cmqRet("fi", r, r >= 0 ? "索引 " + r + " 的元素 " + cmq_arr[r] + " 是第一个大于 " + v + " 的" : "没有");
+    }
+    function cmqSome() {
+        var v = Number(document.getElementById("cmq_sm_val").value);
+        var r = cmq_arr.some(function (x) { return x % v === 0; });
+        cmqRet("sm", r);
+    }
+    function cmqEvery() {
+        var v = Number(document.getElementById("cmq_ev_val").value);
+        var r = cmq_arr.every(function (x) { return x > v; });
+        cmqRet("ev", r);
+    }
+
+    // ====== 3. 遍历转换 ======
+    function cmqMap() {
+        var v = Number(document.getElementById("cmq_mp_val").value);
+        var r = cmq_arr.map(function (x) { return x * v; });
+        cmqRet("mp", r, "✅ 原数组未变：[" + cmq_arr.join(",") + "]");
+    }
+    function cmqFilter() {
+        var d = Number(document.getElementById("cmq_ft_div").value);
+        var m = Number(document.getElementById("cmq_ft_mod").value);
+        var r = cmq_arr.filter(function (x) { return x % d === m; });
+        cmqRet("ft", r, "保留 x % " + d + " === " + m + " 的元素");
+    }
+    function cmqReduce() {
+        var v = Number(document.getElementById("cmq_rd_val").value);
+        var r = cmq_arr.reduce(function (a, b) { return a + b; }, v);
+        var detail = cmq_arr.join(" + ") + " = " + cmq_arr.reduce(function (a, b) { return a + b; }, 0);
+        cmqRet("rd", r, detail + "（含初始值 " + v + "）");
+    }
+    function cmqForEach() {
+        var out = "";
+        cmq_arr.forEach(function (x, i) { out += i + " : " + x + "\n"; });
+        document.getElementById("cmq_out_fe").textContent = out.trim() + "\n（无返回值，直接遍历执行）";
+    }
+
+    // ====== 4. 排序 & 其他 ======
+    function cmqSortAsc() {
+        cmq_arr.sort(function (a, b) { return a - b; });
+        cmqRender();
+        cmqMsg("sort", "✅ 升序排列：[" + cmq_arr.join(",") + "]");
+    }
+    function cmqSortDesc() {
+        cmq_arr.sort(function (a, b) { return b - a; });
+        cmqRender();
+        cmqMsg("sort", "✅ 降序排列：[" + cmq_arr.join(",") + "]");
+    }
+    function cmqReverse() {
+        cmq_arr.reverse();
+        cmqRender();
+        cmqMsg("rev", "✅ 已反转：[" + cmq_arr.join(",") + "]");
+    }
+    function cmqSlice() {
+        var s = parseInt(document.getElementById("cmq_sl_s").value);
+        var e = parseInt(document.getElementById("cmq_sl_e").value);
+        var r = cmq_arr.slice(s, e);
+        cmqRet("sl", r, "slice(" + s + "," + e + ") 左闭右开，原数组：[" + cmq_arr.join(",") + "]");
+    }
+    function cmqConcat() {
+        var r = cmq_arr.concat([6, 7]);
+        cmqRet("cc", r, "concat([6,7]) 原数组：[" + cmq_arr.join(",") + "]");
+    }
+    function cmqJoin() {
+        var r = cmq_arr.join("-");
+        cmqRet("cc", r, "join(\"-\") 把数组用 - 连成字符串");
+    }
+
+    cmqRender([]);
+</script>
+</body>
+</html>
