@@ -1,0 +1,611 @@
+<!-- 姓名：蔡美琪，日期：2026-11-02，功能名称：远程接口测试工具（GET/POST/PUT/PATCH/DELETE） -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>17-4 API 接口测试</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    background: #f0f2f5;
+    padding: 28px 20px;
+    color: #333;
+  }
+  a.cmq_home {
+    display: inline-block;
+    margin-bottom: 16px;
+    color: #2b5797;
+    text-decoration: none;
+    font-size: 14px;
+  }
+  a.cmq_home:hover { text-decoration: underline; }
+
+  .cmq_container {
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+  .cmq_page_title { font-size: 26px; font-weight: 700; margin-bottom: 4px; }
+  .cmq_page_sub { font-size: 13px; color: #888; margin-bottom: 20px; }
+
+  /* ===== 请求区 ===== */
+  .cmq_panel {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.05);
+    padding: 20px 22px;
+    margin-bottom: 18px;
+  }
+  .cmq_panel h3 {
+    font-size: 15px;
+    color: #2b5797;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #eef1f6;
+  }
+
+  .cmq_url_bar {
+    display: flex;
+    gap: 0;
+    border: 1px solid #d1d9e6;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+  }
+  .cmq_method_select {
+    flex-shrink: 0;
+    padding: 0 14px;
+    border: none;
+    border-right: 1px solid #d1d9e6;
+    background: #f7f9fc;
+    font-size: 14px;
+    font-family: inherit;
+    font-weight: 600;
+    color: #2b5797;
+    cursor: pointer;
+    outline: none;
+    min-width: 90px;
+  }
+  .cmq_method_select.cmq_GET { color: #16a34a; }
+  .cmq_method_select.cmq_POST { color: #d9363e; }
+  .cmq_method_select.cmq_PUT { color: #ea580c; }
+  .cmq_method_select.cmq_PATCH { color: #9333ea; }
+  .cmq_method_select.cmq_DELETE { color: #dc2626; }
+
+  .cmq_url_input {
+    flex: 1;
+    border: none;
+    padding: 12px 14px;
+    font-size: 14px;
+    font-family: "Consolas", monospace;
+    outline: none;
+    color: #333;
+    min-width: 0;
+  }
+  .cmq_url_input:focus { background: #fafbfd; }
+
+  .cmq_send_btn {
+    flex-shrink: 0;
+    padding: 12px 32px;
+    border: none;
+    background: #2b5797;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background .2s, transform .1s;
+  }
+  .cmq_send_btn:hover { background: #1e3a8a; }
+  .cmq_send_btn:active { transform: scale(.97); }
+  .cmq_send_btn:disabled { background: #9ca3af; cursor: not-allowed; transform: none; }
+
+  /* 快速示例 */
+  .cmq_examples {
+    margin-top: 12px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .cmq_example {
+    font-size: 12px;
+    padding: 4px 12px;
+    border-radius: 14px;
+    background: #eef4ff;
+    color: #2b5797;
+    cursor: pointer;
+    transition: background .15s;
+    border: none;
+    font-family: inherit;
+  }
+  .cmq_example:hover { background: #dbeafe; }
+
+  /* Headers / Body 编辑器 */
+  .cmq_tabs_h {
+    display: flex;
+    border-bottom: 1px solid #eef1f6;
+    margin-bottom: 12px;
+    gap: 0;
+  }
+  .cmq_tab_h {
+    padding: 8px 18px;
+    font-size: 13px;
+    color: #666;
+    cursor: pointer;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    font-family: inherit;
+  }
+  .cmq_tab_h.cmq_active {
+    color: #2b5797;
+    border-bottom-color: #2b5797;
+    font-weight: 600;
+  }
+
+  .cmq_textarea {
+    width: 100%;
+    min-height: 120px;
+    border: 1px solid #d1d9e6;
+    border-radius: 6px;
+    padding: 12px;
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    resize: vertical;
+    background: #fafbfd;
+    color: #333;
+  }
+  .cmq_textarea:focus {
+    outline: none;
+    border-color: #2b5797;
+    background: #fff;
+  }
+  .cmq_textarea.cmq_disabled {
+    background: #f3f4f6;
+    color: #9ca3af;
+    cursor: not-allowed;
+  }
+
+  /* ===== 响应区 ===== */
+  .cmq_response_head {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .cmq_status_badge {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    background: #e5e7eb;
+    color: #374151;
+  }
+  .cmq_status_badge.cmq_2xx { background: #dcfce7; color: #15803d; }
+  .cmq_status_badge.cmq_3xx { background: #e0e7ff; color: #3730a3; }
+  .cmq_status_badge.cmq_4xx { background: #fef3c7; color: #92400e; }
+  .cmq_status_badge.cmq_5xx { background: #fee2e2; color: #b91c1c; }
+  .cmq_status_badge.cmq_err { background: #fee2e2; color: #b91c1c; }
+
+  .cmq_meta {
+    font-size: 12px;
+    color: #888;
+    font-family: "Consolas", monospace;
+  }
+
+  .cmq_response_sections {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  @media (min-width: 900px) {
+    .cmq_response_sections { grid-template-columns: 320px 1fr; }
+  }
+  .cmq_resp_box {
+    border: 1px solid #eef1f6;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .cmq_resp_box h4 {
+    font-size: 12px;
+    background: #f7f9fc;
+    padding: 8px 12px;
+    color: #555;
+    font-weight: 600;
+    border-bottom: 1px solid #eef1f6;
+    font-family: "Consolas", monospace;
+  }
+  .cmq_resp_content {
+    padding: 12px 14px;
+    max-height: 440px;
+    overflow: auto;
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 12.5px;
+    line-height: 1.65;
+    white-space: pre-wrap;
+    word-break: break-all;
+    background: #fafbfd;
+  }
+  .cmq_resp_content.cmq_err_bg {
+    background: #fff1f0;
+    color: #cf1322;
+  }
+
+  /* JSON 语法高亮 */
+  .cmq_json .k { color: #b7791f; }
+  .cmq_json .s { color: #0277bd; }
+  .cmq_json .n { color: #c62828; }
+  .cmq_json .b { color: #2e7d32; }
+  .cmq_json .nul { color: #7b1fa2; font-style: italic; }
+
+  /* Headers */
+  .cmq_resp_headers div {
+    padding: 4px 0;
+    border-bottom: 1px dashed #eef1f6;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .cmq_resp_headers div:last-child { border-bottom: none; }
+  .cmq_resp_headers .cmq_h_key { color: #6b21a8; font-weight: 600; }
+  .cmq_resp_headers .cmq_h_val { color: #374151; }
+
+  /* Empty state */
+  .cmq_empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: #9ca3af;
+    font-size: 14px;
+  }
+  .cmq_empty .cmq_emoji { font-size: 48px; display: block; margin-bottom: 10px; }
+
+  /* 提示 toast */
+  .cmq_toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1a1a1a;
+    color: #fff;
+    padding: 10px 22px;
+    border-radius: 20px;
+    font-size: 13px;
+    z-index: 999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .25s, transform .25s;
+  }
+  .cmq_toast.cmq_show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(4px);
+  }
+  .cmq_toast.cmq_err { background: #d9363e; }
+</style>
+</head>
+<body>
+
+<a class="cmq_home" href="1.html">← 返回首页</a>
+
+<div class="cmq_container">
+  <div class="cmq_page_title">🧪 API 接口测试工具</div>
+  <div class="cmq_page_sub">支持 GET / POST / PUT / PATCH / DELETE · 实时查看响应状态、响应头、响应体</div>
+
+  <!-- 请求区 -->
+  <div class="cmq_panel">
+    <h3>📤 构造请求</h3>
+    <div class="cmq_url_bar">
+      <select class="cmq_method_select cmq_GET" id="cmq_method">
+        <option value="GET">GET</option>
+        <option value="POST">POST</option>
+        <option value="PUT">PUT</option>
+        <option value="PATCH">PATCH</option>
+        <option value="DELETE">DELETE</option>
+      </select>
+      <input class="cmq_url_input" id="cmq_url" placeholder="https://example.com/api/..." value="https://dummyjson.com/products/1">
+      <button class="cmq_send_btn" id="cmq_send">发送请求</button>
+    </div>
+
+    <div class="cmq_examples">
+      <span style="font-size:12px;color:#888;margin-right:4px">快速填充：</span>
+      <button class="cmq_example" data-url="https://dummyjson.com/products?limit=3" data-method="GET">GET 商品列表</button>
+      <button class="cmq_example" data-url="https://dummyjson.com/users/1" data-method="GET">GET 用户</button>
+      <button class="cmq_example" data-url="https://dummyjson.com/auth/login" data-method="POST">POST 登录</button>
+      <button class="cmq_example" data-url="https://jsonplaceholder.typicode.com/posts" data-method="GET">Placeholder posts</button>
+      <button class="cmq_example" data-url="https://jsonplaceholder.typicode.com/posts/1" data-method="PUT">PUT 更新</button>
+      <button class="cmq_example" data-url="https://httpstat.us/404" data-method="GET">模拟 404</button>
+      <button class="cmq_example" data-url="https://httpstat.us/500" data-method="GET">模拟 500</button>
+    </div>
+  </div>
+
+  <!-- Headers / Body -->
+  <div class="cmq_panel">
+    <div class="cmq_tabs_h">
+      <button class="cmq_tab_h cmq_active" data-tab="headers">Headers（每行一个：Key: Value）</button>
+      <button class="cmq_tab_h" data-tab="body">Body（JSON / 纯文本）</button>
+    </div>
+
+    <div id="cmq_tab_headers">
+      <textarea class="cmq_textarea" id="cmq_headers" placeholder="Content-Type: application/json
+Accept: application/json"></textarea>
+    </div>
+    <div id="cmq_tab_body" style="display:none">
+      <textarea class="cmq_textarea" id="cmq_body" placeholder='POST / PUT / PATCH 请求体（JSON 或文本）&#10;{&#10;  "username": "emilys",&#10;  "password": "emilyspass"&#10;}'></textarea>
+    </div>
+  </div>
+
+  <!-- 响应区 -->
+  <div class="cmq_panel" id="cmq_resp_panel">
+    <h3>📥 响应结果</h3>
+    <div id="cmq_resp_empty" class="cmq_empty">
+      <span class="cmq_emoji">📭</span>
+      尚未发送请求，点击上方「发送请求」开始测试吧
+    </div>
+    <div id="cmq_resp_content" style="display:none">
+      <div class="cmq_response_head">
+        <span class="cmq_status_badge" id="cmq_status">—</span>
+        <span class="cmq_meta" id="cmq_status_text">—</span>
+        <span class="cmq_meta" id="cmq_time">—</span>
+        <span class="cmq_meta" id="cmq_size">—</span>
+      </div>
+
+      <div class="cmq_response_sections">
+        <div>
+          <div class="cmq_resp_box">
+            <h4>RESPONSE HEADERS</h4>
+            <div class="cmq_resp_content cmq_resp_headers" id="cmq_resp_headers">—</div>
+          </div>
+        </div>
+        <div>
+          <div class="cmq_resp_box">
+            <h4>RESPONSE BODY</h4>
+            <div class="cmq_resp_content cmq_json" id="cmq_resp_body">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="cmq_toast" id="cmq_toast"></div>
+
+<script>
+  // ===== JSON 语法高亮 =====
+  function cmq_colorize(str) {
+    var out = '';
+    var i = 0, n = str.length;
+    while (i < n) {
+      var c = str[i];
+      if (c === '"') {
+        var j = i + 1;
+        while (j < n && str[j] !== '"') { if (str[j] === '\\') j++; j++; }
+        out += '<span class="s">' + str.substring(i, j + 1) + '</span>';
+        i = j + 1; continue;
+      }
+      if (/[0-9.\-]/.test(c)) {
+        var num = '';
+        while (i < n && /[0-9.\-+eE]/.test(str[i])) { num += str[i]; i++; }
+        out += '<span class="n">' + num + '</span>'; continue;
+      }
+      if (c === '{' || c === '}' || c === '[' || c === ']' || c === ':' || c === ',') {
+        out += '<span class="k">' + c + '</span>'; i++; continue;
+      }
+      if (str.substr(i, 4) === 'true')  { out += '<span class="b">true</span>'; i += 4; continue; }
+      if (str.substr(i, 5) === 'false') { out += '<span class="b">false</span>'; i += 5; continue; }
+      if (str.substr(i, 4) === 'null')  { out += '<span class="nul">null</span>'; i += 4; continue; }
+      out += c; i++;
+    }
+    return out;
+  }
+
+  function cmq_prettyBody(text, contentType) {
+    var isJson = contentType && contentType.indexOf('json') !== -1;
+    if (!isJson) {
+      return text || '(空)';
+    }
+    try {
+      var obj = JSON.parse(text);
+      return cmq_colorize(JSON.stringify(obj, null, 2));
+    } catch (e) {
+      return text;
+    }
+  }
+
+  function cmq_parseHeaders(text) {
+    var lines = (text || '').trim().split(/\r?\n/);
+    var h = {};
+    for (var i = 0; i < lines.length; i++) {
+      var sep = lines[i].indexOf(':');
+      if (sep > 0) {
+        h[lines[i].substring(0, sep).trim()] = lines[i].substring(sep + 1).trim();
+      }
+    }
+    return h;
+  }
+
+  function cmq_toast(msg, isErr) {
+    var el = document.getElementById('cmq_toast');
+    el.textContent = msg;
+    el.className = 'cmq_toast' + (isErr ? ' cmq_err' : '') + ' cmq_show';
+    clearTimeout(el._t);
+    el._t = setTimeout(function () { el.className = 'cmq_toast'; }, 2200);
+  }
+
+  // ===== URL 校验 =====
+  function cmq_checkUrl(u) {
+    if (!u) return '请输入 URL';
+    if (u.indexOf('://') === -1) return 'URL 需以 http:// 或 https:// 开头';
+    return null;
+  }
+
+  // ===== 发送请求 =====
+  var cmq_abort = null;
+
+  function cmq_send() {
+    var url = document.getElementById('cmq_url').value.trim();
+    var method = document.getElementById('cmq_method').value;
+    var headersText = document.getElementById('cmq_headers').value;
+    var body = document.getElementById('cmq_body').value;
+
+    var err = cmq_checkUrl(url);
+    if (err) { cmq_toast(err, true); return; }
+
+    var headers = cmq_parseHeaders(headersText);
+
+    // 如果是有 body 的方法，默认 Content-Type
+    var hasBody = (method === 'POST' || method === 'PUT' || method === 'PATCH');
+    var finalBody = undefined;
+    if (hasBody && body.trim()) {
+      finalBody = body.trim();
+      if (!headers['Content-Type'] && !headers['content-type']) {
+        headers['Content-Type'] = 'application/json';
+      }
+    }
+
+    var init = {
+      method: method,
+      headers: headers
+    };
+    if (finalBody !== undefined) init.body = finalBody;
+
+    // UI loading
+    document.getElementById('cmq_send').disabled = true;
+    document.getElementById('cmq_send').textContent = '请求中...';
+    document.getElementById('cmq_resp_empty').style.display = 'none';
+    document.getElementById('cmq_resp_content').style.display = 'none';
+
+    var t0 = Date.now();
+    var okStatuses = document.getElementById('cmq_status');
+    var okStatusText = document.getElementById('cmq_status_text');
+    var okTime = document.getElementById('cmq_time');
+    var okSize = document.getElementById('cmq_size');
+    var okHeaders = document.getElementById('cmq_resp_headers');
+    var okBody = document.getElementById('cmq_resp_body');
+
+    fetch(url, init)
+      .then(function (res) {
+        var ct = res.headers.get('content-type') || '';
+        return res.text().then(function (txt) {
+          return { res: res, text: txt, ct: ct };
+        });
+      })
+      .then(function (info) {
+        var ms = Date.now() - t0;
+        var res = info.res;
+        var text = info.text;
+
+        okStatus.className = 'cmq_status_badge';
+        okStatus.textContent = res.status + ' ' + res.statusText;
+        if (res.ok) okStatus.classList.add('cmq_2xx');
+        else if (res.status >= 300 && res.status < 400) okStatus.classList.add('cmq_3xx');
+        else if (res.status >= 400 && res.status < 500) okStatus.classList.add('cmq_4xx');
+        else if (res.status >= 500) okStatus.classList.add('cmq_5xx');
+
+        okStatusText.textContent = res.ok ? '✅ 请求成功' : '⚠️ 非 2xx 响应';
+        okTime.textContent = '⏱ ' + ms + ' ms';
+        okSize.textContent = '📦 ' + new Blob([text]).size + ' 字节';
+
+        // Headers
+        var hHtml = '';
+        var resH = res.headers;
+        var hCount = 0;
+        resH.forEach(function (v, k) {
+          hHtml += '<div><span class="cmq_h_key">' + k + '</span>: <span class="cmq_h_val">' + v + '</span></div>';
+          hCount++;
+        });
+        if (hCount === 0) hHtml = '(无响应头)';
+        okHeaders.innerHTML = hHtml;
+
+        // Body
+        okBody.classList.remove('cmq_err_bg');
+        okBody.innerHTML = cmq_prettyBody(text, info.ct);
+
+        document.getElementById('cmq_resp_content').style.display = 'block';
+        cmq_toast(res.ok ? '请求成功 (' + res.status + ')' : '返回状态 ' + res.status + ' ' + res.statusText, !res.ok);
+      })
+      .catch(function (err) {
+        var ms = Date.now() - t0;
+        okStatus.className = 'cmq_status_badge cmq_err';
+        okStatus.textContent = '✖ NETWORK ERROR';
+        okStatusText.textContent = '❌ 网络或 CORS 错误';
+        okTime.textContent = '⏱ ' + ms + ' ms';
+        okSize.textContent = '📦 0 字节';
+        okHeaders.innerHTML = '<div style="color:#9ca3af">（浏览器未收到响应）</div>';
+        okBody.classList.add('cmq_err_bg');
+        okBody.innerHTML =
+          '<b>错误信息：</b> ' + err.message + '\n\n'
+        + '<b>可能原因：</b>\n'
+        + '1. 目标服务器未启动或 URL 拼写错误\n'
+        + '2. CORS 跨域限制（响应头缺少 Access-Control-Allow-Origin）\n'
+        + '3. 混合内容：https 页面请求 http 资源\n'
+        + '4. 浏览器隐私设置阻止\n\n'
+        + '<b>试试：</b>换成支持 CORS 的接口，例如 dummyjson / jsonplaceholder';
+
+        document.getElementById('cmq_resp_content').style.display = 'block';
+        cmq_toast('请求失败：' + err.message, true);
+      })
+      .finally(function () {
+        document.getElementById('cmq_send').disabled = false;
+        document.getElementById('cmq_send').textContent = '发送请求';
+      });
+  }
+
+  // ===== 事件绑定 =====
+  document.getElementById('cmq_send').addEventListener('click', cmq_send);
+  document.getElementById('cmq_url').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') cmq_send();
+  });
+
+  // Method select 颜色
+  var methodSel = document.getElementById('cmq_method');
+  methodSel.addEventListener('change', function () {
+    methodSel.className = 'cmq_method_select cmq_' + methodSel.value;
+    var hasBody = (methodSel.value !== 'GET' && methodSel.value !== 'DELETE');
+    document.getElementById('cmq_body').classList.toggle('cmq_disabled', !hasBody);
+    if (!hasBody && !document.getElementById('cmq_body').classList.contains('cmq_disabled')) {
+      // do nothing
+    }
+  });
+
+  // Tab 切换
+  document.querySelectorAll('.cmq_tab_h').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.cmq_tab_h').forEach(function (b) { b.classList.remove('cmq_active'); });
+      btn.classList.add('cmq_active');
+      var t = btn.getAttribute('data-tab');
+      document.getElementById('cmq_tab_headers').style.display = (t === 'headers') ? '' : 'none';
+      document.getElementById('cmq_tab_body').style.display = (t === 'body') ? '' : 'none';
+    });
+  });
+
+  // 示例填充
+  document.querySelectorAll('.cmq_example').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var url = btn.getAttribute('data-url');
+      var method = btn.getAttribute('data-method');
+      document.getElementById('cmq_url').value = url;
+      methodSel.value = method;
+      methodSel.className = 'cmq_method_select cmq_' + method;
+      document.getElementById('cmq_body').classList.toggle('cmq_disabled', method === 'GET' || method === 'DELETE');
+
+      // POST 登录的默认 body
+      if (url.indexOf('login') !== -1) {
+        document.getElementById('cmq_body').value = '{\n  "username": "emilys",\n  "password": "emilyspass"\n}';
+        document.querySelector('.cmq_tab_h[data-tab="body"]').click();
+      } else if (method !== 'GET') {
+        document.getElementById('cmq_body').value = '{\n  "title": "测试标题"\n}';
+        document.querySelector('.cmq_tab_h[data-tab="body"]').click();
+      } else {
+        document.getElementById('cmq_body').value = '';
+      }
+
+      cmq_toast('已填充示例');
+    });
+  });
+
+  // 初始 Body 禁用
+  document.getElementById('cmq_body').classList.add('cmq_disabled');
+</script>
+
+</body>
+</html>
