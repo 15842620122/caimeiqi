@@ -1,0 +1,660 @@
+<!-- 姓名：蔡美琪，日期：2026-11-02，功能名称：JavaScript setTimeout / setInterval 两种定时器可视化演示 -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>17-5 JS 定时器</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    background: #f0f2f5;
+    padding: 32px 20px;
+    color: #333;
+  }
+  a.cmq_home {
+    display: inline-block;
+    margin-bottom: 18px;
+    color: #2b5797;
+    text-decoration: none;
+    font-size: 14px;
+  }
+  a.cmq_home:hover { text-decoration: underline; }
+
+  .cmq_container { max-width: 1100px; margin: 0 auto; }
+  .cmq_page_title { font-size: 26px; font-weight: 700; margin-bottom: 4px; }
+  .cmq_page_sub { font-size: 13px; color: #888; margin-bottom: 22px; }
+
+  .cmq_card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.05);
+    padding: 22px 24px;
+    margin-bottom: 20px;
+  }
+  .cmq_card h2 {
+    font-size: 17px;
+    color: #2b5797;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #eef1f6;
+  }
+  .cmq_card h2 .cmq_tag {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 10px;
+    border-radius: 10px;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+  .cmq_tag.cmq_timeout { background: #fef3c7; color: #92400e; }
+  .cmq_tag.cmq_interval { background: #dbeafe; color: #1d4ed8; }
+  .cmq_tag.cmq_both { background: #dcfce7; color: #15803d; }
+
+  /* ===== 对比表 ===== */
+  .cmq_table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .cmq_table th,
+  .cmq_table td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid #eef1f6;
+    vertical-align: top;
+  }
+  .cmq_table th {
+    background: #f7f9fc;
+    color: #2b5797;
+    font-weight: 600;
+    width: 50%;
+  }
+  .cmq_table code {
+    background: #fff7d6;
+    color: #b7791f;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-family: "Consolas", monospace;
+    font-size: 12px;
+  }
+
+  /* ===== 按钮 ===== */
+  .cmq_btns { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+  .cmq_btn {
+    padding: 8px 20px;
+    font-size: 14px;
+    font-family: inherit;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #fff;
+    background: #2b5797;
+    transition: background .2s, transform .1s;
+  }
+  .cmq_btn:hover { background: #1e3a8a; }
+  .cmq_btn:active { transform: scale(.97); }
+  .cmq_btn.cmq_ok { background: #16a34a; }
+  .cmq_btn.cmq_ok:hover { background: #15803d; }
+  .cmq_btn.cmq_warn { background: #ea580c; }
+  .cmq_btn.cmq_warn:hover { background: #c2410c; }
+  .cmq_btn.cmq_danger { background: #dc2626; }
+  .cmq_btn.cmq_danger:hover { background: #b91c1c; }
+  .cmq_btn.cmq_gray { background: #6b7280; }
+  .cmq_btn.cmq_gray:hover { background: #4b5563; }
+  .cmq_btn.cmq_disabled { opacity: .45; cursor: not-allowed; }
+  .cmq_btn.cmq_disabled:hover { background: #2b5797; transform: none; }
+
+  /* ===== 1. 倒计时 ===== */
+  .cmq_countdown {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 14px;
+    font-family: "Consolas", monospace;
+  }
+  .cmq_time_box {
+    flex: 1;
+    background: #1a1a1a;
+    color: #ffd966;
+    padding: 16px 10px;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    box-shadow: inset 0 0 14px rgba(255,217,102,.15);
+  }
+  .cmq_time_box small {
+    display: block;
+    font-size: 11px;
+    color: #aaa;
+    margin-top: 6px;
+    font-weight: 400;
+    letter-spacing: 1px;
+  }
+  .cmq_time_box.cmq_warn { color: #ef4444; animation: cmq_blink 1s linear infinite; }
+  @keyframes cmq_blink { 50% { opacity: .35 } }
+
+  /* ===== 2. 数字跳动 ===== */
+  .cmq_number_wall {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .cmq_num_card {
+    flex: 1;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+    padding: 16px 10px;
+    border-radius: 8px;
+    text-align: center;
+  }
+  .cmq_num_card .cmq_n {
+    font-size: 32px;
+    font-weight: 700;
+    font-family: "Consolas", monospace;
+    transition: transform .15s;
+  }
+  .cmq_num_card .cmq_n.cmq_bump {
+    transform: scale(1.25);
+    color: #ffd966;
+  }
+  .cmq_num_card small {
+    display: block;
+    font-size: 11px;
+    opacity: .85;
+    margin-top: 4px;
+  }
+
+  /* ===== 3. 进度条 ===== */
+  .cmq_bar_track {
+    width: 100%;
+    height: 18px;
+    background: #e5e7eb;
+    border-radius: 9px;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+  .cmq_bar_fill {
+    height: 100%;
+    background: linear-gradient(90deg, #16a34a, #34d399);
+    border-radius: 9px;
+    width: 0;
+    transition: width .1s linear;
+  }
+  .cmq_bar_text {
+    font-size: 13px;
+    font-family: "Consolas", monospace;
+    color: #555;
+  }
+
+  /* ===== 4. 钟表 ===== */
+  .cmq_clock {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    border: 8px solid #1a1a1a;
+    margin: 0 auto 16px;
+    position: relative;
+    background: radial-gradient(circle at center, #fff, #f7f9fc);
+  }
+  .cmq_clock::before {
+    content: "";
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 8px; height: 8px;
+    background: #d9363e;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 3;
+  }
+  .cmq_hand {
+    position: absolute;
+    left: 50%;
+    bottom: 50%;
+    transform-origin: 50% 100%;
+    border-radius: 2px;
+    transition: transform .05s linear;
+  }
+  .cmq_hand.cmq_hour { width: 5px; height: 48px; background: #1a1a1a; z-index: 1; }
+  .cmq_hand.cmq_min { width: 3px; height: 62px; background: #374151; z-index: 1; }
+  .cmq_hand.cmq_sec { width: 2px; height: 72px; background: #d9363e; z-index: 2; }
+  .cmq_tick {
+    position: absolute;
+    left: 50%;
+    top: 8px;
+    width: 2px;
+    height: 10px;
+    background: #666;
+    transform-origin: 50% 82px;
+    margin-left: -1px;
+  }
+  .cmq_digital {
+    text-align: center;
+    font-family: "Consolas", monospace;
+    font-size: 22px;
+    color: #1a1a1a;
+    font-weight: 600;
+  }
+
+  /* ===== 5. 延迟弹窗 ===== */
+  .cmq_banner {
+    background: linear-gradient(135deg, #1e3a8a, #2b5797);
+    color: #fff;
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin-top: 14px;
+    font-size: 14px;
+    display: none;
+    opacity: 0;
+    transition: opacity .3s;
+  }
+  .cmq_banner.cmq_show { display: block; opacity: 1; }
+  .cmq_banner b { color: #ffd966; }
+
+  /* ===== 6. 跑马灯日志 ===== */
+  .cmq_log {
+    background: #1a1a1a;
+    color: #d1d5db;
+    border-radius: 6px;
+    padding: 12px 14px;
+    font-family: "Consolas", monospace;
+    font-size: 12px;
+    line-height: 1.75;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  .cmq_log .cmq_ts { color: #10b981; }
+  .cmq_log .cmq_lvl_info { color: #93c5fd; }
+  .cmq_log .cmq_lvl_ok { color: #34d399; }
+  .cmq_log .cmq_lvl_warn { color: #fbbf24; }
+  .cmq_log .cmq_lvl_err { color: #f87171; }
+  .cmq_log .cmq_lvl_done { color: #c4b5fd; }
+
+  /* ===== 7. 动画方块 ===== */
+  .cmq_stage {
+    position: relative;
+    height: 100px;
+    background: #f7f9fc;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #eef1f6;
+    margin-bottom: 12px;
+  }
+  .cmq_ball {
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f97316, #ef4444);
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+  }
+
+  /* ===== 代码块 ===== */
+  .cmq_code {
+    background: #1a1a1a;
+    color: #d1d5db;
+    border-radius: 6px;
+    padding: 14px 16px;
+    font-family: "Consolas", monospace;
+    font-size: 12.5px;
+    line-height: 1.7;
+    margin-top: 12px;
+    overflow-x: auto;
+    white-space: pre;
+  }
+  .cmq_code .k { color: #c4b5fd; }
+  .cmq_code .s { color: #fbbf24; }
+  .cmq_code .n { color: #f87171; }
+  .cmq_code .c { color: #6b7280; font-style: italic; }
+  .cmq_code .f { color: #60a5fa; }
+</style>
+</head>
+<body>
+
+<a class="cmq_home" href="1.html">← 返回首页</a>
+
+<div class="cmq_container">
+  <div class="cmq_page_title">第 17 章 · JavaScript 定时器</div>
+  <div class="cmq_page_sub">两种定时器：<code>setTimeout</code> 一次性延迟执行 / <code>setInterval</code> 周期性循环执行</div>
+
+  <!-- 对比表 -->
+  <div class="cmq_card">
+    <h2>📘 两种定时器对比</h2>
+    <table class="cmq_table">
+      <thead><tr><th><code>setTimeout</code></th><th><code>setInterval</code></th></tr></thead>
+      <tbody>
+        <tr><td>⏰ 一次性，到点只执行 <b>1 次</b></td><td>🔁 周期性，每隔 N ms 执行 <b>无限次</b></td></tr>
+        <tr><td>返回值是定时器 <b>ID</b>（数字）</td><td>同样返回定时器 <b>ID</b></td></tr>
+        <tr><td>用 <code>clearTimeout(id)</code> 取消</td><td>用 <code>clearInterval(id)</code> 取消</td></tr>
+        <tr><td>常用于：延迟弹窗、防抖、动画一次性跳转</td><td>常用于：时钟、倒计时、轮播、进度条、轮询</td></tr>
+        <tr><td colspan="2" style="background:#fff7d6;font-size:12px;color:#92400e">
+          ⚠️ 两者都不会阻塞主线程！浏览器是单线程 + 事件循环，定时到了也得等主线程空闲才执行回调。
+        </td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 演示 1: 倒计时 -->
+  <div class="cmq_card">
+    <h2>⏳ 倒计时器 <span class="cmq_tag cmq_interval">setInterval</span></h2>
+    <div class="cmq_countdown">
+      <div class="cmq_time_box"><span id="cmq_d">00</span><small>天</small></div>
+      <div class="cmq_time_box"><span id="cmq_h">00</span><small>时</small></div>
+      <div class="cmq_time_box"><span id="cmq_m">00</span><small>分</small></div>
+      <div class="cmq_time_box"><span id="cmq_s">00</span><small>秒</small></div>
+    </div>
+    <div class="cmq_btns">
+      <button class="cmq_btn cmq_ok" id="cmq_cnt_start">▶ 开始（10 秒倒计时）</button>
+      <button class="cmq_btn cmq_warn" id="cmq_cnt_pause">⏸ 暂停</button>
+      <button class="cmq_btn cmq_gray" id="cmq_cnt_reset">🔄 重置</button>
+    </div>
+    <div class="cmq_code">
+<span class="c">// setInterval 每隔 1000ms 执行一次</span>
+<span class="k">var</span> timer = <span class="f">setInterval</span>(<span class="k">function</span>() {
+  <span class="c">// 更新 DOM</span>
+  <span class="k">if</span> (countdown <= 0) {
+    <span class="f">clearInterval</span>(timer);  <span class="c">// 到点清除</span>
+  }
+}, <span class="n">1000</span>);</div>
+  </div>
+
+  <!-- 演示 2: 跑马灯数字 -->
+  <div class="cmq_card">
+    <h2>🔢 跑马灯计数器 <span class="cmq_tag cmq_interval">setInterval</span></h2>
+    <div class="cmq_number_wall">
+      <div class="cmq_num_card"><div class="cmq_n" id="cmq_num1">0</div><small>每 500ms</small></div>
+      <div class="cmq_num_card"><div class="cmq_n" id="cmq_num2">0</div><small>每 1000ms</small></div>
+      <div class="cmq_num_card"><div class="cmq_n" id="cmq_num3">0</div><small>每 1500ms</small></div>
+      <div class="cmq_num_card"><div class="cmq_n" id="cmq_num4">0</div><small>每 3000ms</small></div>
+    </div>
+    <div class="cmq_btns">
+      <button class="cmq_btn cmq_ok" id="cmq_marquee_start">▶ 全部启动</button>
+      <button class="cmq_btn cmq_danger" id="cmq_marquee_stop">■ 全部停止</button>
+    </div>
+  </div>
+
+  <!-- 演示 3: 进度条 -->
+  <div class="cmq_card">
+    <h2>📊 进度条 <span class="cmq_tag cmq_interval">setInterval</span></h2>
+    <div class="cmq_bar_track"><div class="cmq_bar_fill" id="cmq_bar"></div></div>
+    <div class="cmq_bar_text">进度: <span id="cmq_bar_pct">0%</span></div>
+    <div class="cmq_btns">
+      <button class="cmq_btn cmq_ok" id="cmq_bar_start">▶ 开始加载</button>
+      <button class="cmq_btn cmq_warn" id="cmq_bar_slow">🐢 慢速</button>
+      <button class="cmq_btn cmq_danger" id="cmq_bar_stop">■ 暂停</button>
+      <button class="cmq_btn cmq_gray" id="cmq_bar_reset">🔄 重置</button>
+    </div>
+  </div>
+
+  <!-- 演示 4: 模拟时钟 -->
+  <div class="cmq_card">
+    <h2>🕐 模拟时钟 <span class="cmq_tag cmq_interval">setInterval</span></h2>
+    <div class="cmq_clock" id="cmq_clock">
+      <div class="cmq_hand cmq_hour"   id="cmq_hand_h"></div>
+      <div class="cmq_hand cmq_min"    id="cmq_hand_m"></div>
+      <div class="cmq_hand cmq_sec"    id="cmq_hand_s"></div>
+    </div>
+    <div class="cmq_digital" id="cmq_digital">--:--:--</div>
+  </div>
+
+  <!-- 演示 5: 延迟弹窗 -->
+  <div class="cmq_card">
+    <h2>🔔 延迟弹窗 <span class="cmq_tag cmq_timeout">setTimeout</span></h2>
+    <div style="font-size:13px;color:#666;margin-bottom:12px">setTimeout 只触发一次，到点后自动停止。如果在等待期间清除掉定时器，弹窗就不会出现。</div>
+    <div class="cmq_btns">
+      <button class="cmq_btn cmq_ok" id="cmq_alert_set">⏰ 3 秒后弹出问候</button>
+      <button class="cmq_btn cmq_danger" id="cmq_alert_clear">✖ 取消（在 3 秒内点击）</button>
+    </div>
+    <div class="cmq_banner" id="cmq_alert_box">
+      <b>🎉 哈喽！</b>
+      <span id="cmq_alert_body">你看到这条消息，是因为 3 秒前点了「延迟弹窗」按钮，<br>setTimeout 到点自动触发了。</span>
+    </div>
+    <div class="cmq_code">
+<span class="k">var</span> timer = <span class="f">setTimeout</span>(<span class="k">function</span>() {
+  <span class="c">// 只在 3000ms 后执行一次</span>
+  showBanner();
+}, <span class="n">3000</span>);
+
+<span class="k">function</span> cancelIt() {
+  <span class="f">clearTimeout</span>(timer);
+  <span class="c">// 还没到点就取消，不会弹窗</span>
+}</div>
+  </div>
+
+  <!-- 演示 6: 同时运行两种定时器 -->
+  <div class="cmq_card">
+    <h2>🎞 两种定时器同时跑 <span class="cmq_tag cmq_both">都有</span></h2>
+    <div class="cmq_stage"><div class="cmq_ball" id="cmq_ball"></div></div>
+    <div class="cmq_log" id="cmq_log">
+<span class="cmq_lvl_info">[系统]</span> 等待启动...
+    </div>
+    <div class="cmq_btns">
+      <button class="cmq_btn cmq_ok" id="cmq_mix_start">▶ 启动（setInterval + setTimeout）</button>
+      <button class="cmq_btn cmq_danger" id="cmq_mix_stop">■ 全部停止</button>
+    </div>
+    <div style="font-size:12px;color:#888;margin-top:12px;line-height:1.6">
+      🏀 小球用 <b>setInterval</b> 每隔 30ms 移动 4px，一直循环；<br>
+      🎯 启动后用 <b>setTimeout</b> 延迟 2 秒打印一条 "2秒到点" 日志，再延迟 5 秒打印 "5秒到点" — 各只触发 1 次。
+    </div>
+  </div>
+
+</div>
+
+<script>
+  var cmq_clockTimer = null;
+  var cmq_countTimer = null;
+  var cmq_marqueeTimers = [null, null, null, null];
+  var cmq_barTimer = null;
+  var cmq_alertTimer = null;
+  var cmq_mixInterval = null;
+  var cmq_mixTimeouts = [];
+
+  function cmq_pad(n) { return n < 10 ? '0' + n : '' + n; }
+
+  // ===== 时钟 =====
+  function cmq_updateClock() {
+    var now = new Date();
+    var h = now.getHours();
+    var m = now.getMinutes();
+    var s = now.getSeconds();
+    var hh = (h % 12) + m / 60;
+    document.getElementById('cmq_hand_h').style.transform = 'rotate(' + (hh * 30) + 'deg)';
+    document.getElementById('cmq_hand_m').style.transform = 'rotate(' + (m * 6 + s * 0.1) + 'deg)';
+    document.getElementById('cmq_hand_s').style.transform = 'rotate(' + (s * 6) + 'deg)';
+    document.getElementById('cmq_digital').textContent =
+      cmq_pad(h) + ':' + cmq_pad(m) + ':' + cmq_pad(s);
+  }
+  cmq_updateClock();
+  cmq_clockTimer = setInterval(cmq_updateClock, 1000);
+
+  // 画刻度
+  (function () {
+    var clock = document.getElementById('cmq_clock');
+    for (var i = 0; i < 12; i++) {
+      var t = document.createElement('div');
+      t.className = 'cmq_tick';
+      t.style.transform = 'rotate(' + (i * 30) + 'deg)';
+      if (i % 3 === 0) { t.style.background = '#1a1a1a'; t.style.height = '16px'; }
+      clock.appendChild(t);
+    }
+  })();
+
+  // ===== 倒计时 =====
+  var cmq_cntRemain = 10;
+  function cmq_cntShow(sec) {
+    var d = Math.floor(sec / 86400);
+    var h = Math.floor((sec % 86400) / 3600);
+    var mi = Math.floor((sec % 3600) / 60);
+    var s = sec % 60;
+    document.getElementById('cmq_d').textContent = cmq_pad(d);
+    document.getElementById('cmq_h').textContent = cmq_pad(h);
+    document.getElementById('cmq_m').textContent = cmq_pad(mi);
+    var sEl = document.getElementById('cmq_s');
+    sEl.textContent = cmq_pad(s);
+    var parent = sEl.parentElement;
+    if (sec <= 3 && sec > 0) parent.classList.add('cmq_warn'); else parent.classList.remove('cmq_warn');
+  }
+  document.getElementById('cmq_cnt_start').addEventListener('click', function () {
+    if (cmq_countTimer) return;
+    cmq_cntRemain = 10;
+    cmq_cntShow(cmq_cntRemain);
+    cmq_countTimer = setInterval(function () {
+      cmq_cntRemain--;
+      cmq_cntShow(cmq_cntRemain);
+      if (cmq_cntRemain <= 0) {
+        clearInterval(cmq_countTimer);
+        cmq_countTimer = null;
+        var d = document.createElement('div');
+        d.className = 'cmq_banner cmq_show';
+        d.innerHTML = '<b>⏰ 时间到！</b> countdown 归零，clearInterval 已自动调用。';
+        d.style.background = 'linear-gradient(135deg,#dc2626,#f97316)';
+        document.querySelector('.cmq_countdown').parentNode.insertBefore(d, document.querySelector('.cmq_countdown').nextSibling);
+      }
+    }, 1000);
+  });
+  document.getElementById('cmq_cnt_pause').addEventListener('click', function () {
+    if (cmq_countTimer) { clearInterval(cmq_countTimer); cmq_countTimer = null; }
+  });
+  document.getElementById('cmq_cnt_reset').addEventListener('click', function () {
+    if (cmq_countTimer) { clearInterval(cmq_countTimer); cmq_countTimer = null; }
+    cmq_cntRemain = 10;
+    cmq_cntShow(cmq_cntRemain);
+  });
+
+  // ===== 跑马灯 =====
+  document.getElementById('cmq_marquee_start').addEventListener('click', function () {
+    var delays = [500, 1000, 1500, 3000];
+    var ids = ['cmq_num1', 'cmq_num2', 'cmq_num3', 'cmq_num4'];
+    var bumpTimers = [null, null, null, null];
+    for (var i = 0; i < 4; i++) {
+      if (cmq_marqueeTimers[i]) continue;
+      cmq_marqueeTimers[i] = (function (idx, elId, delay) {
+        var n = 0;
+        var el = document.getElementById(elId);
+        return setInterval(function () {
+          n++;
+          el.textContent = n;
+          el.classList.remove('cmq_bump'); void el.offsetWidth; el.classList.add('cmq_bump');
+          if (bumpTimers[idx]) clearTimeout(bumpTimers[idx]);
+          bumpTimers[idx] = setTimeout(function () { el.classList.remove('cmq_bump'); }, 150);
+        }, delay);
+      })(i, ids[i], delays[i]);
+    }
+  });
+  document.getElementById('cmq_marquee_stop').addEventListener('click', function () {
+    for (var i = 0; i < cmq_marqueeTimers.length; i++) {
+      if (cmq_marqueeTimers[i]) { clearInterval(cmq_marqueeTimers[i]); cmq_marqueeTimers[i] = null; }
+    }
+  });
+
+  // ===== 进度条 =====
+  var cmq_barVal = 0;
+  var cmq_barSpeed = 2;
+  function cmq_barTick() {
+    cmq_barVal += cmq_barSpeed;
+    if (cmq_barVal > 100) cmq_barVal = 100;
+    document.getElementById('cmq_bar').style.width = cmq_barVal + '%';
+    document.getElementById('cmq_bar_pct').textContent = cmq_barVal + '%';
+    if (cmq_barVal >= 100 && cmq_barTimer) {
+      clearInterval(cmq_barTimer); cmq_barTimer = null;
+    }
+  }
+  document.getElementById('cmq_bar_start').addEventListener('click', function () {
+    if (cmq_barTimer) return;
+    if (cmq_barVal >= 100) cmq_barVal = 0;
+    cmq_barSpeed = 2;
+    cmq_barTimer = setInterval(cmq_barTick, 50);
+  });
+  document.getElementById('cmq_bar_slow').addEventListener('click', function () {
+    if (cmq_barTimer) { clearInterval(cmq_barTimer); cmq_barTimer = null; }
+    if (cmq_barVal >= 100) cmq_barVal = 0;
+    cmq_barSpeed = 0.8;
+    cmq_barTimer = setInterval(cmq_barTick, 50);
+  });
+  document.getElementById('cmq_bar_stop').addEventListener('click', function () {
+    if (cmq_barTimer) { clearInterval(cmq_barTimer); cmq_barTimer = null; }
+  });
+  document.getElementById('cmq_bar_reset').addEventListener('click', function () {
+    if (cmq_barTimer) { clearInterval(cmq_barTimer); cmq_barTimer = null; }
+    cmq_barVal = 0;
+    document.getElementById('cmq_bar').style.width = '0%';
+    document.getElementById('cmq_bar_pct').textContent = '0%';
+  });
+
+  // ===== 延迟弹窗 =====
+  document.getElementById('cmq_alert_set').addEventListener('click', function () {
+    if (cmq_alertTimer) clearTimeout(cmq_alertTimer);
+    var box = document.getElementById('cmq_alert_box');
+    box.classList.remove('cmq_show');
+    box.style.background = '';
+    cmq_alertTimer = setTimeout(function () {
+      box.style.background = 'linear-gradient(135deg,#1e3a8a,#2b5797)';
+      box.classList.add('cmq_show');
+    }, 3000);
+  });
+  document.getElementById('cmq_alert_clear').addEventListener('click', function () {
+    if (cmq_alertTimer) {
+      clearTimeout(cmq_alertTimer);
+      cmq_alertTimer = null;
+    }
+    var box = document.getElementById('cmq_alert_box');
+    box.classList.remove('cmq_show');
+    box.innerHTML = '<b>⏸ 已取消</b> setTimeout 被提前 clearTimeout 干掉了，不会弹窗了。';
+    box.style.background = 'linear-gradient(135deg,#6b7280,#374151)';
+    setTimeout(function () { box.classList.add('cmq_show'); }, 10);
+  });
+
+  // ===== 混合演示 =====
+  function cmq_log(msg, lvl) {
+    var now = new Date();
+    var ts = cmq_pad(now.getHours()) + ':' + cmq_pad(now.getMinutes()) + ':' + cmq_pad(now.getSeconds());
+    var el = document.getElementById('cmq_log');
+    var line = '<div><span class="cmq_ts">[' + ts + ']</span> <span class="cmq_lvl_' + (lvl || 'info') + '">' + msg + '</span></div>';
+    el.innerHTML += line;
+    el.scrollTop = el.scrollHeight;
+  }
+
+  document.getElementById('cmq_mix_start').addEventListener('click', function () {
+    if (cmq_mixInterval) return;
+    var ball = document.getElementById('cmq_ball');
+    var x = 0;
+    var maxX = 420;
+    cmq_log('setInterval 启动：小球开始移动，每 30ms 走 4px', 'ok');
+
+    cmq_mixInterval = setInterval(function () {
+      x += 4;
+      if (x > maxX) x = 0;
+      ball.style.left = x + 'px';
+    }, 30);
+
+    var t1 = setTimeout(function () {
+      cmq_log('setTimeout · 2 秒到点 🎯（只触发这一次）', 'warn');
+    }, 2000);
+    cmq_mixTimeouts.push(t1);
+
+    var t2 = setTimeout(function () {
+      cmq_log('setTimeout · 5 秒到点 🎯（只触发这一次）', 'warn');
+    }, 5000);
+    cmq_mixTimeouts.push(t2);
+
+    var t3 = setTimeout(function () {
+      cmq_log('setTimeout · 9 秒到点 🎯（只触发这一次）', 'warn');
+    }, 9000);
+    cmq_mixTimeouts.push(t3);
+  });
+
+  document.getElementById('cmq_mix_stop').addEventListener('click', function () {
+    if (cmq_mixInterval) { clearInterval(cmq_mixInterval); cmq_mixInterval = null; cmq_log('clearInterval 小球停止', 'err'); }
+    for (var i = 0; i < cmq_mixTimeouts.length; i++) {
+      if (cmq_mixTimeouts[i]) clearTimeout(cmq_mixTimeouts[i]);
+    }
+    cmq_mixTimeouts = [];
+    cmq_log('clearTimeout × 3 — 所有尚未触发的 setTimeout 全部取消', 'err');
+  });
+</script>
+
+</body>
+</html>
