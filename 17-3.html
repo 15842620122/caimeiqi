@@ -1,0 +1,326 @@
+<!-- 姓名：蔡美琪，日期：2026-11-02，功能名称：fetch 商品列表，点击跳转详情页 -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>17-3 商品列表</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    background: #f5f6f8;
+    padding: 28px 20px;
+    color: #333;
+  }
+  a.cmq_home {
+    display: inline-block;
+    margin-bottom: 16px;
+    color: #2b5797;
+    text-decoration: none;
+    font-size: 14px;
+  }
+  a.cmq_home:hover { text-decoration: underline; }
+
+  .cmq_container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .cmq_header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .cmq_header h1 {
+    font-size: 26px;
+    color: #1a1a1a;
+  }
+  .cmq_header .cmq_sub {
+    font-size: 13px;
+    color: #888;
+    margin-top: 4px;
+  }
+  .cmq_status {
+    font-size: 13px;
+    padding: 6px 14px;
+    border-radius: 14px;
+    background: #e0e7ff;
+    color: #3730a3;
+  }
+  .cmq_status.cmq_loading { background: #fef3c7; color: #92400e; }
+  .cmq_status.cmq_ok { background: #dcfce7; color: #15803d; }
+  .cmq_status.cmq_err { background: #fee2e2; color: #b91c1c; }
+
+  .cmq_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+  }
+
+  /* ===== 卡片 ===== */
+  .cmq_card {
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,.05);
+    cursor: pointer;
+    transition: transform .2s, box-shadow .2s;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+  }
+  .cmq_card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 24px rgba(43,87,151,.18);
+  }
+  .cmq_img_wrap {
+    width: 100%;
+    height: 180px;
+    background: #f7f9fc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+  .cmq_img_wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .35s;
+  }
+  .cmq_card:hover .cmq_img_wrap img { transform: scale(1.06); }
+  .cmq_badge {
+    position: absolute;
+    top: 10px; left: 10px;
+    background: #ef4444;
+    color: #fff;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+  .cmq_discount {
+    background: #ea580c;
+    position: absolute;
+    top: 10px; right: 10px;
+    color: #fff;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+
+  .cmq_body {
+    padding: 14px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  .cmq_brand {
+    font-size: 11px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    margin-bottom: 4px;
+  }
+  .cmq_title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #222;
+    line-height: 1.45;
+    margin-bottom: 6px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 40px;
+  }
+  .cmq_desc {
+    font-size: 12px;
+    color: #888;
+    line-height: 1.5;
+    margin-bottom: 10px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    flex: 1;
+  }
+  .cmq_tags {
+    margin-bottom: 10px;
+  }
+  .cmq_tag {
+    display: inline-block;
+    font-size: 10px;
+    color: #2b5797;
+    background: #eef4ff;
+    padding: 2px 7px;
+    border-radius: 10px;
+    margin-right: 4px;
+  }
+  .cmq_bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 10px;
+    border-top: 1px dashed #eef1f6;
+  }
+  .cmq_price {
+    font-size: 20px;
+    font-weight: 700;
+    color: #d9363e;
+  }
+  .cmq_price small {
+    font-size: 12px;
+    color: #888;
+    text-decoration: line-through;
+    margin-left: 6px;
+    font-weight: 400;
+  }
+  .cmq_rating {
+    font-size: 12px;
+    color: #f59e0b;
+    font-weight: 600;
+  }
+  .cmq_rating span { color: #888; font-weight: 400; font-size: 11px; margin-left: 4px; }
+
+  /* 骨架屏 */
+  .cmq_skeleton {
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    animation: cmq_pulse 1.4s ease-in-out infinite;
+  }
+  @keyframes cmq_pulse {
+    0%,100%{opacity:.5} 50%{opacity:1}
+  }
+  .cmq_sk_img { height: 180px; background: #e5e7eb; }
+  .cmq_sk_body { padding: 14px 16px 16px; }
+  .cmq_sk_line { height: 12px; background: #e5e7eb; border-radius: 4px; margin-bottom: 8px; }
+  .cmq_sk_line.lg { height: 16px; width: 70%; }
+  .cmq_sk_line.md { width: 90%; }
+  .cmq_sk_line.sm { width: 55%; }
+
+  .cmq_err {
+    grid-column: 1/-1;
+    text-align: center;
+    padding: 40px;
+    background: #fff;
+    border-radius: 10px;
+    color: #b91c1c;
+  }
+</style>
+</head>
+<body>
+
+<a class="cmq_home" href="1.html">← 返回首页</a>
+
+<div class="cmq_container">
+  <div class="cmq_header">
+    <div>
+      <h1>🛍 精选商品</h1>
+      <div class="cmq_sub">数据来源 dummyjson.com · 点击卡片查看详情</div>
+    </div>
+    <div class="cmq_status" id="cmq_status">待加载</div>
+  </div>
+
+  <div class="cmq_grid" id="cmq_grid"></div>
+</div>
+
+<script>
+  function cmq_h(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function cmq_setStatus(kind, text) {
+    var el = document.getElementById('cmq_status');
+    el.className = 'cmq_status cmq_' + kind;
+    el.textContent = text;
+  }
+
+  function cmq_showSkeleton() {
+    var html = '';
+    for (var i = 0; i < 8; i++) {
+      html += '<div class="cmq_skeleton">'
+            +   '<div class="cmq_sk_img"></div>'
+            +   '<div class="cmq_sk_body">'
+            +     '<div class="cmq_sk_line sm"></div>'
+            +     '<div class="cmq_sk_line lg"></div>'
+            +     '<div class="cmq_sk_line md"></div>'
+            +     '<div class="cmq_sk_line sm"></div>'
+            +   '</div>'
+            + '</div>';
+    }
+    document.getElementById('cmq_grid').innerHTML = html;
+  }
+
+  function cmq_render(list) {
+    var html = '';
+    for (var i = 0; i < list.length; i++) {
+      var p = list[i];
+      var hasDiscount = p.discountPercentage && p.discountPercentage > 0;
+      var priceNow = hasDiscount
+        ? (p.price * (100 - p.discountPercentage) / 100).toFixed(2)
+        : p.price;
+      html += '<a class="cmq_card" href="17-3-detail.html?id=' + (p.id || '') + '">'
+            +   '<div class="cmq_img_wrap">'
+            +     '<img src="' + cmq_h(p.thumbnail || '') + '" alt="' + cmq_h(p.title) + '" loading="lazy" onerror="this.style.display=\'none\'">'
+            +     (p.stock <= 5 ? '<span class="cmq_badge">仅剩 ' + p.stock + '</span>' : '')
+            +     (hasDiscount ? '<span class="cmq_discount">-' + cmq_h(p.discountPercentage.toFixed(0)) + '%</span>' : '')
+            +   '</div>'
+            +   '<div class="cmq_body">'
+            +     '<div class="cmq_brand">' + cmq_h(p.brand || p.category || 'GENERIC') + '</div>'
+            +     '<div class="cmq_title">' + cmq_h(p.title) + '</div>'
+            +     '<div class="cmq_desc">' + cmq_h(p.description) + '</div>'
+            +     '<div class="cmq_tags">';
+      if (p.tags) {
+        for (var t = 0; t < Math.min(p.tags.length, 3); t++) {
+          html += '<span class="cmq_tag">#' + cmq_h(p.tags[t]) + '</span>';
+        }
+      }
+      html += '    </div>'
+            +     '<div class="cmq_bottom">'
+            +       '<div class="cmq_price">¥' + cmq_h(priceNow)
+            +         (hasDiscount ? '<small>¥' + cmq_h(p.price) + '</small>' : '')
+            +       '</div>'
+            +       '<div class="cmq_rating">★ ' + cmq_h(p.rating) + '<span>(' + cmq_h(p.stock) + ')</span></div>'
+            +     '</div>'
+            +   '</div>'
+            + '</a>';
+    }
+    document.getElementById('cmq_grid').innerHTML = html;
+  }
+
+  function cmq_load() {
+    cmq_setStatus('loading', '⏳ 加载中...');
+    cmq_showSkeleton();
+    var t0 = Date.now();
+    fetch('https://dummyjson.com/products?limit=8')
+      .then(function (res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
+      })
+      .then(function (data) {
+        var ms = Date.now() - t0;
+        var list = (data && data.products) ? data.products : [];
+        cmq_render(list);
+        cmq_setStatus('ok', '✅ 共 ' + list.length + ' 件 · ' + ms + 'ms');
+      })
+      .catch(function (err) {
+        cmq_setStatus('err', '❌ ' + err.message);
+        document.getElementById('cmq_grid').innerHTML =
+          '<div class="cmq_err"><b>加载失败</b><br><br>' + cmq_h(err.message) + '</div>';
+      });
+  }
+
+  cmq_load();
+</script>
+
+</body>
+</html>
