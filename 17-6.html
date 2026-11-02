@@ -1,0 +1,601 @@
+<!-- 姓名：蔡美琪，日期：2026-11-02，功能名称：Promise + async/await 模拟包饺子异步流程 -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>17-6 Promise 包饺子</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    background: #f0f2f5;
+    padding: 30px 20px;
+    color: #333;
+  }
+  a.cmq_home {
+    display: inline-block;
+    margin-bottom: 16px;
+    color: #2b5797;
+    text-decoration: none;
+    font-size: 14px;
+  }
+  a.cmq_home:hover { text-decoration: underline; }
+
+  .cmq_container { max-width: 1100px; margin: 0 auto; }
+  .cmq_page_title { font-size: 26px; font-weight: 700; margin-bottom: 4px; }
+  .cmq_page_sub { font-size: 13px; color: #888; margin-bottom: 22px; }
+
+  .cmq_card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.05);
+    padding: 22px 24px;
+    margin-bottom: 20px;
+  }
+  .cmq_card h2 {
+    font-size: 17px;
+    color: #2b5797;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #eef1f6;
+  }
+  .cmq_card h2 .cmq_tag {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 10px;
+    border-radius: 10px;
+    margin-left: 8px;
+    vertical-align: middle;
+    font-weight: 500;
+  }
+  .cmq_tag.cmq_race { background: #fef3c7; color: #92400e; }
+  .cmq_tag.cmq_all { background: #dbeafe; color: #1d4ed8; }
+  .cmq_tag.cmq_seq { background: #dcfce7; color: #15803d; }
+
+  /* ===== 流程图 ===== */
+  .cmq_flow {
+    display: grid;
+    gap: 14px;
+    margin-top: 10px;
+  }
+  .cmq_flow_block {
+    background: #f7f9fc;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 14px 16px;
+    position: relative;
+    transition: border-color .3s, background .3s, transform .2s;
+  }
+  .cmq_flow_block.cmq_pending { border-color: #e5e7eb; background: #fafafa; color: #aaa; }
+  .cmq_flow_block.cmq_running { border-color: #f59e0b; background: #fffbeb; }
+  .cmq_flow_block.cmq_done { border-color: #16a34a; background: #f0fdf4; }
+  .cmq_flow_block.cmq_fail { border-color: #dc2626; background: #fef2f2; }
+
+  .cmq_flow_block.cmq_running::after {
+    content: "";
+    position: absolute; inset: 0;
+    border-radius: 8px;
+    background: linear-gradient(90deg, transparent, rgba(245,158,11,.18), transparent);
+    animation: cmq_shimmer 1.3s infinite;
+    pointer-events: none;
+  }
+  @keyframes cmq_shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  .cmq_fb_title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+  .cmq_fb_title .cmq_emo { font-size: 18px; margin-right: 6px; }
+  .cmq_fb_title .cmq_badge {
+    font-size: 11px;
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-weight: 500;
+  }
+  .cmq_pending .cmq_badge { background: #f3f4f6; color: #9ca3af; }
+  .cmq_running .cmq_badge { background: #fef3c7; color: #92400e; }
+  .cmq_done .cmq_badge { background: #dcfce7; color: #15803d; }
+  .cmq_fail .cmq_badge { background: #fee2e2; color: #b91c1c; }
+  .cmq_fb_meta { font-size: 12px; color: #6b7280; font-family: "Consolas", monospace; }
+  .cmq_fb_timer {
+    height: 4px;
+    background: #e5e7eb;
+    border-radius: 2px;
+    margin-top: 8px;
+    overflow: hidden;
+  }
+  .cmq_fb_fill {
+    height: 100%;
+    width: 0;
+    background: #f59e0b;
+    border-radius: 2px;
+  }
+  .cmq_done .cmq_fb_fill { background: #16a34a; width: 100%; }
+
+  /* ===== 并发分支 ===== */
+  .cmq_branch {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .cmq_branch .cmq_flow_block {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+  .cmq_branch .cmq_fb_title { font-size: 13px; }
+  .cmq_branch_label {
+    font-size: 11px;
+    color: #9ca3af;
+    text-align: center;
+    margin: 4px 0;
+    letter-spacing: 1px;
+  }
+
+  /* 连线 */
+  .cmq_arrow {
+    text-align: center;
+    font-size: 18px;
+    color: #9ca3af;
+    padding: 2px 0;
+  }
+
+  /* ===== 主流程图布局 ===== */
+  .cmq_pipeline {
+    display: grid;
+    gap: 4px;
+  }
+
+  /* ===== 按钮 ===== */
+  .cmq_btns { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+  .cmq_btn {
+    padding: 8px 20px;
+    font-size: 14px;
+    font-family: inherit;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #fff;
+    background: #2b5797;
+    transition: background .2s, transform .1s;
+  }
+  .cmq_btn:hover { background: #1e3a8a; }
+  .cmq_btn:active { transform: scale(.97); }
+  .cmq_btn.cmq_ok { background: #16a34a; }
+  .cmq_btn.cmq_ok:hover { background: #15803d; }
+  .cmq_btn.cmq_gray { background: #6b7280; }
+  .cmq_btn.cmq_gray:hover { background: #4b5563; }
+  .cmq_btn.cmq_disabled { opacity: .45; cursor: not-allowed; }
+
+  /* ===== 汇总进度 ===== */
+  .cmq_summary {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, #f7f9fc, #eef1f6);
+    border-radius: 8px;
+    margin-bottom: 14px;
+    font-size: 13px;
+  }
+  .cmq_summary b { color: #2b5797; font-family: "Consolas", monospace; }
+  .cmq_bar_outer { flex: 1; height: 12px; background: #e5e7eb; border-radius: 6px; overflow: hidden; }
+  .cmq_bar_inner { height: 100%; background: linear-gradient(90deg, #16a34a, #34d399); width: 0; border-radius: 6px; transition: width .3s; }
+
+  /* ===== 日志 ===== */
+  .cmq_log {
+    background: #1a1a1a;
+    color: #d1d5db;
+    border-radius: 6px;
+    padding: 12px 14px;
+    font-family: "Consolas", monospace;
+    font-size: 12.5px;
+    line-height: 1.8;
+    max-height: 320px;
+    overflow-y: auto;
+  }
+  .cmq_log .cmq_ts { color: #10b981; }
+  .cmq_log .cmq_name { color: #60a5fa; }
+  .cmq_log .cmq_op { color: #fbbf24; }
+  .cmq_log .cmq_ok { color: #34d399; }
+  .cmq_log .cmq_race { color: #f472b6; }
+  .cmq_log .cmq_all { color: #a78bfa; }
+  .cmq_log .cmq_arrow { color: #6b7280; }
+
+  /* ===== 代码 ===== */
+  .cmq_code {
+    background: #1a1a1a;
+    color: #d1d5db;
+    border-radius: 6px;
+    padding: 14px 16px;
+    font-family: "Consolas", monospace;
+    font-size: 12.5px;
+    line-height: 1.75;
+    margin-top: 12px;
+    overflow-x: auto;
+    white-space: pre;
+  }
+  .cmq_code .k { color: #c4b5fd; }
+  .cmq_code .s { color: #fbbf24; }
+  .cmq_code .n { color: #f87171; }
+  .cmq_code .c { color: #6b7280; font-style: italic; }
+  .cmq_code .f { color: #60a5fa; }
+  .cmq_code .o { color: #f472b6; }
+
+  .cmq_two_cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 760px) {
+    .cmq_two_cols { grid-template-columns: 1fr; }
+    .cmq_branch { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<a class="cmq_home" href="1.html">← 返回首页</a>
+
+<div class="cmq_container">
+  <div class="cmq_page_title">🥟 用 Promise 包饺子</div>
+  <div class="cmq_page_sub">async / await + Promise.race + Promise.all —— 模拟真实厨房流水线</div>
+
+  <!-- 进度条汇总 -->
+  <div class="cmq_summary">
+    <div>⏱ 已用时 <b id="cmq_total">0s</b></div>
+    <div class="cmq_bar_outer"><div class="cmq_bar_inner" id="cmq_total_bar"></div></div>
+    <div>🏁 状态 <b id="cmq_state">待开始</b></div>
+  </div>
+
+  <!-- 按钮 -->
+  <div class="cmq_btns">
+    <button class="cmq_btn cmq_ok" id="cmq_start">▶ 开始包饺子</button>
+    <button class="cmq_btn cmq_gray" id="cmq_reset">🔄 重置</button>
+  </div>
+
+  <!-- 主流程图 -->
+  <div class="cmq_card">
+    <h2>🍳 厨房流水线</h2>
+
+    <div class="cmq_pipeline">
+
+      <!-- 阶段 1：买原料（Race） -->
+      <div class="cmq_flow_block cmq_pending" id="cmq_step_buy">
+        <div class="cmq_fb_title">
+          <span><span class="cmq_emo">🛒</span>阶段 1：买原料（谁先完成都行 · Promise.race）</span>
+          <span class="cmq_badge">等待中</span>
+        </div>
+        <div class="cmq_fb_meta">线上外卖 6s  +  线下超市 5s  →  取原料</div>
+        <div class="cmq_branch">
+          <div class="cmq_flow_block cmq_pending" id="cmq_branch_online">
+            <div class="cmq_fb_title"><span><span class="cmq_emo">📱</span>线上买菜 (6s)</span><span class="cmq_badge">待下单</span></div>
+            <div class="cmq_fb_meta" id="cmq_branch_online_meta"></div>
+            <div class="cmq_fb_timer"><div class="cmq_fb_fill"></div></div>
+          </div>
+          <div class="cmq_flow_block cmq_pending" id="cmq_branch_offline">
+            <div class="cmq_fb_title"><span><span class="cmq_emo">🏪</span>线下超市 (5s)</span><span class="cmq_badge">待出门</span></div>
+            <div class="cmq_fb_meta" id="cmq_branch_offline_meta"></div>
+            <div class="cmq_fb_timer"><div class="cmq_fb_fill"></div></div>
+          </div>
+        </div>
+        <div class="cmq_fb_timer"><div class="cmq_fb_fill"></div></div>
+      </div>
+
+      <div class="cmq_arrow">▼</div>
+
+      <!-- 阶段 2：和面 + 和馅（All） -->
+      <div class="cmq_flow_block cmq_pending" id="cmq_step_mix">
+        <div class="cmq_fb_title">
+          <span><span class="cmq_emo">🍜</span>阶段 2：和面 + 和馅（两个都要完成 · Promise.all）</span>
+          <span class="cmq_badge">等待中</span>
+        </div>
+        <div class="cmq_fb_meta">和面 4s  ∥  和馅 3s  →  都完才算过</div>
+        <div class="cmq_branch">
+          <div class="cmq_flow_block cmq_pending" id="cmq_branch_dough">
+            <div class="cmq_fb_title"><span><span class="cmq_emo">🍞</span>和面 (4s)</span><span class="cmq_badge">等待原料</span></div>
+            <div class="cmq_fb_meta" id="cmq_branch_dough_meta"></div>
+            <div class="cmq_fb_timer"><div class="cmq_fb_fill"></div></div>
+          </div>
+          <div class="cmq_flow_block cmq_pending" id="cmq_branch_fill">
+            <div class="cmq_fb_title"><span><span class="cmq_emo">🥬</span>和馅 (3s)</span><span class="cmq_badge">等待原料</span></div>
+            <div class="cmq_fb_meta" id="cmq_branch_fill_meta"></div>
+            <div class="cmq_fb_timer"><div class="cmq_fb_fill"></div></div>
+          </div>
+        </div>
+        <div class="cmq_fb_timer"><div class="cmq_fb_fill"></div></div>
+      </div>
+
+      <div class="cmq_arrow">▼</div>
+
+      <!-- 阶段 3：包饺子 -->
+      <div class="cmq_flow_block cmq_pending" id="cmq_step_wrap">
+        <div class="cmq_fb_title">
+          <span><span class="cmq_emo">🥟</span>阶段 3：包饺子（串行）</span>
+          <span class="cmq_badge">等待中</span>
+        </div>
+        <div class="cmq_fb_meta">把面和馅包在一起 · 2s</div>
+        <div class="cmq_fb_timer"><div class="cmq_fb_fill"></div></div>
+      </div>
+
+      <div class="cmq_arrow">▼</div>
+
+      <!-- 阶段 4：煮饺子 -->
+      <div class="cmq_flow_block cmq_pending" id="cmq_step_boil">
+        <div class="cmq_fb_title">
+          <span><span class="cmq_emo">🔥</span>阶段 4：煮饺子（串行）</span>
+          <span class="cmq_badge">等待中</span>
+        </div>
+        <div class="cmq_fb_meta">水开下锅 · 3s</div>
+        <div class="cmq_fb_timer"><div class="cmq_fb_fill"></div></div>
+      </div>
+
+      <div class="cmq_arrow">▼</div>
+
+      <!-- 阶段 5：吃饺子 -->
+      <div class="cmq_flow_block cmq_pending" id="cmq_step_eat">
+        <div class="cmq_fb_title">
+          <span><span class="cmq_emo">😋</span>阶段 5：吃饺子（串行）</span>
+          <span class="cmq_badge">等待中</span>
+        </div>
+        <div class="cmq_fb_meta">趁热吃 · 1s</div>
+        <div class="cmq_fb_timer"><div class="cmq_fb_fill"></div></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 代码 + 日志 两栏 -->
+  <div class="cmq_two_cols">
+    <div class="cmq_card">
+      <h2>🔍 实时日志</h2>
+      <div class="cmq_log" id="cmq_log">
+<div><span class="cmq_ts">--:--:--</span> <span class="cmq_op">[系统]</span> 点击「开始包饺子」按钮启动异步流水线...</div>
+      </div>
+    </div>
+
+    <div class="cmq_card">
+      <h2>🧑‍💻 async / await 代码</h2>
+      <div class="cmq_code"><span class="k">async function</span> <span class="f">makeDumplings</span>() {
+  <span class="k">const</span> start = Date.<span class="f">now</span>();
+
+  <span class="c">// 阶段 1：Promise.race —— 谁先完成都行</span>
+  <span class="k">await</span> Promise.<span class="o">race</span>([
+    <span class="f">buyOnline</span>(<span class="n">6000</span>),   <span class="c">// 📱 线上 6s</span>
+    <span class="f">buyOffline</span>(<span class="n">5000</span>),  <span class="c">// 🏪 线下 5s</span>
+  ]);
+  <span class="f">pickup</span>();  <span class="c">// 取原料</span>
+
+  <span class="c">// 阶段 2：Promise.all —— 两个都得好</span>
+  <span class="k">await</span> Promise.<span class="o">all</span>([
+    <span class="f">makeDough</span>(<span class="n">4000</span>), <span class="c">// 🍞 和面 4s</span>
+    <span class="f">makeFill</span>(<span class="n">3000</span>), <span class="c">// 🥬 和馅 3s</span>
+  ]);
+
+  <span class="c">// 阶段 3 ~ 5：串行 await</span>
+  <span class="k">await</span> <span class="f">wrap</span>(<span class="n">2000</span>);  <span class="c">// 🥟 包饺子</span>
+  <span class="k">await</span> <span class="f">boil</span>(<span class="n">3000</span>); <span class="c">// 🔥 煮饺子</span>
+  <span class="k">await</span> <span class="f">eat</span>(<span class="n">1000</span>);  <span class="c">// 😋 吃饺子</span>
+
+  console.<span class="f">log</span>(<span class="s">'🎉 全流程完成！'</span>);
+}
+
+<span class="c">// 通用 Promise + setTimeout 包装器</span>
+<span class="k">function</span> <span class="f">cmqWait</span>(ms, onTick) {
+  <span class="k">return new</span> Promise(<span class="k">function</span>(resolve) {
+    <span class="k">const</span> t0 = Date.<span class="f">now</span>();
+    <span class="k">const</span> timer = <span class="f">setInterval</span>(<span class="k">function</span>() {
+      onTick && <span class="f">onTick</span>(Math.min(<span class="n">1</span>, (Date.<span class="f">now</span>()-t0)/ms));
+    }, <span class="n">30</span>);
+    <span class="f">setTimeout</span>(<span class="k">function</span>() {
+      <span class="f">clearInterval</span>(timer); resolve();
+    }, ms);
+  });
+}</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  var cmq_running = false;
+  var cmq_totalTimer = null;
+  var cmq_totalSec = 0;
+
+  // ===== 日志 =====
+  function cmq_log(name, op, colorCls) {
+    var now = new Date();
+    var ts = ('0' + now.getHours()).slice(-2) + ':' + ('0' + now.getMinutes()).slice(-2) + ':' + ('0' + now.getSeconds()).slice(-2);
+    var el = document.getElementById('cmq_log');
+    var line = '<div><span class="cmq_ts">[' + ts + ']</span> <span class="cmq_name">' + name + '</span> <span class="' + (colorCls || '') + '">' + op + '</span></div>';
+    el.innerHTML += line;
+    el.scrollTop = el.scrollHeight;
+  }
+
+  // ===== 状态切换 =====
+  function cmq_setBox(id, state, badgeText) {
+    var box = document.getElementById(id);
+    if (!box) return;
+    box.classList.remove('cmq_pending', 'cmq_running', 'cmq_done', 'cmq_fail');
+    box.classList.add('cmq_' + state);
+    var badge = box.querySelector(':scope > .cmq_fb_title .cmq_badge, > span.cmq_badge');
+    // 只改第一个直接子级的 badge
+    var title = box.children[0];
+    if (title) {
+      var b = title.querySelector('.cmq_badge');
+      if (b && badgeText !== undefined) b.textContent = badgeText;
+    }
+    // 进度条：running 重置 0，done 拉满
+    if (state === 'running') {
+      var fill = box.querySelector(':scope > .cmq_fb_timer > .cmq_fb_fill');
+      if (fill) fill.style.width = '0%';
+    } else if (state === 'done') {
+      var fill2 = box.querySelector(':scope > .cmq_fb_timer > .cmq_fb_fill');
+      if (fill2) fill2.style.width = '100%';
+    }
+  }
+  function cmq_setBoxSub(id, state, badgeText, metaText) {
+    var box = document.getElementById(id);
+    if (!box) return;
+    box.classList.remove('cmq_pending', 'cmq_running', 'cmq_done', 'cmq_fail');
+    box.classList.add('cmq_' + state);
+    var title = box.children[0];
+    if (title) {
+      var b = title.querySelector('.cmq_badge');
+      if (b && badgeText !== undefined) b.textContent = badgeText;
+    }
+    if (metaText !== undefined) {
+      var m = document.getElementById(id + '_meta');
+      if (m) m.textContent = metaText;
+    }
+  }
+
+  // ===== 带进度回调的 Promise =====
+  function cmq_promiseStep(name, ms, onRun, onDone, tickIds, tickTargets) {
+    return new Promise(function (resolve) {
+      cmq_log('🚩 ' + name, '开始', 'cmq_op');
+      if (onRun) onRun();
+      var t0 = Date.now();
+      var tickTimer = setInterval(function () {
+        var pct = Math.min(1, (Date.now() - t0) / ms);
+        // 更新给定的所有 fill 进度条
+        if (tickIds && tickIds.length) {
+          for (var i = 0; i < tickIds.length; i++) {
+            var box = document.getElementById(tickIds[i]);
+            if (box) {
+              var f = box.querySelector(':scope > .cmq_fb_timer > .cmq_fb_fill');
+              if (f) f.style.width = (pct * 100) + '%';
+            }
+          }
+        }
+      }, 30);
+      setTimeout(function () {
+        clearInterval(tickTimer);
+        cmq_log('✅ ' + name, '完成 · ' + (ms / 1000) + 's', 'cmq_ok');
+        if (onDone) onDone();
+        resolve(ms);
+      }, ms);
+    });
+  }
+
+  // ===== 主流程 =====
+  async function cmq_main() {
+    if (cmq_running) return;
+    cmq_running = true;
+    document.getElementById('cmq_start').classList.add('cmq_disabled');
+    document.getElementById('cmq_state').textContent = '运行中';
+    document.getElementById('cmq_state').style.color = '#f59e0b';
+
+    // 总计时
+    var tTotal = Date.now();
+    cmq_totalTimer = setInterval(function () {
+      cmq_totalSec = (Date.now() - tTotal) / 1000;
+      document.getElementById('cmq_total').textContent = cmq_totalSec.toFixed(1) + 's';
+    }, 100);
+
+    cmq_log('🏠', '流程启动 —— 我饿了，开始包饺子！', 'cmq_op');
+
+    // ========== 阶段 1：买原料 (Promise.race) ==========
+    cmq_log('🛒 阶段 1', '→ Promise.race(线上, 线下)', 'cmq_race');
+    cmq_setBox('cmq_step_buy', 'running', '买原料中...');
+
+    var buyRace = [];
+
+    buyRace.push(new Promise(function (resolve) {
+      cmq_promiseStep('📱 线上买菜', 6000,
+        function () { cmq_setBoxSub('cmq_branch_online', 'running', '骑手派送中', '预计 6s'); },
+        function () { cmq_setBoxSub('cmq_branch_online', 'done', '已送达 ✅', '实际 6s'); },
+        ['cmq_branch_online', 'cmq_step_buy']
+      ).then(resolve);
+    }));
+
+    buyRace.push(new Promise(function (resolve) {
+      cmq_promiseStep('🏪 线下超市', 5000,
+        function () { cmq_setBoxSub('cmq_branch_offline', 'running', '正在挑菜', '预计 5s'); },
+        function () { cmq_setBoxSub('cmq_branch_offline', 'done', '结账出门 ✅', '实际 5s'); },
+        ['cmq_branch_offline', 'cmq_step_buy']
+      ).then(resolve);
+    }));
+
+    var buyWinner = await Promise.race(buyRace);
+    cmq_log('🏆', 'Race 结束：线下超市更快（5s） → 直接取原料', 'cmq_race');
+    cmq_log('📦', '取原料！', 'cmq_ok');
+    cmq_setBox('cmq_step_buy', 'done', '原料到手 ✅');
+
+    // ========== 阶段 2：和面 + 和馅 (Promise.all) ==========
+    cmq_log('🍜 阶段 2', '→ Promise.all(和面, 和馅)', 'cmq_all');
+    cmq_setBox('cmq_step_mix', 'running', '准备中...');
+
+    await Promise.all([
+      cmq_promiseStep('🍞 和面', 4000,
+        function () { cmq_setBoxSub('cmq_branch_dough', 'running', '揉面中', '预计 4s'); },
+        function () { cmq_setBoxSub('cmq_branch_dough', 'done', '面团就绪 ✅', '4s 完成'); },
+        ['cmq_branch_dough', 'cmq_step_mix']
+      ),
+      cmq_promiseStep('🥬 和馅', 3000,
+        function () { cmq_setBoxSub('cmq_branch_fill', 'running', '切菜调味', '预计 3s'); },
+        function () { cmq_setBoxSub('cmq_branch_fill', 'done', '馅料调好 ✅', '3s 完成'); },
+        ['cmq_branch_fill', 'cmq_step_mix']
+      ),
+    ]);
+    cmq_log('🎉', 'All 完成！和面 + 和馅都 OK 了', 'cmq_all');
+    cmq_setBox('cmq_step_mix', 'done', '面和馅都好啦 ✅');
+
+    // ========== 阶段 3：包饺子 ==========
+    cmq_setBox('cmq_step_wrap', 'running', '擀皮包馅中...');
+    await cmq_promiseStep('🥟 包饺子', 2000, null, null, ['cmq_step_wrap']);
+    cmq_setBox('cmq_step_wrap', 'done', '包了 20 个 ✅');
+
+    // ========== 阶段 4：煮饺子 ==========
+    cmq_setBox('cmq_step_boil', 'running', '水开下锅...');
+    await cmq_promiseStep('🔥 煮饺子', 3000, null, null, ['cmq_step_boil']);
+    cmq_setBox('cmq_step_boil', 'done', '浮起来了 ✅');
+
+    // ========== 阶段 5：吃饺子 ==========
+    cmq_setBox('cmq_step_eat', 'running', '吹凉ing...');
+    await cmq_promiseStep('😋 吃饺子', 1000, null, null, ['cmq_step_eat']);
+    cmq_setBox('cmq_step_eat', 'done', '好吃！光盘 ✅');
+
+    // ========== 收尾 ==========
+    clearInterval(cmq_totalTimer);
+    var totalTime = ((Date.now() - tTotal) / 1000).toFixed(1);
+    cmq_log('🏁', '全部搞定！总耗时 ' + totalTime + 's', 'cmq_ok');
+    document.getElementById('cmq_total_bar').style.width = '100%';
+    document.getElementById('cmq_state').textContent = '完成！总 ' + totalTime + 's';
+    document.getElementById('cmq_state').style.color = '#16a34a';
+    document.getElementById('cmq_start').classList.remove('cmq_disabled');
+    cmq_running = false;
+
+    // 总进度条
+    document.getElementById('cmq_total_bar').style.width = '100%';
+  }
+
+  // 重置
+  function cmq_reset() {
+    if (cmq_running) return;
+    var ids = ['cmq_step_buy', 'cmq_step_mix', 'cmq_step_wrap', 'cmq_step_boil', 'cmq_step_eat',
+               'cmq_branch_online', 'cmq_branch_offline', 'cmq_branch_dough', 'cmq_branch_fill'];
+    for (var i = 0; i < ids.length; i++) cmq_setBox(ids[i], 'pending');
+    document.getElementById('cmq_total').textContent = '0s';
+    document.getElementById('cmq_total_bar').style.width = '0%';
+    document.getElementById('cmq_state').textContent = '待开始';
+    document.getElementById('cmq_state').style.color = '#333';
+    document.getElementById('cmq_log').innerHTML =
+      '<div><span class="cmq_ts">--:--:--</span> <span class="cmq_op">[系统]</span> 已重置。点击「开始包饺子」按钮启动流水线...</div>';
+    document.getElementById('cmq_start').classList.remove('cmq_disabled');
+    cmq_running = false;
+  }
+
+  document.getElementById('cmq_start').addEventListener('click', cmq_main);
+  document.getElementById('cmq_reset').addEventListener('click', cmq_reset);
+</script>
+
+</body>
+</html>
