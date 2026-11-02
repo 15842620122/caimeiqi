@@ -419,25 +419,35 @@
     el.scrollTop = el.scrollHeight;
   }
 
+  // ===== 工具：找某个 box 的直接子级进度条 fill =====
+  function cmq_findFill(box) {
+    if (!box) return null;
+    var kids = box.children;
+    for (var i = 0; i < kids.length; i++) {
+      if (kids[i].className.indexOf('cmq_fb_timer') !== -1) {
+        var f = kids[i].querySelector('.cmq_fb_fill');
+        if (f) return f;
+      }
+    }
+    return null;
+  }
+
   // ===== 状态切换 =====
   function cmq_setBox(id, state, badgeText) {
     var box = document.getElementById(id);
     if (!box) return;
     box.classList.remove('cmq_pending', 'cmq_running', 'cmq_done', 'cmq_fail');
     box.classList.add('cmq_' + state);
-    var badge = box.querySelector(':scope > .cmq_fb_title .cmq_badge, > span.cmq_badge');
-    // 只改第一个直接子级的 badge
     var title = box.children[0];
     if (title) {
       var b = title.querySelector('.cmq_badge');
       if (b && badgeText !== undefined) b.textContent = badgeText;
     }
-    // 进度条：running 重置 0，done 拉满
     if (state === 'running') {
-      var fill = box.querySelector(':scope > .cmq_fb_timer > .cmq_fb_fill');
+      var fill = cmq_findFill(box);
       if (fill) fill.style.width = '0%';
     } else if (state === 'done') {
-      var fill2 = box.querySelector(':scope > .cmq_fb_timer > .cmq_fb_fill');
+      var fill2 = cmq_findFill(box);
       if (fill2) fill2.style.width = '100%';
     }
   }
@@ -458,28 +468,25 @@
   }
 
   // ===== 带进度回调的 Promise =====
-  function cmq_promiseStep(name, ms, onRun, onDone, tickIds, tickTargets) {
+  function cmq_promiseStep(name, ms, onRun, onDone, tickIds) {
     return new Promise(function (resolve) {
-      cmq_log('🚩 ' + name, '开始', 'cmq_op');
-      if (onRun) onRun();
+      try { cmq_log('🚩 ' + name, '开始', 'cmq_op'); } catch(e) {}
+      try { if (onRun) onRun(); } catch(e) {}
       var t0 = Date.now();
       var tickTimer = setInterval(function () {
         var pct = Math.min(1, (Date.now() - t0) / ms);
-        // 更新给定的所有 fill 进度条
         if (tickIds && tickIds.length) {
           for (var i = 0; i < tickIds.length; i++) {
             var box = document.getElementById(tickIds[i]);
-            if (box) {
-              var f = box.querySelector(':scope > .cmq_fb_timer > .cmq_fb_fill');
-              if (f) f.style.width = (pct * 100) + '%';
-            }
+            var f = cmq_findFill(box);
+            if (f) f.style.width = (pct * 100) + '%';
           }
         }
-      }, 30);
+      }, 50);
       setTimeout(function () {
         clearInterval(tickTimer);
-        cmq_log('✅ ' + name, '完成 · ' + (ms / 1000) + 's', 'cmq_ok');
-        if (onDone) onDone();
+        try { cmq_log('✅ ' + name, '完成 · ' + (ms / 1000) + 's', 'cmq_ok'); } catch(e) {}
+        try { if (onDone) onDone(); } catch(e) {}
         resolve(ms);
       }, ms);
     });
@@ -506,25 +513,19 @@
     cmq_log('🛒 阶段 1', '→ Promise.race(线上, 线下)', 'cmq_race');
     cmq_setBox('cmq_step_buy', 'running', '买原料中...');
 
-    var buyRace = [];
+    var raceOnline = cmq_promiseStep('📱 线上买菜', 6000,
+      function () { cmq_setBoxSub('cmq_branch_online', 'running', '骑手派送中', '预计 6s'); },
+      function () { cmq_setBoxSub('cmq_branch_online', 'done', '已送达 ✅', '实际 6s'); },
+      ['cmq_branch_online', 'cmq_step_buy']
+    );
 
-    buyRace.push(new Promise(function (resolve) {
-      cmq_promiseStep('📱 线上买菜', 6000,
-        function () { cmq_setBoxSub('cmq_branch_online', 'running', '骑手派送中', '预计 6s'); },
-        function () { cmq_setBoxSub('cmq_branch_online', 'done', '已送达 ✅', '实际 6s'); },
-        ['cmq_branch_online', 'cmq_step_buy']
-      ).then(resolve);
-    }));
+    var raceOffline = cmq_promiseStep('🏪 线下超市', 5000,
+      function () { cmq_setBoxSub('cmq_branch_offline', 'running', '正在挑菜', '预计 5s'); },
+      function () { cmq_setBoxSub('cmq_branch_offline', 'done', '结账出门 ✅', '实际 5s'); },
+      ['cmq_branch_offline', 'cmq_step_buy']
+    );
 
-    buyRace.push(new Promise(function (resolve) {
-      cmq_promiseStep('🏪 线下超市', 5000,
-        function () { cmq_setBoxSub('cmq_branch_offline', 'running', '正在挑菜', '预计 5s'); },
-        function () { cmq_setBoxSub('cmq_branch_offline', 'done', '结账出门 ✅', '实际 5s'); },
-        ['cmq_branch_offline', 'cmq_step_buy']
-      ).then(resolve);
-    }));
-
-    var buyWinner = await Promise.race(buyRace);
+    var buyWinner = await Promise.race([raceOnline, raceOffline]);
     cmq_log('🏆', 'Race 结束：线下超市更快（5s） → 直接取原料', 'cmq_race');
     cmq_log('📦', '取原料！', 'cmq_ok');
     cmq_setBox('cmq_step_buy', 'done', '原料到手 ✅');
