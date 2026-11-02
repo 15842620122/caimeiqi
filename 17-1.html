@@ -1,0 +1,630 @@
+<!-- 姓名：蔡美琪，日期：2026-11-02，功能名称：JSON 可视化展示与交互 -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>17-1 JSON 展示</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    background: #f0f2f5;
+    padding: 32px 20px;
+    color: #333;
+  }
+  a.cmq_home {
+    display: inline-block;
+    margin-bottom: 18px;
+    color: #2b5797;
+    text-decoration: none;
+    font-size: 14px;
+  }
+  a.cmq_home:hover { text-decoration: underline; }
+
+  .cmq_container {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .cmq_page_title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 6px;
+  }
+  .cmq_page_sub {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 24px;
+  }
+
+  .cmq_card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.06);
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  .cmq_card h2 {
+    font-size: 18px;
+    color: #2b5797;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #eef1f6;
+  }
+
+  .cmq_section {
+    margin-bottom: 30px;
+  }
+
+  /* ====== 顶部大对象可视化 ====== */
+  .cmq_hero {
+    background: linear-gradient(135deg, #1e3a8a 0%, #2b5797 100%);
+    color: #fff;
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-bottom: 24px;
+  }
+  .cmq_hero h3 {
+    font-size: 20px;
+    margin-bottom: 16px;
+    color: #ffd966;
+  }
+  .cmq_hero_obj {
+    background: rgba(255,255,255,.08);
+    border-radius: 8px;
+    padding: 18px 22px;
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 14px;
+    line-height: 1.9;
+    white-space: pre;
+    overflow-x: auto;
+  }
+  .cmq_hero_obj .k { color: #ffd966; }
+  .cmq_hero_obj .s { color: #a5f3fc; }
+  .cmq_hero_obj .n { color: #fca5a5; }
+  .cmq_hero_obj .b { color: #bbf7d0; }
+  .cmq_hero_obj .null { color: #d8b4fe; font-style: italic; }
+
+  /* ====== 语法速查表 ====== */
+  .cmq_syntax_table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  .cmq_syntax_table th,
+  .cmq_syntax_table td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid #eef1f6;
+  }
+  .cmq_syntax_table th {
+    background: #f7f9fc;
+    color: #2b5797;
+    font-weight: 600;
+  }
+  .cmq_syntax_table td code {
+    background: #fff7d6;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: "Consolas", monospace;
+    font-size: 13px;
+    color: #b7791f;
+  }
+
+  /* ====== 交互区 ====== */
+  .cmq_interact {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .cmq_panel_title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 10px;
+  }
+  .cmq_textarea {
+    width: 100%;
+    height: 220px;
+    border: 1px solid #d1d9e6;
+    border-radius: 8px;
+    padding: 14px;
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    resize: vertical;
+    background: #fafbfd;
+    color: #2b5797;
+  }
+  .cmq_textarea:focus {
+    outline: none;
+    border-color: #2b5797;
+    background: #fff;
+  }
+  .cmq_btns {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .cmq_btn {
+    padding: 8px 18px;
+    font-size: 14px;
+    font-family: inherit;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #fff;
+    background: #2b5797;
+    transition: background .2s, transform .1s;
+  }
+  .cmq_btn:hover { background: #1e3a8a; }
+  .cmq_btn:active { transform: scale(.97); }
+  .cmq_btn.cmq_btn_ok { background: #16a34a; }
+  .cmq_btn.cmq_btn_ok:hover { background: #15803d; }
+  .cmq_btn.cmq_btn_warn { background: #ea580c; }
+  .cmq_btn.cmq_btn_warn:hover { background: #c2410c; }
+  .cmq_btn.cmq_btn_gray { background: #6b7280; }
+  .cmq_btn.cmq_btn_gray:hover { background: #4b5563; }
+
+  .cmq_output {
+    background: #f7f9fc;
+    border-radius: 8px;
+    padding: 16px 18px;
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    min-height: 220px;
+    max-height: 260px;
+    overflow: auto;
+    white-space: pre;
+    border: 1px solid #e5e9f0;
+  }
+  .cmq_output.cmq_err {
+    background: #fff1f0;
+    border-color: #ffccc7;
+    color: #cf1322;
+  }
+  .cmq_output .k { color: #b7791f; }
+  .cmq_output .s { color: #0277bd; }
+  .cmq_output .n { color: #c62828; }
+  .cmq_output .b { color: #2e7d32; }
+  .cmq_output .null { color: #7b1fa2; font-style: italic; }
+
+  /* ====== 树形查看器 ====== */
+  .cmq_tree_wrap {
+    background: #fafbfd;
+    border-radius: 8px;
+    padding: 16px 20px;
+    border: 1px solid #e5e9f0;
+  }
+  .cmq_node {
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 13px;
+    line-height: 1.9;
+  }
+  .cmq_node_label {
+    cursor: pointer;
+    user-select: none;
+    display: inline-block;
+  }
+  .cmq_node_label:hover { background: #fff3cd; border-radius: 3px; }
+  .cmq_toggle {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    font-size: 10px;
+    line-height: 14px;
+    text-align: center;
+    color: #2b5797;
+    margin-right: 4px;
+    transition: transform .15s;
+  }
+  .cmq_toggle.cmq_closed { transform: rotate(-90deg); }
+  .cmq_children { padding-left: 22px; border-left: 1px dashed #cdd5e0; margin-left: 6px; }
+  .cmq_children.cmq_collapsed { display: none; }
+  .cmq_type_tag {
+    display: inline-block;
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 9px;
+    margin-left: 6px;
+    font-weight: 600;
+    vertical-align: middle;
+  }
+  .cmq_type_tag.t_obj { background: #dbeafe; color: #1d4ed8; }
+  .cmq_type_tag.t_arr { background: #fce7f3; color: #be185d; }
+  .cmq_type_tag.t_str { background: #dcfce7; color: #15803d; }
+  .cmq_type_tag.t_num { background: #fee2e2; color: #b91c1c; }
+  .cmq_type_tag.t_bol { background: #fef9c3; color: #a16207; }
+  .cmq_type_tag.t_nul { background: #f3e8ff; color: #7e22ce; }
+
+  /* ====== 底部小演示 ====== */
+  .cmq_demo_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .cmq_demo_item {
+    border: 1px solid #eef1f6;
+    border-radius: 8px;
+    padding: 14px 16px;
+    background: #fafbfd;
+  }
+  .cmq_demo_item h4 {
+    font-size: 14px;
+    color: #2b5797;
+    margin-bottom: 8px;
+  }
+  .cmq_demo_item pre {
+    font-family: "Consolas", monospace;
+    font-size: 12px;
+    color: #555;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+</style>
+</head>
+<body>
+
+<a class="cmq_home" href="1.html">← 返回首页</a>
+
+<div class="cmq_container">
+
+  <div class="cmq_page_title">第 17 章 · JSON</div>
+  <div class="cmq_page_sub">JavaScript Object Notation — 轻量级数据交换格式</div>
+
+  <!-- 顶部 Hero 示例 -->
+  <div class="cmq_hero">
+    <h3>📦 一个真实的 JSON 对象示例</h3>
+    <div class="cmq_hero_obj" id="cmq_hero"></div>
+  </div>
+
+  <!-- 语法速查表 -->
+  <div class="cmq_card">
+    <h2>📘 JSON 语法速查</h2>
+    <table class="cmq_syntax_table">
+      <thead>
+        <tr><th>类型</th><th>说明</th><th>示例</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>对象 object</td><td>花括号包裹，键值对用 <code>:</code> 分隔</td><td><code>{"name": "Tom"}</code></td></tr>
+        <tr><td>数组 array</td><td>方括号包裹，元素用 <code>,</code> 分隔</td><td><code>[1, 2, 3]</code></td></tr>
+        <tr><td>字符串 string</td><td>必须用 <b>双引号</b>（单引号不合法）</td><td><code>"hello"</code></td></tr>
+        <tr><td>数字 number</td><td>整数或浮点数，无前导零</td><td><code>3.14</code></td></tr>
+        <tr><td>布尔 boolean</td><td>只有小写 <code>true</code> / <code>false</code></td><td><code>true</code></td></tr>
+        <tr><td>空值 null</td><td>只有小写 <code>null</code></td><td><code>null</code></td></tr>
+        <tr><td>⚠️ 禁止</td><td>函数、undefined、注释、单引号、尾随逗号</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 左右交互区 -->
+  <div class="cmq_card">
+    <h2>⚡ JSON ↔ JS 对象 实时转换</h2>
+    <div class="cmq_interact">
+      <div>
+        <div class="cmq_panel_title">① 左边：JSON 字符串（可编辑）</div>
+        <textarea class="cmq_textarea" id="cmq_input">{
+  "name": "李白",
+  "age": 28,
+  "skills": ["写诗", "喝酒", "舞剑"],
+  "address": null,
+  "vip": true
+}</textarea>
+        <div class="cmq_btns">
+          <button class="cmq_btn cmq_btn_ok" id="cmq_btn_parse">▶ JSON.parse → 对象</button>
+          <button class="cmq_btn cmq_btn_gray" id="cmq_btn_sample">📋 加载示例</button>
+          <button class="cmq_btn cmq_btn_gray" id="cmq_btn_clear">🗑 清空</button>
+        </div>
+      </div>
+      <div>
+        <div class="cmq_panel_title">② 右边：JS 对象 → JSON 字符串</div>
+        <div class="cmq_output" id="cmq_output">// 点击按钮后，这里会显示转换结果</div>
+        <div class="cmq_btns">
+          <button class="cmq_btn cmq_btn_warn" id="cmq_btn_stringify">▶ 内置对象 JSON.stringify</button>
+          <button class="cmq_btn" id="cmq_btn_pretty">✨ 美化输出 (4空格)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 树形查看器 -->
+  <div class="cmq_card">
+    <h2>🌳 可折叠 JSON 树状查看器</h2>
+    <div class="cmq_btns" style="margin-bottom:14px">
+      <button class="cmq_btn" id="cmq_btn_expand">⬇ 全部展开</button>
+      <button class="cmq_btn cmq_btn_gray" id="cmq_btn_collapse">⬆ 全部折叠</button>
+      <button class="cmq_btn cmq_btn_warn" id="cmq_btn_load_tree">🔄 换一个复杂对象</button>
+    </div>
+    <div class="cmq_tree_wrap" id="cmq_tree"></div>
+  </div>
+
+  <!-- 底部小演示 -->
+  <div class="cmq_card">
+    <h2>🔍 JSON vs JS 对象 的区别</h2>
+    <div class="cmq_demo_grid">
+      <div class="cmq_demo_item">
+        <h4>✅ 合法 JSON</h4>
+<pre>{
+  "name": "Tom",
+  "age": 20
+}</pre>
+      </div>
+      <div class="cmq_demo_item">
+        <h4>❌ 非法 JSON（单引号）</h4>
+<pre>{
+  'name': 'Tom',
+  'age': 20
+}</pre>
+      </div>
+      <div class="cmq_demo_item">
+        <h4>❌ 非法 JSON（函数）</h4>
+<pre>{
+  "say": function() {
+    alert("hi")
+  }
+}</pre>
+      </div>
+      <div class="cmq_demo_item">
+        <h4>❌ 非法 JSON（注释）</h4>
+<pre>{
+  // 这是注释
+  "x": 1
+}</pre>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  var cmq_heroData = {
+    "name": "山野植物手册",
+    "version": 2,
+    "website": null,
+    "topics": ["数组", "对象", "字符串", "JSON"],
+    "active": true,
+    "author": {
+      "name": "蔡美琪",
+      "school": "高级网页设计"
+    }
+  };
+
+  function cmq_escape(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
+  function cmq_colorize(str) {
+    var out = '';
+    var i = 0;
+    var n = str.length;
+    while (i < n) {
+      var c = str[i];
+      if (c === '"') {
+        var j = i + 1;
+        while (j < n && str[j] !== '"') {
+          if (str[j] === '\\') j++;
+          j++;
+        }
+        var seg = str.substring(i, j + 1);
+        out += '<span class="s">' + cmq_escape(seg) + '</span>';
+        i = j + 1;
+        continue;
+      }
+      if ((c >= '0' && c <= '9') || c === '-' || c === '.') {
+        var num = '';
+        while (i < n && /[0-9.\-]/.test(str[i])) { num += str[i]; i++; }
+        out += '<span class="n">' + num + '</span>';
+        continue;
+      }
+      if (c === '{' || c === '}' || c === '[' || c === ']' || c === ':' || c === ',') {
+        out += '<span class="k">' + c + '</span>';
+        i++;
+        continue;
+      }
+      if (str.substring(i, i + 4) === 'true') { out += '<span class="b">true</span>'; i += 4; continue; }
+      if (str.substring(i, i + 5) === 'false') { out += '<span class="b">false</span>'; i += 5; continue; }
+      if (str.substring(i, i + 4) === 'null') { out += '<span class="null">null</span>'; i += 4; continue; }
+      out += c;
+      i++;
+    }
+    return out;
+  }
+
+  function cmq_showHero() {
+    var s = JSON.stringify(cmq_heroData, null, 2);
+    document.getElementById('cmq_hero').innerHTML = cmq_colorize(s);
+  }
+
+  function cmq_detectType(v) {
+    if (v === null) return 'null';
+    if (Array.isArray(v)) return 'array';
+    return typeof v;
+  }
+
+  function cmq_typeTag(v) {
+    var t = cmq_detectType(v);
+    var map = { object: 't_obj', array: 't_arr', string: 't_str', number: 't_num', boolean: 't_bol', null: 't_nul' };
+    var labelMap = { object: 'Object', array: 'Array', string: 'String', number: 'Number', boolean: 'Boolean', null: 'Null' };
+    return '<span class="cmq_type_tag ' + map[t] + '">' + labelMap[t] + '</span>';
+  }
+
+  function cmq_renderTree(value, key, depth) {
+    var html = '';
+    var t = cmq_detectType(value);
+    var indent = '│  '.repeat(depth);
+    var isContainer = (t === 'object' || t === 'array');
+    var open = t === 'object' ? '{' : '[';
+    var close = t === 'object' ? '}' : ']';
+    var len = isContainer ? Object.keys(value).length : 0;
+
+    if (key !== null) {
+      html += '<span class="cmq_toggle' + (depth === 0 ? '' : ' cmq_closed') + '">▼</span>';
+      html += '<span class="cmq_node_label" data-act="' + (isContainer ? 'toggle' : '') + '">';
+      html += '<span style="color:#b7791f;font-weight:600">"' + key + '"</span>';
+      html += ': ';
+      html += '</span>';
+    }
+    if (isContainer) {
+      html += '<span style="color:#2b5797">' + open + '</span>';
+      html += cmq_typeTag(value);
+      html += ' <span style="color:#999;font-size:11px">' + len + ' 项</span>';
+      html += '\n';
+      html += '<div class="cmq_children' + (depth > 0 ? ' cmq_collapsed' : '') + '">';
+      var keys = t === 'array' ? Object.keys(value) : Object.keys(value);
+      for (var i = 0; i < keys.length; i++) {
+        var k = keys[i];
+        var child = value[k];
+        html += cmq_renderTree(child, k, depth + 1);
+      }
+      html += '</div>';
+      html += '<span style="color:#2b5797">' + close + '</span>';
+    } else {
+      if (t === 'string') html += '<span style="color:#0277bd">"' + cmq_escape(value) + '"</span>';
+      else if (t === 'number') html += '<span style="color:#c62828">' + value + '</span>';
+      else if (t === 'boolean') html += '<span style="color:#2e7d32">' + value + '</span>';
+      else if (t === 'null') html += '<span style="color:#7b1fa2;font-style:italic">null</span>';
+      html += ' ' + cmq_typeTag(value);
+    }
+    html += '\n';
+    return indent + html;
+  }
+
+  var cmq_treeData = {
+    "status": "ok",
+    "count": 3,
+    "hasMore": true,
+    "data": [
+      { "id": 101, "title": "静夜思", "author": "李白", "tags": ["古诗", "月亮"] },
+      { "id": 102, "title": "春晓", "author": "孟浩然", "tags": ["古诗", "春天"] },
+      { "id": 103, "title": "登鹳雀楼", "author": "王之涣", "tags": null, "levels": [1, 2, 3] }
+    ],
+    "meta": { "total": 3, "page": 1 }
+  };
+
+  function cmq_renderTreeRoot(data) {
+    var html = cmq_renderTree(data, null, 0);
+    document.getElementById('cmq_tree').innerHTML = html;
+  }
+
+  // === 按钮事件 ===
+  document.getElementById('cmq_btn_parse').addEventListener('click', function () {
+    var raw = document.getElementById('cmq_input').value;
+    var out = document.getElementById('cmq_output');
+    try {
+      var obj = JSON.parse(raw);
+      var s = JSON.stringify(obj, null, 2);
+      out.innerHTML = cmq_colorize(s);
+      out.classList.remove('cmq_err');
+    } catch (e) {
+      out.textContent = '❌ 解析失败: ' + e.message;
+      out.classList.add('cmq_err');
+    }
+  });
+
+  document.getElementById('cmq_btn_pretty').addEventListener('click', function () {
+    var raw = document.getElementById('cmq_input').value;
+    var out = document.getElementById('cmq_output');
+    try {
+      var obj = JSON.parse(raw);
+      var s = JSON.stringify(obj, null, 4);
+      out.innerHTML = cmq_colorize(s);
+      out.classList.remove('cmq_err');
+    } catch (e) {
+      out.textContent = '❌ 解析失败: ' + e.message;
+      out.classList.add('cmq_err');
+    }
+  });
+
+  document.getElementById('cmq_btn_stringify').addEventListener('click', function () {
+    var demoObj = {
+      name: "演示对象",
+      year: 2026,
+      ok: true,
+      list: [1, "two", null],
+      nested: { a: 1, b: 2 }
+    };
+    var out = document.getElementById('cmq_output');
+    out.innerHTML = '<span style="color:#666;font-style:italic">// 原 JS 对象（含函数会被自动丢弃）</span>\n';
+    out.innerHTML += cmq_colorize(JSON.stringify(demoObj, null, 2));
+    out.innerHTML += '\n\n<span style="color:#666;font-style:italic">// 压缩模式：JSON.stringify(obj)</span>\n';
+    out.innerHTML += cmq_colorize(JSON.stringify(demoObj));
+    out.classList.remove('cmq_err');
+  });
+
+  document.getElementById('cmq_btn_sample').addEventListener('click', function () {
+    var samples = [
+      '{"name":"山野植物手册","version":2,"topics":["数组","对象","JSON"]}',
+      '{"status":200,"message":"ok","data":[{"id":1,"title":"首页"},{"id":2,"title":"关于"}]}',
+      '{"config":{"debug":true,"port":8080,"database":{"host":"localhost","pool":10}}}'
+    ];
+    var i = Math.floor(Math.random() * samples.length);
+    document.getElementById('cmq_input').value = samples[i];
+  });
+
+  document.getElementById('cmq_btn_clear').addEventListener('click', function () {
+    document.getElementById('cmq_input').value = '';
+    document.getElementById('cmq_output').textContent = '// 已清空';
+    document.getElementById('cmq_output').classList.remove('cmq_err');
+  });
+
+  document.getElementById('cmq_btn_load_tree').addEventListener('click', function () {
+    cmq_treeData = {
+      "response": {
+        "code": 0,
+        "message": "success",
+        "timestamp": 1730000000,
+        "payload": {
+          "users": [
+            { "id": 1, "profile": { "name": "张三", "age": 25, "vip": true }, "friends": [2, 3, 5] },
+            { "id": 2, "profile": { "name": "李四", "age": 30, "vip": false }, "friends": [1, 4] }
+          ],
+          "stats": null
+        }
+      }
+    };
+    cmq_renderTreeRoot(cmq_treeData);
+  });
+
+  document.getElementById('cmq_btn_expand').addEventListener('click', function () {
+    document.querySelectorAll('.cmq_children').forEach(function (el) {
+      el.classList.remove('cmq_collapsed');
+    });
+    document.querySelectorAll('.cmq_toggle').forEach(function (el) {
+      el.classList.remove('cmq_closed');
+    });
+  });
+
+  document.getElementById('cmq_btn_collapse').addEventListener('click', function () {
+    document.querySelectorAll('.cmq_children').forEach(function (el, idx) {
+      if (idx > 0) el.classList.add('cmq_collapsed');
+    });
+    document.querySelectorAll('.cmq_toggle').forEach(function (el, idx) {
+      if (idx > 0) el.classList.add('cmq_closed');
+    });
+  });
+
+  document.getElementById('cmq_tree').addEventListener('click', function (e) {
+    var tg = e.target.closest('.cmq_toggle, .cmq_node_label');
+    if (!tg) return;
+    var parent = tg.parentElement;
+    var child = parent.querySelector(':scope > .cmq_children');
+    if (!child) return;
+    child.classList.toggle('cmq_collapsed');
+    parent.querySelectorAll(':scope > .cmq_toggle').forEach(function (el) {
+      el.classList.toggle('cmq_closed', child.classList.contains('cmq_collapsed'));
+    });
+  });
+
+  // 初始化
+  cmq_showHero();
+  cmq_renderTreeRoot(cmq_treeData);
+</script>
+
+</body>
+</html>
