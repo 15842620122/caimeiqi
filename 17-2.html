@@ -1,0 +1,373 @@
+<!-- 姓名：蔡美琪，日期：2026-11-02，功能名称：fetch 获取远程 JSON 数据并展示用户卡片 -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>17-2 fetch 获取远程数据</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    background: #f0f2f5;
+    padding: 32px 20px;
+    color: #333;
+  }
+  a.cmq_home {
+    display: inline-block;
+    margin-bottom: 18px;
+    color: #2b5797;
+    text-decoration: none;
+    font-size: 14px;
+  }
+  a.cmq_home:hover { text-decoration: underline; }
+
+  .cmq_container {
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+
+  .cmq_page_title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 4px;
+  }
+  .cmq_page_sub {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 22px;
+  }
+
+  .cmq_toolbar {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.05);
+    padding: 18px 22px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+  .cmq_toolbar .cmq_url {
+    flex: 1;
+    min-width: 300px;
+    background: #f7f9fc;
+    border: 1px solid #e1e6ee;
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-family: "Consolas", monospace;
+    font-size: 13px;
+    color: #2b5797;
+  }
+  .cmq_btn {
+    padding: 10px 22px;
+    font-size: 14px;
+    font-family: inherit;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #fff;
+    background: #2b5797;
+    transition: background .2s, transform .1s;
+    white-space: nowrap;
+  }
+  .cmq_btn:hover { background: #1e3a8a; }
+  .cmq_btn:active { transform: scale(.97); }
+  .cmq_btn.cmq_btn_ok { background: #16a34a; }
+  .cmq_btn.cmq_btn_ok:hover { background: #15803d; }
+  .cmq_btn.cmq_btn_warn { background: #ea580c; }
+  .cmq_btn.cmq_btn_warn:hover { background: #c2410c; }
+
+  .cmq_status {
+    font-size: 13px;
+    padding: 6px 14px;
+    border-radius: 14px;
+    background: #e0e7ff;
+    color: #3730a3;
+  }
+  .cmq_status.cmq_loading { background: #fef3c7; color: #92400e; }
+  .cmq_status.cmq_ok { background: #dcfce7; color: #15803d; }
+  .cmq_status.cmq_err { background: #fee2e2; color: #b91c1c; }
+
+  /* ===== 加载骨架屏 ===== */
+  .cmq_skeleton {
+    background: #fff;
+    border-radius: 10px;
+    padding: 28px;
+    margin-bottom: 16px;
+    animation: cmq_pulse 1.4s ease-in-out infinite;
+  }
+  @keyframes cmq_pulse {
+    0%, 100% { opacity: .5; }
+    50% { opacity: 1; }
+  }
+  .cmq_sk_line {
+    height: 14px;
+    background: #e5e7eb;
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+  .cmq_sk_line.lg { width: 60%; height: 18px; }
+  .cmq_sk_line.md { width: 40%; }
+  .cmq_sk_line.sm { width: 80%; }
+
+  /* ===== 用户卡片网格 ===== */
+  .cmq_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 18px;
+  }
+
+  .cmq_user {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.05);
+    overflow: hidden;
+    transition: transform .2s, box-shadow .2s;
+  }
+  .cmq_user:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(43,87,151,.15);
+  }
+  .cmq_user_head {
+    background: linear-gradient(135deg, #2b5797, #4f7fc2);
+    color: #fff;
+    padding: 20px 22px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .cmq_avatar {
+    width: 50px; height: 50px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.25);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    font-weight: 700;
+    flex-shrink: 0;
+    letter-spacing: 1px;
+  }
+  .cmq_name_row {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+  }
+  .cmq_name {
+    font-size: 17px;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .cmq_username {
+    font-size: 13px;
+    opacity: .85;
+    margin-top: 2px;
+  }
+  .cmq_id_tag {
+    background: rgba(255,255,255,.25);
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+
+  .cmq_user_body {
+    padding: 16px 22px;
+  }
+  .cmq_info_row {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  .cmq_info_row:last-child { margin-bottom: 0; }
+  .cmq_info_label {
+    flex-shrink: 0;
+    width: 56px;
+    color: #9aa3b2;
+    font-weight: 500;
+  }
+  .cmq_info_val {
+    flex: 1;
+    color: #333;
+    word-break: break-all;
+  }
+  .cmq_info_val a {
+    color: #2b5797;
+    text-decoration: none;
+  }
+  .cmq_info_val a:hover { text-decoration: underline; }
+
+  .cmq_addr_block {
+    background: #f7f9fc;
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin-top: 10px;
+    font-size: 12px;
+    color: #555;
+  }
+  .cmq_addr_block .cmq_addr_line { margin-bottom: 3px; }
+  .cmq_addr_block .cmq_addr_line:last-child { margin-bottom: 0; color: #2b5797; font-weight: 600; }
+
+  .cmq_company_block {
+    background: #fff7d6;
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin-top: 10px;
+    font-size: 12px;
+  }
+  .cmq_company_block .cmq_c_name {
+    font-weight: 700;
+    color: #b45309;
+    font-size: 13px;
+    margin-bottom: 3px;
+  }
+  .cmq_company_block .cmq_c_ph {
+    color: #78716c;
+    font-style: italic;
+    margin-bottom: 2px;
+  }
+
+  /* ===== 响应式 ===== */
+  @media (max-width: 480px) {
+    .cmq_grid { grid-template-columns: 1fr; }
+    .cmq_toolbar { flex-direction: column; align-items: stretch; }
+  }
+</style>
+</head>
+<body>
+
+<a class="cmq_home" href="1.html">← 返回首页</a>
+
+<div class="cmq_container">
+  <div class="cmq_page_title">第 17 章 · fetch 远程数据</div>
+  <div class="cmq_page_sub">使用原生 fetch API 从 JSONPlaceholder 获取真实数据</div>
+
+  <div class="cmq_toolbar">
+    <div class="cmq_url" id="cmq_url">https://jsonplaceholder.typicode.com/users</div>
+    <button class="cmq_btn" id="cmq_fetch">📡 发送 fetch 请求</button>
+    <span class="cmq_status" id="cmq_status">待获取</span>
+  </div>
+
+  <div class="cmq_grid" id="cmq_grid">
+    <div class="cmq_skeleton"><div class="cmq_sk_line lg"></div><div class="cmq_sk_line md"></div><div class="cmq_sk_line sm"></div></div>
+    <div class="cmq_skeleton"><div class="cmq_sk_line lg"></div><div class="cmq_sk_line md"></div><div class="cmq_sk_line sm"></div></div>
+    <div class="cmq_skeleton"><div class="cmq_sk_line lg"></div><div class="cmq_sk_line md"></div><div class="cmq_sk_line sm"></div></div>
+  </div>
+</div>
+
+<script>
+  function cmq_firstLetter(name) {
+    if (!name) return '?';
+    return name.trim().charAt(0).toUpperCase();
+  }
+
+  function cmq_h(val) {
+    return String(val).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function cmq_render(list) {
+    if (!Array.isArray(list)) {
+      document.getElementById('cmq_grid').innerHTML = '<div class="cmq_status cmq_err" style="padding:20px">❌ 数据格式异常：期望数组</div>';
+      return;
+    }
+    var html = '';
+    for (var i = 0; i < list.length; i++) {
+      var u = list[i];
+      var geo = (u.address && u.address.geo) || {};
+      html += '<div class="cmq_user">'
+            +   '<div class="cmq_user_head">'
+            +     '<div class="cmq_avatar">' + cmq_firstLetter(u.name) + '</div>'
+            +     '<div class="cmq_name_row">'
+            +       '<div class="cmq_name">' + cmq_h(u.name) + '</div>'
+            +       '<div class="cmq_username">@' + cmq_h(u.username) + '</div>'
+            +     '</div>'
+            +     '<span class="cmq_id_tag">ID #' + (u.id || '') + '</span>'
+            +   '</div>'
+            +   '<div class="cmq_user_body">'
+            +     '<div class="cmq_info_row">'
+            +       '<span class="cmq_info_label">📧 邮箱</span>'
+            +       '<span class="cmq_info_val">' + cmq_h(u.email) + '</span>'
+            +     '</div>'
+            +     '<div class="cmq_info_row">'
+            +       '<span class="cmq_info_label">📱 电话</span>'
+            +       '<span class="cmq_info_val">' + cmq_h(u.phone) + '</span>'
+            +     '</div>'
+            +     '<div class="cmq_info_row">'
+            +       '<span class="cmq_info_label">🌐 网站</span>'
+            +       '<span class="cmq_info_val"><a href="http://' + cmq_h(u.website) + '" target="_blank" rel="noopener">' + cmq_h(u.website) + '</a></span>'
+            +     '</div>';
+
+      if (u.address) {
+        html += '<div class="cmq_addr_block">'
+              +   '<div class="cmq_addr_line">📍 ' + cmq_h(u.address.street || '') + ' · ' + cmq_h(u.address.suite || '') + '</div>'
+              +   '<div class="cmq_addr_line">🏙 ' + cmq_h(u.address.city || '') + ' · ' + cmq_h(u.address.zipcode || '') + '</div>';
+        if (geo.lat !== undefined && geo.lng !== undefined) {
+          html += '<div class="cmq_addr_line">🗺 经纬度 ' + cmq_h(geo.lat) + ', ' + cmq_h(geo.lng) + '</div>';
+        }
+        html += '</div>';
+      }
+
+      if (u.company) {
+        html += '<div class="cmq_company_block">'
+              +   '<div class="cmq_c_name">🏢 ' + cmq_h(u.company.name || '') + '</div>'
+              +   '<div class="cmq_c_ph">"' + cmq_h(u.company.catchPhrase || '') + '"</div>'
+              +   '<div style="color:#78716c;font-size:11px">' + cmq_h(u.company.bs || '') + '</div>'
+              + '</div>';
+      }
+
+      html +=   '</div>'
+            + '</div>';
+    }
+    document.getElementById('cmq_grid').innerHTML = html;
+  }
+
+  function cmq_setStatus(kind, text) {
+    var el = document.getElementById('cmq_status');
+    el.className = 'cmq_status cmq_' + kind;
+    el.textContent = text;
+  }
+
+  function cmq_showSkeleton() {
+    document.getElementById('cmq_grid').innerHTML =
+      '<div class="cmq_skeleton"><div class="cmq_sk_line lg"></div><div class="cmq_sk_line md"></div><div class="cmq_sk_line sm"></div></div>'
+    + '<div class="cmq_skeleton"><div class="cmq_sk_line lg"></div><div class="cmq_sk_line md"></div><div class="cmq_sk_line sm"></div></div>'
+    + '<div class="cmq_skeleton"><div class="cmq_sk_line lg"></div><div class="cmq_sk_line md"></div><div class="cmq_sk_line sm"></div></div>';
+  }
+
+  function cmq_fetchUsers() {
+    var url = document.getElementById('cmq_url').textContent.trim();
+    cmq_setStatus('loading', '⏳ 请求中...');
+    cmq_showSkeleton();
+    var t0 = Date.now();
+
+    fetch(url)
+      .then(function (res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
+      })
+      .then(function (data) {
+        var ms = Date.now() - t0;
+        cmq_render(data);
+        cmq_setStatus('ok', '✅ 成功 ' + data.length + ' 条 · ' + ms + 'ms');
+      })
+      .catch(function (err) {
+        cmq_setStatus('err', '❌ 失败：' + err.message);
+        document.getElementById('cmq_grid').innerHTML =
+          '<div class="cmq_status cmq_err" style="padding:24px;grid-column:1/-1;text-align:center">'
+          + '<b>请求出错</b><br><br>' + cmq_h(err.message)
+          + '<br><br><span style="font-size:12px;color:#888">请确认网络或直接访问 ' + cmq_h(url) + '</span>'
+          + '</div>';
+      });
+  }
+
+  document.getElementById('cmq_fetch').addEventListener('click', cmq_fetchUsers);
+
+  cmq_fetchUsers();
+</script>
+
+</body>
+</html>
