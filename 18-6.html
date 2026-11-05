@@ -1,0 +1,415 @@
+<!-- 姓名：蔡美琪，日期：2026-11-05，功能名称：Mermaid 智能客服系统流程图 + ER 图 -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>18-6 Mermaid · 智能客服系统设计 · 蔡美琪</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      min-height: 100vh;
+      font-family: "Microsoft YaHei", "PingFang SC", "Segoe UI", sans-serif;
+      background:
+        radial-gradient(ellipse at 20% 0%, rgba(124,58,237,.35) 0%, transparent 55%),
+        radial-gradient(ellipse at 80% 100%, rgba(6,182,212,.30) 0%, transparent 55%),
+        linear-gradient(180deg, #05060f 0%, #0a0a1f 50%, #050515 100%);
+      color: #e2e8f0;
+    }
+    a.cmq_back {
+      display: inline-block;
+      margin: 18px 24px 0;
+      padding: 8px 16px;
+      color: #22d3ee;
+      text-decoration: none;
+      font-size: 13px;
+      border: 1px solid rgba(34,211,238,.35);
+      border-radius: 20px;
+      background: rgba(15,23,42,.6);
+      transition: all .3s;
+    }
+    a.cmq_back:hover { background: rgba(34,211,238,.12); box-shadow: 0 0 16px rgba(34,211,238,.3); }
+
+    header.cmq_hd { text-align: center; padding: 30px 16px 20px; }
+    header.cmq_hd h1 {
+      font-size: 32px;
+      font-weight: 700;
+      background: linear-gradient(90deg, #22d3ee, #a78bfa, #f472b6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 6px;
+    }
+    header.cmq_hd p { margin-top: 8px; color: #94a3b8; font-size: 13px; letter-spacing: 3px; }
+    header.cmq_hd .cmq_tags {
+      margin-top: 14px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
+    }
+    header.cmq_hd .cmq_tags span {
+      padding: 4px 14px; font-size: 12px; border-radius: 14px;
+      border: 1px solid rgba(167,139,250,.35); color: #c4b5fd;
+      background: rgba(167,139,250,.08);
+    }
+
+    .cmq_container { max-width: 1400px; margin: 0 auto 50px; padding: 0 16px; }
+    .cmq_card {
+      background: linear-gradient(180deg, rgba(20,16,48,.8), rgba(8,8,24,.8));
+      border: 1px solid rgba(167,139,250,.25);
+      border-radius: 18px;
+      padding: 26px;
+      margin-bottom: 32px;
+      box-shadow: 0 8px 40px rgba(76,29,149,.25), inset 0 1px 0 rgba(255,255,255,.04);
+      backdrop-filter: blur(6px);
+    }
+    .cmq_card_hd {
+      display: flex; align-items: center; gap: 14px; margin-bottom: 4px;
+    }
+    .cmq_card_hd .cmq_num {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: linear-gradient(135deg,#06b6d4,#7c3aed);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 700; color: #fff;
+      box-shadow: 0 0 18px rgba(124,58,237,.45);
+    }
+    .cmq_card_hd h2 { font-size: 20px; color: #22d3ee; letter-spacing: 2px; }
+    .cmq_card .cmq_desc { font-size: 12px; color: #94a3b8; margin: 6px 0 18px 50px; letter-spacing: 1px; }
+
+    .cmq_chart_frame {
+      border-radius: 12px;
+      background: radial-gradient(ellipse at top, #100a28 0%, #05030f 100%);
+      border: 1px solid rgba(99,102,241,.25);
+      padding: 28px 20px;
+      overflow-x: auto;
+      box-shadow: inset 0 0 40px rgba(6,182,212,.06);
+    }
+    .cmq_chart_frame svg { display: block; margin: 0 auto; }
+
+    /* Mermaid 深色主题覆盖 */
+    .mermaid { text-align: center; }
+    .mermaid svg {
+      filter: drop-shadow(0 2px 16px rgba(124,58,237,.25));
+    }
+
+    .cmq_tools {
+      display: flex; gap: 10px; flex-wrap: wrap; margin-left: 50px; margin-bottom: 14px;
+    }
+    .cmq_btn {
+      padding: 6px 16px; font-size: 12px; border-radius: 16px;
+      border: 1px solid rgba(167,139,250,.35); background: transparent;
+      color: #c4b5fd; cursor: pointer; font-family: inherit; transition: all .25s;
+    }
+    .cmq_btn:hover { background: rgba(167,139,250,.12); }
+    .cmq_btn.active {
+      background: linear-gradient(135deg,#06b6d4,#7c3aed); color: #fff;
+      border-color: transparent; box-shadow: 0 0 12px rgba(109,40,217,.4);
+    }
+
+    .cmq_source {
+      margin-top: 18px; padding: 14px 18px; border-radius: 10px;
+      background: rgba(15,23,42,.7); border: 1px dashed rgba(148,163,184,.25);
+      font-family: "Consolas", "Monaco", monospace; font-size: 12px;
+      color: #94a3b8; white-space: pre-wrap; word-break: break-all;
+      max-height: 180px; overflow-y: auto; line-height: 1.6;
+    }
+    .cmq_source::-webkit-scrollbar { width: 6px; }
+    .cmq_source::-webkit-scrollbar-thumb { background: #4c1d95; border-radius: 3px; }
+
+    footer { text-align: center; padding: 20px; color: #64748b; font-size: 12px; letter-spacing: 2px; }
+  </style>
+  <script src="./cdn/mermaid.min.js"></script>
+</head>
+<body>
+  <a href="1.html" class="cmq_back">← 返回首页</a>
+
+  <header class="cmq_hd">
+    <h1>SMART CUSTOMER SERVICE · Mermaid</h1>
+    <p>智能客服系统 · 流程图 &amp; ER 图 · BY 蔡美琪</p>
+    <div class="cmq_tags">
+      <span>Mermaid.js</span>
+      <span>Flowchart</span>
+      <span>ER Diagram</span>
+      <span>System Design</span>
+    </div>
+  </header>
+
+  <div class="cmq_container">
+
+    <!-- ============ 卡片 1：智能客服流程图 ============ -->
+    <div class="cmq_card">
+      <div class="cmq_card_hd">
+        <div class="cmq_num">①</div>
+        <h2>智能客服系统 · 业务流程图</h2>
+      </div>
+      <div class="cmq_desc">用户从发起咨询到问题解决的完整业务链路，涵盖 NLP 意图识别、知识库检索、人工转接等核心节点。</div>
+
+      <div class="cmq_tools">
+        <button class="cmq_btn active" id="cmqBtnFlowTop">自上而下 TD</button>
+        <button class="cmq_btn" id="cmqBtnFlowLR">从左到右 LR</button>
+        <button class="cmq_btn" id="cmqBtnFlowSrc">📜 查看源码</button>
+      </div>
+
+      <div class="cmq_chart_frame">
+        <pre class="mermaid" id="cmqMermaidFlow"></pre>
+      </div>
+
+      <details class="cmq_source" id="cmqSourceFlow" style="display:none;">
+<summary style="cursor:pointer;color:#a78bfa;">▶ Mermaid 源码</summary>
+<pre></pre>
+      </details>
+    </div>
+
+    <!-- ============ 卡片 2：数据库 ER 图 ============ -->
+    <div class="cmq_card">
+      <div class="cmq_card_hd">
+        <div class="cmq_num">②</div>
+        <h2>智能客服系统 · 数据库 ER 图</h2>
+      </div>
+      <div class="cmq_desc">核心实体及其关系：用户、会话、消息、知识库条目、FAQ、工单、坐席人员。</div>
+
+      <div class="cmq_tools">
+        <button class="cmq_btn active" id="cmqBtnErTheme">默认主题</button>
+        <button class="cmq_btn" id="cmqBtnErSrc">📜 查看源码</button>
+      </div>
+
+      <div class="cmq_chart_frame">
+        <pre class="mermaid" id="cmqMermaidER"></pre>
+      </div>
+
+      <details class="cmq_source" id="cmqSourceER" style="display:none;">
+<summary style="cursor:pointer;color:#a78bfa;">▶ Mermaid 源码</summary>
+<pre></pre>
+      </details>
+    </div>
+
+  </div>
+
+  <footer>© 2026 蔡美琪 · 高级网页设计 · Mermaid 系统设计图</footer>
+
+  <script>
+    // ==============================================================
+    //  配置 Mermaid 深色主题
+    // ==============================================================
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: 'dark',
+      themeVariables: {
+        primaryColor: '#4c1d95',
+        primaryTextColor: '#e2e8f0',
+        primaryBorderColor: '#a78bfa',
+        lineColor: '#22d3ee',
+        secondaryColor: '#0e7490',
+        tertiaryColor: '#1e1b4b',
+        background: 'transparent',
+        mainBkg: '#312e81',
+        nodeBorder: '#818cf8',
+        clusterBkg: 'rgba(76,29,149,.25)',
+        clusterBorder: '#6d28d9',
+        titleColor: '#22d3ee',
+        edgeLabelBackground: '#0f172a'
+      },
+      flowchart: {
+        htmlLabels: true,
+        curve: 'basis',
+        padding: 16,
+        nodeSpacing: 36,
+        rankSpacing: 48,
+        useMaxWidth: true
+      },
+      er: {
+        layoutDirection: 'LR',
+        useMaxWidth: true
+      },
+      securityLevel: 'loose'
+    });
+
+
+    // ==============================================================
+    //  1. 流程图源码（TD 默认）
+    // ==============================================================
+    var CMQ_FLOW_TD = [
+      'flowchart TD',
+      '    subgraph 用户层["👤 用户端"]',
+      '        A([开始咨询]) --> B{用户输入}',
+      '    end',
+      '',
+      '    subgraph 接入层["🔌 接入网关"]',
+      '        B --> C[渠道接入<br/>Web / App / 微信 / API]',
+      '    end',
+      '',
+      '    subgraph AI引擎层["🧠 AI 处理引擎"]',
+      '        C --> D[NLU 意图识别]',
+      '        D --> E{置信度 ≥ 80%?}',
+      '        E -- Yes --> F[知识库检索 RAG]',
+      '        E -- No --> G[多轮对话引导]',
+      '        G --> D',
+      '        F --> H{找到匹配答案?}',
+      '    end',
+      '',
+      '    subgraph 业务层["⚙️ 业务处理"]',
+      '        H -- Yes --> I[生成回复<br/>LLM 润色]',
+      '        H -- No --> J[创建工单]',
+      '        J --> K{当前在线坐席?}',
+      '    end',
+      '',
+      '    subgraph 人工层["👨‍💼 人工客服"]',
+      '        K -- Yes --> L[分配给坐席]',
+      '        K -- No --> M[排队等待 / 留言]',
+      '        M --> N[坐席上线后提醒]',
+      '        N --> L',
+      '    end',
+      '',
+      '    subgraph 结束["✅ 闭环"]',
+      '        I --> O[用户收到回复]',
+      '        L --> P[人工对话]',
+      '        O --> Q{问题解决?}',
+      '        P --> Q',
+      '        Q -- Yes --> R[结束会话 + 满意度评价]',
+      '        Q -- No --> J',
+      '        R --> S([结束])',
+      '    end',
+      '',
+      '    style A fill:#06b6d4,stroke:#22d3ee,color:#0f172a',
+      '    style S fill:#f472b6,stroke:#f9a8d4,color:#0f172a',
+      '    style E fill:#fbbf24,stroke:#fde68a,color:#0f172a',
+      '    style H fill:#fbbf24,stroke:#fde68a,color:#0f172a',
+      '    style K fill:#fbbf24,stroke:#fde68a,color:#0f172a',
+      '    style Q fill:#fbbf24,stroke:#fde68a,color:#0f172a',
+      '    style F fill:#34d399,stroke:#6ee7b7,color:#0f172a',
+      '    style I fill:#34d399,stroke:#6ee7b7,color:#0f172a',
+      '    style R fill:#a78bfa,stroke:#c4b5fd,color:#0f172a'
+    ].join('\n');
+
+    var CMQ_FLOW_LR = CMQ_FLOW_TD.replace('flowchart TD', 'flowchart LR');
+
+
+    // ==============================================================
+    //  2. ER 图源码
+    // ==============================================================
+    var CMQ_ER = [
+      'erDiagram',
+      '    USER {',
+      '        bigint user_id PK "用户ID"',
+      '        string open_id "三方标识"',
+      '        string nickname "昵称"',
+      '        tinyint gender "性别"',
+      '        datetime created_at "注册时间"',
+      '        datetime last_active "最后活跃"',
+      '    }',
+      '',
+      '    SESSION {',
+      '        bigint session_id PK "会话ID"',
+      '        bigint user_id FK "用户ID"',
+      '        tinyint channel "渠道类型"',
+      '        tinyint status "状态"',
+      '        datetime start_time "开始时间"',
+      '        datetime end_time "结束时间"',
+      '        int duration_sec "时长(秒)"',
+      '    }',
+      '',
+      '    MESSAGE {',
+      '        bigint msg_id PK "消息ID"',
+      '        bigint session_id FK "会话ID"',
+      '        tinyint sender "发送方"',
+      '        text content "消息内容"',
+      '        tinyint msg_type "类型"',
+      '        datetime created_at "时间戳"',
+      '    }',
+      '',
+      '    KNOWLEDGE {',
+      '        bigint doc_id PK "文档ID"',
+      '        string title "标题"',
+      '        text content "正文"',
+      '        bigint category_id FK "分类ID"',
+      '        int hit_count "命中次数"',
+      '        tinyint status "状态"',
+      '        datetime updated_at "更新时间"',
+      '    }',
+      '',
+      '    FAQ {',
+      '        bigint faq_id PK "FAQ ID"',
+      '        string question "标准问题"',
+      '        text answer "标准答案"',
+      '        int helpful "有用数"',
+      '        int unhelpful "无用数"',
+      '    }',
+      '',
+      '    TICKET {',
+      '        bigint ticket_id PK "工单ID"',
+      '        bigint user_id FK "用户ID"',
+      '        bigint agent_id FK "坐席ID"',
+      '        tinyint priority "优先级"',
+      '        tinyint status "状态"',
+      '        text description "问题描述"',
+      '        datetime created_at "创建时间"',
+      '        datetime resolved_at "解决时间"',
+      '    }',
+      '',
+      '    AGENT {',
+      '        bigint agent_id PK "坐席ID"',
+      '        string name "姓名"',
+      '        string account "工号"',
+      '        tinyint skill_group "技能组"',
+      '        tinyint online_status "在线状态"',
+      '        int current_load "当前负载"',
+      '    }',
+      '',
+      '    USER ||--o{ SESSION : "发起"',
+      '    SESSION ||--o{ MESSAGE : "包含"',
+      '    USER ||--o{ TICKET : "提交"',
+      '    AGENT ||--o{ TICKET : "处理"',
+      '    AGENT }o--|| SESSION : "接入"',
+      '    KNOWLEDGE ||--o{ FAQ : "关联"'
+    ].join('\n');
+
+
+    // ==============================================================
+    //  渲染函数（唯一实例，通过改源码 + 重新 render）
+    // ==============================================================
+    var cmq_rendered = { flow: '', er: '' };
+
+    function cmqRender(id, code) {
+      var el = document.getElementById(id);
+      el.innerHTML = '';
+      el.className = 'mermaid';
+      el.textContent = code;
+      mermaid.run({ nodes: [el] });
+    }
+
+    cmqRender('cmqMermaidFlow', CMQ_FLOW_TD);
+    cmq_rendered.flow = CMQ_FLOW_TD;
+    cmqRender('cmqMermaidER', CMQ_ER);
+    cmq_rendered.er = CMQ_ER;
+
+
+    // ==============================================================
+    //  交互：流程图 TD / LR 切换
+    // ==============================================================
+    document.getElementById('cmqBtnFlowTop').addEventListener('click', function () {
+      document.querySelectorAll('#cmqBtnFlowTop, #cmqBtnFlowLR').forEach(function (b) { b.classList.remove('active'); });
+      this.classList.add('active');
+      cmqRender('cmqMermaidFlow', CMQ_FLOW_TD);
+      cmq_rendered.flow = CMQ_FLOW_TD;
+    });
+    document.getElementById('cmqBtnFlowLR').addEventListener('click', function () {
+      document.querySelectorAll('#cmqBtnFlowTop, #cmqBtnFlowLR').forEach(function (b) { b.classList.remove('active'); });
+      this.classList.add('active');
+      cmqRender('cmqMermaidFlow', CMQ_FLOW_LR);
+      cmq_rendered.flow = CMQ_FLOW_LR;
+    });
+
+    // 查看源码切换
+    document.getElementById('cmqBtnFlowSrc').addEventListener('click', function () {
+      var box = document.getElementById('cmqSourceFlow');
+      if (box.style.display === 'none') {
+        box.style.display = 'block';
+        box.querySelector('pre').textContent = cmq_rendered.flow;
+      } else { box.style.display = 'none'; }
+    });
+    document.getElementById('cmqBtnErSrc').addEventListener('click', function () {
+      var box = document.getElementById('cmqSourceER');
+      if (box.style.display === 'none') {
+        box.style.display = 'block';
+        box.querySelector('pre').textContent = cmq_rendered.er;
+      } else { box.style.display = 'none'; }
+    });
+  </script>
+</body>
+</html>
