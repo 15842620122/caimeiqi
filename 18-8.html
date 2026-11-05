@@ -1,0 +1,586 @@
+<!-- 姓名：蔡美琪，日期：2026-11-05，功能名称：ECharts 数据可视化大屏（三列布局 · 3D 地球） -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>18-8 · 数据可视化大屏 · 蔡美琪</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%; min-height: 100vh; overflow-x: hidden;
+      font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+      color: #cfe8ff;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(6,182,212,.18) 0%, transparent 60%),
+        radial-gradient(ellipse at 50% 100%, rgba(37,99,235,.15) 0%, transparent 60%),
+        linear-gradient(180deg, #020814 0%, #061226 50%, #020612 100%);
+    }
+
+    /* ======= 顶部标题栏 ======= */
+    .cmq_topbar {
+      position: relative;
+      height: 72px;
+      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(180deg, rgba(6,182,212,.15) 0%, transparent 100%);
+      border-bottom: 1px solid rgba(34,211,238,.2);
+    }
+    .cmq_topbar::before, .cmq_topbar::after {
+      content: ''; position: absolute; bottom: 0;
+      width: 180px; height: 2px;
+      background: linear-gradient(90deg, transparent, #22d3ee, transparent);
+    }
+    .cmq_topbar::before { left: 5%; }
+    .cmq_topbar::after  { right: 5%; }
+    .cmq_topbar h1 {
+      font-size: 28px; font-weight: 700; letter-spacing: 12px;
+      background: linear-gradient(180deg, #e0f7ff 30%, #22d3ee 70%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      text-shadow: 0 0 30px rgba(34,211,238,.5);
+    }
+    .cmq_clock {
+      position: absolute; right: 32px; top: 50%; transform: translateY(-50%);
+      font-size: 13px; color: #22d3ee; letter-spacing: 2px; font-family: Consolas, monospace;
+      padding: 6px 14px; border: 1px solid rgba(34,211,238,.35); border-radius: 4px;
+      background: rgba(15,23,42,.5);
+    }
+    .cmq_back {
+      position: absolute; left: 24px; top: 50%; transform: translateY(-50%);
+      color: #22d3ee; text-decoration: none; font-size: 13px;
+      padding: 6px 14px; border: 1px solid rgba(34,211,238,.3); border-radius: 4px;
+      background: rgba(15,23,42,.5); transition: all .3s;
+    }
+    .cmq_back:hover { background: rgba(34,211,238,.12); box-shadow: 0 0 12px rgba(34,211,238,.3); }
+
+    /* ======= 大屏主体 ======= */
+    .cmq_dashboard {
+      width: 100%; max-width: 1920px; margin: 0 auto; padding: 14px;
+      display: grid; grid-template-columns: 28% 44% 28%; gap: 14px;
+    }
+    .cmq_col { display: flex; flex-direction: column; gap: 14px; }
+
+    /* 卡片通用 */
+    .cmq_panel {
+      position: relative;
+      background: linear-gradient(180deg, rgba(7,30,60,.75) 0%, rgba(4,16,35,.75) 100%);
+      border: 1px solid rgba(34,211,238,.2);
+      border-radius: 4px; padding: 12px 12px 6px;
+      overflow: hidden;
+    }
+    .cmq_panel::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0;
+      height: 2px; background: linear-gradient(90deg, transparent, #22d3ee, transparent);
+    }
+    .cmq_panel .cmq_hd {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 8px; padding-bottom: 6px;
+      border-bottom: 1px dashed rgba(34,211,238,.2);
+    }
+    .cmq_panel .cmq_hd h3 {
+      font-size: 13px; color: #22d3ee; font-weight: 600; letter-spacing: 2px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .cmq_panel .cmq_hd h3::before {
+      content: ''; width: 3px; height: 14px; background: #22d3ee; border-radius: 2px;
+      box-shadow: 0 0 8px #22d3ee;
+    }
+    .cmq_panel .cmq_hd .cmq_tag {
+      font-size: 11px; color: #06b6d4; letter-spacing: 1px;
+      padding: 2px 8px; border: 1px solid rgba(6,182,212,.3); border-radius: 2px;
+    }
+    .cmq_panel .cmq_chart { width: 100%; }
+
+    /* ======= 左列 ======= */
+    .cmq_col_left .cmq_panel:nth-child(1) { flex: 0 0 240px; }
+    .cmq_col_left .cmq_panel:nth-child(2) { flex: 1; min-height: 260px; }
+    .cmq_col_left .cmq_panel:nth-child(3) { flex: 0 0 220px; }
+
+    /* ======= 中列 ======= */
+    .cmq_col_center { display: flex; flex-direction: column; gap: 14px; }
+    .cmq_col_center .cmq_geo { flex: 1; min-height: 480px; }
+    .cmq_col_center .cmq_bottom { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; height: 220px; }
+
+    /* ======= 右列 ======= */
+    .cmq_col_right .cmq_panel:nth-child(1) { flex: 0 0 260px; }
+    .cmq_col_right .cmq_panel:nth-child(2) { flex: 0 0 220px; }
+    .cmq_col_right .cmq_panel:nth-child(3) { flex: 1; min-height: 300px; }
+
+    /* 数据列表 */
+    .cmq_list { padding: 4px 0; }
+    .cmq_list_item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 6px 10px; margin-bottom: 4px; font-size: 12px;
+      background: rgba(6,182,212,.06); border-left: 2px solid #22d3ee;
+      border-radius: 0 3px 3px 0; transition: all .2s;
+    }
+    .cmq_list_item:hover { background: rgba(34,211,238,.12); }
+    .cmq_list_item .cmq_rank {
+      display: inline-block; width: 20px; height: 20px; line-height: 20px;
+      text-align: center; font-size: 11px; font-weight: 700; border-radius: 2px;
+      background: rgba(34,211,238,.2); color: #22d3ee; margin-right: 8px;
+    }
+    .cmq_list_item:nth-child(1) .cmq_rank { background: linear-gradient(135deg,#fbbf24,#f59e0b); color: #0f172a; }
+    .cmq_list_item:nth-child(2) .cmq_rank { background: linear-gradient(135deg,#94a3b8,#64748b); color: #0f172a; }
+    .cmq_list_item:nth-child(3) .cmq_rank { background: linear-gradient(135deg,#d97706,#92400e); color: #fff; }
+    .cmq_list_item .cmq_val { color: #22d3ee; font-family: Consolas, monospace; font-weight: 600; }
+
+    /* 数字跳动 */
+    .cmq_kpi_row { display: flex; justify-content: space-around; padding: 6px 0 10px; }
+    .cmq_kpi_row .cmq_kpi { text-align: center; }
+    .cmq_kpi_row .cmq_kpi .cmq_num {
+      font-size: 26px; font-weight: 700; font-family: Consolas, monospace;
+      background: linear-gradient(180deg,#fff,#22d3ee);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .cmq_kpi_row .cmq_kpi .cmq_label { font-size: 11px; color: #64748b; margin-top: 2px; letter-spacing: 1px; }
+
+    /* 滚动条 */
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-thumb { background: rgba(34,211,238,.4); border-radius: 2px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+
+    @media (max-width: 1400px) {
+      .cmq_dashboard { grid-template-columns: 30% 40% 30%; }
+      .cmq_topbar h1 { font-size: 22px; letter-spacing: 8px; }
+    }
+  </style>
+  <script src="./cdn/echarts.min.js"></script>
+  <script src="./cdn/echarts-gl.min.js"></script>
+</head>
+<body>
+
+<!-- 顶部标题栏 -->
+<div class="cmq_topbar">
+  <a href="1.html" class="cmq_back">← 返回首页</a>
+  <h1>全球智能数据监测中心</h1>
+  <div class="cmq_clock" id="cmqClock">--:--:--</div>
+</div>
+
+<!-- 大屏主体 -->
+<div class="cmq_dashboard">
+
+  <!-- ================= 左列 ================= -->
+  <div class="cmq_col cmq_col_left">
+
+    <!-- ① KPI 数字卡片 + 仪表盘 -->
+    <div class="cmq_panel">
+      <div class="cmq_hd"><h3>① 实时核心指标</h3><span class="cmq_tag">REAL-TIME</span></div>
+      <div class="cmq_kpi_row">
+        <div class="cmq_kpi"><div class="cmq_num" id="cmqKpi1">12,847</div><div class="cmq_label">今日访问</div></div>
+        <div class="cmq_kpi"><div class="cmq_num" id="cmqKpi2">3,256</div><div class="cmq_label">活跃用户</div></div>
+        <div class="cmq_kpi"><div class="cmq_num" id="cmqKpi3">98.6%</div><div class="cmq_label">在线率</div></div>
+      </div>
+      <div id="cmqChartGauge" class="cmq_chart" style="height:160px;"></div>
+    </div>
+
+    <!-- ② 折线趋势 -->
+    <div class="cmq_panel">
+      <div class="cmq_hd"><h3>② 近 24 小时访问趋势</h3><span class="cmq_tag">TREND</span></div>
+      <div id="cmqChartLine" class="cmq_chart" style="height:calc(100% - 32px); min-height:200px;"></div>
+    </div>
+
+    <!-- ③ 柱状排行 -->
+    <div class="cmq_panel">
+      <div class="cmq_hd"><h3>③ 省份业务排行 TOP 8</h3><span class="cmq_tag">RANK</span></div>
+      <div id="cmqChartBar" class="cmq_chart" style="height:calc(100% - 32px);"></div>
+    </div>
+  </div>
+
+  <!-- ================= 中列 ================= -->
+  <div class="cmq_col cmq_col_center">
+
+    <!-- 🌍 3D 地球 + 飞线 + 城市散点 -->
+    <div class="cmq_panel cmq_geo">
+      <div class="cmq_hd">
+        <h3>🌍 全球航线 · 实时数据流</h3>
+        <span class="cmq_tag">3D · GLOBE</span>
+      </div>
+      <div id="cmqChartGlobe" class="cmq_chart" style="height:calc(100% - 32px);"></div>
+    </div>
+
+    <!-- 下方 2 个小图 -->
+    <div class="cmq_bottom">
+      <div class="cmq_panel">
+        <div class="cmq_hd"><h3>⑥ 业务类型占比</h3><span class="cmq_tag">PIE</span></div>
+        <div id="cmqChartPie" class="cmq_chart" style="height:calc(100% - 32px);"></div>
+      </div>
+      <div class="cmq_panel">
+        <div class="cmq_hd"><h3>⑦ 用户行为关联</h3><span class="cmq_tag">SCATTER</span></div>
+        <div id="cmqChartScatter" class="cmq_chart" style="height:calc(100% - 32px);"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 右列 ================= -->
+  <div class="cmq_col cmq_col_right">
+
+    <!-- ④ 雷达能力评估 -->
+    <div class="cmq_panel">
+      <div class="cmq_hd"><h3>④ 系统能力雷达</h3><span class="cmq_tag">RADAR</span></div>
+      <div id="cmqChartRadar" class="cmq_chart" style="height:calc(100% - 32px);"></div>
+    </div>
+
+    <!-- ⑤ 漏斗转化 -->
+    <div class="cmq_panel">
+      <div class="cmq_hd"><h3>⑤ 用户转化漏斗</h3><span class="cmq_tag">FUNNEL</span></div>
+      <div id="cmqChartFunnel" class="cmq_chart" style="height:calc(100% - 32px);"></div>
+    </div>
+
+    <!-- ⑧ 实时数据列表 -->
+    <div class="cmq_panel">
+      <div class="cmq_hd"><h3>⑧ 实时业务流水</h3><span class="cmq_tag">LIVE</span></div>
+      <div class="cmq_list" id="cmqList"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // =========================================================
+  //  通用：深色大屏主题
+  // =========================================================
+  var CMQ_THEME = {
+    textStyle: { color: '#cfe8ff' },
+    backgroundColor: 'transparent',
+    tooltip: {
+      backgroundColor: 'rgba(6,18,38,.92)', borderColor: '#22d3ee',
+      textStyle: { color: '#e2e8f0' }
+    },
+    axisLine: { lineStyle: { color: 'rgba(34,211,238,.4)' } },
+    splitLine: { lineStyle: { color: 'rgba(34,211,238,.1)' } }
+  };
+  var CMQ_COLORS = ['#22d3ee', '#3b82f6', '#a78bfa', '#f472b6', '#fbbf24', '#34d399', '#60a5fa', '#fb7185'];
+
+  // 时钟
+  function cmqTick() {
+    var d = new Date();
+    var p = function (n) { return n < 10 ? '0' + n : n; };
+    document.getElementById('cmqClock').textContent =
+      d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' +
+      p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+  }
+  cmqTick(); setInterval(cmqTick, 1000);
+
+  // =========================================================
+  //  ① 仪表盘
+  // =========================================================
+  var cmqGauge = echarts.init(document.getElementById('cmqChartGauge'), 'dark');
+  cmqGauge.setOption({
+    backgroundColor: 'transparent',
+    series: [{
+      type: 'gauge', startAngle: 220, endAngle: -40,
+      min: 0, max: 100, radius: '100%', center: ['50%', '55%'],
+      progress: { show: true, width: 10, itemStyle: { color: '#22d3ee' } },
+      axisLine: { lineStyle: { width: 10, color: [[1, 'rgba(34,211,238,.15)']] } },
+      axisTick: { show: false }, splitLine: { show: false }, axisLabel: { show: false },
+      pointer: { show: false },
+      anchor: { show: false },
+      title: { offsetCenter: [0, '30%'], fontSize: 11, color: '#64748b' },
+      detail: {
+        valueAnimation: true, fontSize: 26, fontWeight: 700, color: '#22d3ee',
+        formatter: '{value}%', offsetCenter: [0, '-5%'],
+        fontFamily: 'Consolas, monospace'
+      },
+      data: [{ value: 86.7, name: '系统负载' }]
+    }]
+  });
+  setInterval(function () {
+    cmqGauge.setOption({ series: [{ data: [{ value: +(60 + Math.random() * 35).toFixed(1) }] }] });
+    document.getElementById('cmqKpi1').textContent = (12000 + Math.floor(Math.random() * 2000)).toLocaleString();
+    document.getElementById('cmqKpi2').textContent = (3000 + Math.floor(Math.random() * 600)).toLocaleString();
+    document.getElementById('cmqKpi3').textContent = (97 + Math.random() * 3).toFixed(1) + '%';
+  }, 2000);
+
+  // =========================================================
+  //  ② 折线趋势
+  // =========================================================
+  var cmqLine = echarts.init(document.getElementById('cmqChartLine'), 'dark');
+  var CMQ_HOURS = []; for (var h = 0; h < 24; h++) CMQ_HOURS.push(h + ':00');
+  function cmqGenTrend() {
+    var a = [], b = [];
+    for (var i = 0; i < 24; i++) {
+      a.push(Math.round(300 + Math.random() * 500 + Math.sin(i / 3) * 100));
+      b.push(Math.round(150 + Math.random() * 300 + Math.cos(i / 2) * 80));
+    }
+    return [a, b];
+  }
+  var trendData = cmqGenTrend();
+  cmqLine.setOption({
+    backgroundColor: 'transparent',
+    tooltip: CMQ_THEME.tooltip,
+    legend: { textStyle: { color: '#94a3b8' }, top: 0, right: 10 },
+    grid: { left: 36, right: 14, top: 30, bottom: 22 },
+    xAxis: { type: 'category', data: CMQ_HOURS, boundaryGap: false,
+      axisLine: CMQ_THEME.axisLine, axisLabel: { color: '#64748b', fontSize: 10 } },
+    yAxis: { type: 'value', splitLine: CMQ_THEME.splitLine, axisLabel: { color: '#64748b', fontSize: 10 } },
+    series: [
+      { name: '访问量', type: 'line', smooth: true, data: trendData[0],
+        itemStyle: { color: '#22d3ee' }, symbol: 'circle', symbolSize: 5,
+        lineStyle: { width: 2 },
+        areaStyle: { color: new echarts.graphic.LinearGradient(0,0,0,1,[
+          { offset: 0, color: 'rgba(34,211,238,.4)' }, { offset: 1, color: 'rgba(34,211,238,0)' }
+        ])} },
+      { name: '活跃数', type: 'line', smooth: true, data: trendData[1],
+        itemStyle: { color: '#a78bfa' }, symbol: 'circle', symbolSize: 5,
+        lineStyle: { width: 2 },
+        areaStyle: { color: new echarts.graphic.LinearGradient(0,0,0,1,[
+          { offset: 0, color: 'rgba(167,139,250,.35)' }, { offset: 1, color: 'rgba(167,139,250,0)' }
+        ])} }
+    ]
+  });
+  setInterval(function () {
+    var td = cmqGenTrend();
+    cmqLine.setOption({ series: [{ data: td[0] }, { data: td[1] }] });
+  }, 5000);
+
+  // =========================================================
+  //  ③ 柱状排行
+  // =========================================================
+  var cmqBar = echarts.init(document.getElementById('cmqChartBar'), 'dark');
+  var CMQ_PROV = ['广东','北京','上海','浙江','江苏','四川','山东','湖北'];
+  var CMQ_PROV_VAL = [4820, 4150, 3980, 3560, 3240, 2890, 2650, 2310];
+  cmqBar.setOption({
+    backgroundColor: 'transparent',
+    tooltip: CMQ_THEME.tooltip,
+    grid: { left: 10, right: 50, top: 6, bottom: 6, containLabel: true },
+    xAxis: { type: 'value', show: false },
+    yAxis: { type: 'category', data: CMQ_PROV.slice().reverse(),
+      axisLine: CMQ_THEME.axisLine, axisLabel: { color: '#cbd5e1', fontSize: 11 },
+      axisTick: { show: false } },
+    series: [{
+      type: 'bar', data: CMQ_PROV_VAL.slice().reverse(), barWidth: 12,
+      itemStyle: {
+        color: new echarts.graphic.LinearGradient(0,0,1,0,[
+          { offset: 0, color: '#0e7490' }, { offset: 1, color: '#22d3ee' }
+        ]),
+        borderRadius: [0, 2, 2, 0]
+      },
+      label: { show: true, position: 'right', color: '#22d3ee', fontSize: 11, fontFamily: 'Consolas' }
+    }]
+  });
+
+  // =========================================================
+  //  🌍 中间 3D 地球 + 飞线 + 散点（echarts-gl globe）
+  // =========================================================
+  var cmqGlobe = echarts.init(document.getElementById('cmqChartGlobe'), 'dark');
+
+  var CMQ_CITIES = [
+    { name:'北京',     lng:116.4074, lat:39.9042 },
+    { name:'上海',     lng:121.4737, lat:31.2304 },
+    { name:'东京',     lng:139.6917, lat:35.6895 },
+    { name:'首尔',     lng:126.9780, lat:37.5665 },
+    { name:'新加坡',   lng:103.8198, lat:1.3521  },
+    { name:'迪拜',     lng:55.2708,  lat:25.2048 },
+    { name:'伦敦',     lng:-0.1276,  lat:51.5074 },
+    { name:'巴黎',     lng:2.3522,   lat:48.8566 },
+    { name:'纽约',     lng:-74.0060, lat:40.7128 },
+    { name:'洛杉矶',   lng:-118.2437,lat:34.0522 },
+    { name:'悉尼',     lng:151.2093, lat:-33.8688},
+    { name:'莫斯科',   lng:37.6173,  lat:55.7558 },
+    { name:'开罗',     lng:31.2357,  lat:30.0444 },
+    { name:'圣保罗',   lng:-46.6333, lat:-23.5505},
+    { name:'墨西哥城', lng:-99.1332, lat:19.4326 },
+    { name:'多伦多',   lng:-79.3832, lat:43.6532 }
+  ];
+
+  function cmqGenRoutes() {
+    var hubs = [0, 1, 4, 6, 8];
+    var routes = [];
+    for (var i = 0; i < CMQ_CITIES.length; i++) {
+      for (var j = 0; j < hubs.length; j++) {
+        if (i !== hubs[j] && Math.random() < 0.35) {
+          routes.push({ coords: [
+            [CMQ_CITIES[hubs[j]].lng, CMQ_CITIES[hubs[j]].lat],
+            [CMQ_CITIES[i].lng, CMQ_CITIES[i].lat]
+          ]});
+        }
+      }
+    }
+    return routes;
+  }
+
+  cmqGlobe.setOption({
+    backgroundColor: 'transparent',
+    tooltip: { backgroundColor: 'rgba(6,18,38,.9)', borderColor: '#22d3ee', textStyle: { color: '#fff' } },
+    globe: {
+      showAtmosphere: true,
+      atmosphere: { offset: 0, blur: 28, color: 'rgba(34,211,238,.3)' },
+      baseTexture: '', heightTexture: '',
+      globeOuterRadius: 100,
+      shading: 'lambert',
+      itemStyle: { color: '#0f2a52', borderWidth: 0.3, borderColor: '#22d3ee' },
+      lighting: { main: { intensity: 1.0 }, ambient: { intensity: 0.5 } },
+      viewControl: { alpha: 25, beta: 0, distance: 160, autoRotate: true, autoRotateSpeed: 6 }
+    },
+    series: [
+      {
+        type: 'lines3D', coordinateSystem: 'globe',
+        effect: { show: true, period: 4, trailLength: 0.2, trailWidth: 1.8 },
+        blendMode: 'lighter',
+        lineStyle: { color: '#22d3ee', width: 1, opacity: 0.6 },
+        data: cmqGenRoutes()
+      },
+      {
+        type: 'scatter3D', coordinateSystem: 'globe',
+        blendMode: 'lighter', symbolSize: 12,
+        itemStyle: { color: '#f472b6', borderColor: '#fff', borderWidth: 0.5 },
+        label: { show: true, formatter: '{b}', textStyle: { color: '#22d3ee', fontSize: 11 } },
+        data: CMQ_CITIES.map(function (c) { return { name: c.name, value: [c.lng, c.lat] }; })
+      }
+    ]
+  });
+
+  // =========================================================
+  //  ⑥ 饼图
+  // =========================================================
+  var cmqPie = echarts.init(document.getElementById('cmqChartPie'), 'dark');
+  cmqPie.setOption({
+    backgroundColor: 'transparent',
+    tooltip: CMQ_THEME.tooltip,
+    legend: { orient: 'vertical', right: 8, top: 'center', textStyle: { color: '#cbd5e1', fontSize: 11 } },
+    series: [{
+      type: 'pie', radius: ['40%', '70%'], center: ['35%', '50%'],
+      avoidLabelOverlap: true, itemStyle: { borderColor: '#061226', borderWidth: 2 },
+      label: { show: false }, labelLine: { show: false },
+      data: [
+        { value: 3280, name: '即时通讯', itemStyle: { color: '#22d3ee' } },
+        { value: 2150, name: '在线交易', itemStyle: { color: '#a78bfa' } },
+        { value: 1860, name: '视频会议', itemStyle: { color: '#f472b6' } },
+        { value: 1420, name: '数据查询', itemStyle: { color: '#fbbf24' } },
+        { value:  980, name: '其他',    itemStyle: { color: '#34d399' } }
+      ]
+    }]
+  });
+
+  // =========================================================
+  //  ⑦ 散点图
+  // =========================================================
+  var cmqScatter = echarts.init(document.getElementById('cmqChartScatter'), 'dark');
+  var scatterData = [];
+  for (var i = 0; i < 60; i++) {
+    scatterData.push([+Math.random().toFixed(2), +Math.random().toFixed(2), +(Math.random() * 30 + 5).toFixed(1)]);
+  }
+  cmqScatter.setOption({
+    backgroundColor: 'transparent',
+    tooltip: { backgroundColor: 'rgba(6,18,38,.9)', borderColor: '#22d3ee',
+      textStyle: { color: '#fff' }, formatter: function(p){ return 'x:'+p.value[0]+' y:'+p.value[1]+' 权重:'+p.value[2]; } },
+    grid: { left: 30, right: 14, top: 14, bottom: 24 },
+    xAxis: { type: 'value', min: 0, max: 1, splitLine: CMQ_THEME.splitLine,
+      axisLine: CMQ_THEME.axisLine, axisLabel: { color: '#64748b', fontSize: 10 } },
+    yAxis: { type: 'value', min: 0, max: 1, splitLine: CMQ_THEME.splitLine,
+      axisLine: CMQ_THEME.axisLine, axisLabel: { color: '#64748b', fontSize: 10 } },
+    series: [{
+      type: 'scatter', data: scatterData,
+      symbolSize: function (d) { return d[2]; },
+      itemStyle: {
+        color: new echarts.graphic.RadialGradient(0.5,0.5,0.5,[
+          { offset: 0, color: '#22d3ee' }, { offset: 1, color: 'rgba(34,211,238,.1)' }
+        ]),
+        shadowBlur: 10, shadowColor: '#22d3ee'
+      }
+    }]
+  });
+
+  // =========================================================
+  //  ④ 雷达
+  // =========================================================
+  var cmqRadar = echarts.init(document.getElementById('cmqChartRadar'), 'dark');
+  cmqRadar.setOption({
+    backgroundColor: 'transparent',
+    tooltip: CMQ_THEME.tooltip,
+    radar: {
+      indicator: [
+        { name: '响应速度', max: 100 }, { name: '处理能力', max: 100 },
+        { name: '稳定性',  max: 100 }, { name: '扩展性',  max: 100 },
+        { name: '安全性',  max: 100 }, { name: 'AI 能力', max: 100 }
+      ],
+      center: ['50%', '50%'], radius: '70%',
+      splitNumber: 4,
+      axisName: { color: '#cbd5e1', fontSize: 11 },
+      splitLine: { lineStyle: { color: 'rgba(34,211,238,.2)' } },
+      splitArea: { areaStyle: { color: ['rgba(34,211,238,.03)','rgba(34,211,238,.06)'] } },
+      axisLine: { lineStyle: { color: 'rgba(34,211,238,.3)' } }
+    },
+    series: [{
+      type: 'radar',
+      data: [
+        { value: [92, 85, 95, 78, 88, 82], name: '当前系统',
+          itemStyle: { color: '#22d3ee' },
+          areaStyle: { color: 'rgba(34,211,238,.25)' },
+          lineStyle: { width: 2 }
+        },
+        { value: [80, 72, 88, 82, 76, 90], name: '目标值',
+          itemStyle: { color: '#a78bfa' },
+          areaStyle: { color: 'rgba(167,139,250,.18)' },
+          lineStyle: { width: 2, type: 'dashed' }
+        }
+      ]
+    }]
+  });
+
+  // =========================================================
+  //  ⑤ 漏斗
+  // =========================================================
+  var cmqFunnel = echarts.init(document.getElementById('cmqChartFunnel'), 'dark');
+  cmqFunnel.setOption({
+    backgroundColor: 'transparent',
+    tooltip: CMQ_THEME.tooltip,
+    series: [{
+      type: 'funnel', left: '10%', top: 8, bottom: 8, width: '80%',
+      min: 0, max: 100, minSize: '0%', maxSize: '100%',
+      sort: 'descending', gap: 2,
+      label: { show: true, position: 'inside', color: '#fff', fontSize: 11, fontWeight: 600 },
+      labelLine: { show: false },
+      itemStyle: { borderColor: '#061226', borderWidth: 2 },
+      data: [
+        { value: 100, name: '访问',   itemStyle: { color: '#22d3ee' } },
+        { value:  78, name: '注册',   itemStyle: { color: '#3b82f6' } },
+        { value:  56, name: '下单',   itemStyle: { color: '#a78bfa' } },
+        { value:  34, name: '付款',   itemStyle: { color: '#f472b6' } },
+        { value:  22, name: '复购',   itemStyle: { color: '#fbbf24' } }
+      ]
+    }]
+  });
+
+  // =========================================================
+  //  ⑧ 实时数据列表
+  // =========================================================
+  var CMQ_NAMES = ['张伟','李娜','王芳','刘洋','陈杰','杨静','赵磊','黄敏','周涛','吴霞','徐鹏','孙丽'];
+  var CMQ_ACTIONS = ['完成了 1 笔交易','提交了工单','发起了咨询','完成了注册','更新了资料','浏览了商品','下载了文档','参与了评价'];
+  var CMQ_STATUS = ['success','pending','success','success','info','success'];
+  var CMQ_COLORS = { success:'#34d399', pending:'#fbbf24', info:'#22d3ee' };
+  var CMQ_STATUS_TEXT = { success:'成功', pending:'处理中', info:'提示' };
+
+  function cmqRenderList() {
+    var list = document.getElementById('cmqList');
+    var html = '';
+    for (var i = 0; i < 10; i++) {
+      var name = CMQ_NAMES[Math.floor(Math.random() * CMQ_NAMES.length)];
+      var action = CMQ_ACTIONS[Math.floor(Math.random() * CMQ_ACTIONS.length)];
+      var status = CMQ_STATUS[Math.floor(Math.random() * CMQ_STATUS.length)];
+      var amount = Math.floor(Math.random() * 9999) + 100;
+      var now = new Date();
+      var p = function (n) { return n < 10 ? '0' + n : n; };
+      var time = p(now.getHours()) + ':' + p(now.getMinutes()) + ':' + p(now.getSeconds());
+      html += '<div class="cmq_list_item">' +
+        '<span><span class="cmq_rank">' + (i + 1) + '</span>' +
+        '<span style="color:#22d3ee;font-weight:600;">' + name + '</span> ' +
+        '<span style="color:#94a3b8;">' + action + '</span></span>' +
+        '<span style="font-size:11px;color:' + CMQ_COLORS[status] + ';">' +
+        '💰 ¥' + amount + ' · ' + time + '</span>' +
+        '</div>';
+    }
+    list.innerHTML = html;
+  }
+  cmqRenderList();
+  setInterval(cmqRenderList, 4000);
+
+  // =========================================================
+  //  响应式 resize
+  // =========================================================
+  var allCharts = [cmqGauge, cmqLine, cmqBar, cmqGlobe, cmqPie, cmqScatter, cmqRadar, cmqFunnel];
+  window.addEventListener('resize', function () {
+    allCharts.forEach(function (c) { c.resize(); });
+  });
+</script>
+</body>
+</html>
