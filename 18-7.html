@@ -1,0 +1,494 @@
+<!-- 姓名：蔡美琪，日期：2026-11-05，功能名称：Three.js 3D 数据可视化（柱状图 + 粒子网络） -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>18-7 Three.js · 3D 数据可视化 · 蔡美琪</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      min-height: 100vh;
+      font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+      background:
+        radial-gradient(ellipse at 15% 0%, rgba(6,182,212,.28) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 100%, rgba(124,58,237,.32) 0%, transparent 55%),
+        linear-gradient(180deg, #030712 0%, #0a0a24 50%, #050514 100%);
+      color: #e2e8f0;
+      overflow-x: hidden;
+    }
+    a.cmq_back {
+      display: inline-block; margin: 18px 24px 0; padding: 8px 16px;
+      color: #22d3ee; text-decoration: none; font-size: 13px;
+      border: 1px solid rgba(34,211,238,.35); border-radius: 20px;
+      background: rgba(15,23,42,.6); transition: all .3s;
+    }
+    a.cmq_back:hover { background: rgba(34,211,238,.12); box-shadow: 0 0 16px rgba(34,211,238,.3); }
+
+    header.cmq_hd { text-align: center; padding: 28px 16px 18px; }
+    header.cmq_hd h1 {
+      font-size: 30px; font-weight: 700;
+      background: linear-gradient(90deg, #22d3ee, #a78bfa, #f472b6);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      letter-spacing: 6px;
+    }
+    header.cmq_hd p { margin-top: 8px; color: #94a3b8; font-size: 13px; letter-spacing: 3px; }
+    header.cmq_hd .cmq_tags { margin-top: 12px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+    header.cmq_hd .cmq_tags span {
+      padding: 4px 14px; font-size: 12px; border-radius: 14px;
+      border: 1px solid rgba(167,139,250,.35); color: #c4b5fd;
+      background: rgba(167,139,250,.08);
+    }
+
+    .cmq_container { max-width: 1400px; margin: 0 auto 50px; padding: 0 16px; }
+    .cmq_card {
+      background: linear-gradient(180deg, rgba(20,16,48,.75), rgba(8,8,24,.75));
+      border: 1px solid rgba(167,139,250,.22); border-radius: 18px;
+      padding: 22px; margin-bottom: 30px;
+      box-shadow: 0 8px 40px rgba(76,29,149,.22), inset 0 1px 0 rgba(255,255,255,.04);
+      backdrop-filter: blur(6px);
+    }
+    .cmq_card_hd { display: flex; align-items: center; gap: 14px; margin-bottom: 4px; }
+    .cmq_card_hd .cmq_num {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: linear-gradient(135deg,#06b6d4,#7c3aed);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; font-weight: 700; color: #fff;
+      box-shadow: 0 0 18px rgba(124,58,237,.45);
+    }
+    .cmq_card_hd h2 { font-size: 18px; color: #22d3ee; letter-spacing: 2px; }
+    .cmq_card .cmq_desc { font-size: 12px; color: #94a3b8; margin: 6px 0 14px 48px; letter-spacing: 1px; }
+
+    .cmq_toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin: 0 0 14px 48px; }
+    .cmq_btn {
+      padding: 6px 16px; font-size: 12px; border-radius: 16px; cursor: pointer;
+      border: 1px solid rgba(167,139,250,.35); background: transparent;
+      color: #c4b5fd; font-family: inherit; transition: all .25s;
+    }
+    .cmq_btn:hover { background: rgba(167,139,250,.12); }
+    .cmq_btn.active {
+      background: linear-gradient(135deg,#06b6d4,#7c3aed); color: #fff;
+      border-color: transparent; box-shadow: 0 0 12px rgba(109,40,217,.4);
+    }
+
+    .cmq_stage {
+      width: 100%; height: 520px; border-radius: 12px; overflow: hidden;
+      background: radial-gradient(ellipse at center, #0a0a28 0%, #020210 100%);
+      border: 1px solid rgba(99,102,241,.22); position: relative;
+    }
+    .cmq_stage canvas { display: block; }
+
+    .cmq_overlay {
+      position: absolute; top: 14px; left: 14px; padding: 6px 12px;
+      background: rgba(15,23,42,.75); border: 1px solid rgba(34,211,238,.3);
+      border-radius: 8px; font-size: 11px; color: #22d3ee; letter-spacing: 1px;
+      backdrop-filter: blur(4px); pointer-events: none;
+    }
+    .cmq_legend {
+      position: absolute; bottom: 14px; left: 14px; display: flex; gap: 10px;
+      flex-wrap: wrap; pointer-events: none;
+    }
+    .cmq_legend span {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 10px; font-size: 11px; border-radius: 12px;
+      background: rgba(15,23,42,.7); border: 1px solid rgba(148,163,184,.2);
+      color: #cbd5e1;
+    }
+    .cmq_legend i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    footer { text-align: center; padding: 20px; color: #64748b; font-size: 12px; letter-spacing: 2px; }
+  </style>
+  <script src="./cdn/three.min.js"></script>
+</head>
+<body>
+  <a href="1.html" class="cmq_back">← 返回首页</a>
+
+  <header class="cmq_hd">
+    <h1>THREE.JS · 3D VISUALIZATION</h1>
+    <p>柱状图 · 粒子网络 · WEBGL · BY 蔡美琪</p>
+    <div class="cmq_tags">
+      <span>Three.js r160</span>
+      <span>WebGL</span>
+      <span>Real-time Rendering</span>
+    </div>
+  </header>
+
+  <div class="cmq_container">
+
+    <!-- ====== 1. 3D 柱状图 ====== -->
+    <div class="cmq_card">
+      <div class="cmq_card_hd">
+        <div class="cmq_num">①</div>
+        <h2>3D 柱状图 · 年度数据趋势</h2>
+      </div>
+      <div class="cmq_desc">立方体柱状 + 发光材质 + 悬浮高亮 + 自动旋转，鼠标可拖拽。</div>
+      <div class="cmq_toolbar">
+        <button class="cmq_btn active" id="cmqBarBtn4">4 季度</button>
+        <button class="cmq_btn" id="cmqBarBtn12">12 月份</button>
+        <button class="cmq_btn" id="cmqBarBtnRandom">🎲 随机数据</button>
+        <button class="cmq_btn active" id="cmqBarBtnAuto">🔄 自转</button>
+      </div>
+      <div class="cmq_stage" id="cmqBarStage">
+        <div class="cmq_overlay">拖拽旋转 · 滚轮缩放</div>
+        <div class="cmq_legend">
+          <span><i style="background:#22d3ee"></i> 数据柱</span>
+          <span><i style="background:#f472b6"></i> 高值高亮</span>
+          <span><i style="background:#a78bfa"></i> 地面网格</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== 2. 粒子网络拓扑 ====== -->
+    <div class="cmq_card">
+      <div class="cmq_card_hd">
+        <div class="cmq_num">②</div>
+        <h2>粒子网络拓扑 · 数据节点关系</h2>
+      </div>
+      <div class="cmq_desc">节点球体 + 动态连线 + 流动光点，模拟复杂网络拓扑。</div>
+      <div class="cmq_toolbar">
+        <button class="cmq_btn active" id="cmqNetBtn100">100 节点</button>
+        <button class="cmq_btn" id="cmqNetBtn200">200 节点</button>
+        <button class="cmq_btn" id="cmqNetBtnZoom">🔍 聚焦中心</button>
+      </div>
+      <div class="cmq_stage" id="cmqNetStage">
+        <div class="cmq_overlay">节点: <span id="cmqNodeCount">100</span> · 连边: <span id="cmqEdgeCount">--</span></div>
+        <div class="cmq_legend">
+          <span><i style="background:#22d3ee"></i> 核心节点</span>
+          <span><i style="background:#a78bfa"></i> 普通节点</span>
+          <span><i style="background:#f472b6"></i> 流动粒子</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <footer>© 2026 蔡美琪 · 高级网页设计 · Three.js 3D 可视化</footer>
+
+  <script>
+    // ============================================================
+    //  公共：极简 OrbitControls（手写，避免额外文件依赖）
+    // ============================================================
+    function cmqOrbit(camera, dom) {
+      var state = {
+        azimuth: 0.5, polar: 1.1, distance: 280,
+        target: new THREE.Vector3(0, 0, 0),
+        minDist: 80, maxDist: 800,
+        dragging: false, lastX: 0, lastY: 0
+      };
+      var onDown = function (e) {
+        state.dragging = true; state.lastX = e.clientX; state.lastY = e.clientY;
+      };
+      var onUp = function () { state.dragging = false; };
+      var onMove = function (e) {
+        if (!state.dragging) return;
+        var dx = e.clientX - state.lastX;
+        var dy = e.clientY - state.lastY;
+        state.lastX = e.clientX; state.lastY = e.clientY;
+        state.azimuth -= dx * 0.008;
+        state.polar = Math.max(0.15, Math.min(Math.PI - 0.15, state.polar - dy * 0.008));
+      };
+      var onWheel = function (e) {
+        e.preventDefault();
+        state.distance = Math.max(state.minDist, Math.min(state.maxDist, state.distance + e.deltaY * 0.3));
+      };
+      dom.addEventListener('mousedown', onDown);
+      window.addEventListener('mouseup', onUp);
+      window.addEventListener('mousemove', onMove);
+      dom.addEventListener('wheel', onWheel, { passive: false });
+
+      function update() {
+        var cx = state.distance * Math.sin(state.polar) * Math.cos(state.azimuth);
+        var cy = state.distance * Math.cos(state.polar);
+        var cz = state.distance * Math.sin(state.polar) * Math.sin(state.azimuth);
+        camera.position.set(cx + state.target.x, cy + state.target.y, cz + state.target.z);
+        camera.lookAt(state.target);
+      }
+      return { state: state, update: update };
+    }
+
+    function cmqResize(renderer, camera, dom) {
+      var w = dom.clientWidth, h = dom.clientHeight;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    }
+
+
+    // ============================================================
+    //  1. 3D 柱状图
+    // ============================================================
+    (function () {
+      var dom = document.getElementById('cmqBarStage');
+      var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setClearColor(0x000000, 0);
+      dom.appendChild(renderer.domElement);
+
+      var scene = new THREE.Scene();
+      scene.fog = new THREE.FogExp2(0x0a0a28, 0.0015);
+
+      var camera = new THREE.PerspectiveCamera(45, dom.clientWidth / dom.clientHeight, 1, 2000);
+      var controls = cmqOrbit(camera, dom);
+      controls.state.distance = 260;
+      controls.update();
+
+      // 灯光
+      scene.add(new THREE.AmbientLight(0x404060, 1.2));
+      var dl = new THREE.DirectionalLight(0xffffff, 1.0);
+      dl.position.set(80, 160, 100); scene.add(dl);
+      var pl1 = new THREE.PointLight(0x22d3ee, 2.5, 300); pl1.position.set(-80, 60, 60); scene.add(pl1);
+      var pl2 = new THREE.PointLight(0xf472b6, 2.0, 300); pl2.position.set(80, 60, -60); scene.add(pl2);
+
+      // 地面网格
+      var gridHelper = new THREE.GridHelper(200, 20, 0x7c3aed, 0x312e81);
+      gridHelper.position.y = -1;
+      gridHelper.material.opacity = 0.35;
+      gridHelper.material.transparent = true;
+      scene.add(gridHelper);
+
+      // 中心底座
+      var baseGeom = new THREE.CylinderGeometry(100, 100, 2, 48);
+      var baseMat = new THREE.MeshStandardMaterial({
+        color: 0x1e1b4b, metalness: 0.4, roughness: 0.6, transparent: true, opacity: 0.7
+      });
+      var base = new THREE.Mesh(baseGeom, baseMat); base.position.y = -2;
+      scene.add(base);
+
+      // 柱状数据
+      var cmq_bars = [];
+      var BAR_COLORS = [0x22d3ee, 0x06b6d4, 0x0891b2, 0x0e7490, 0xa78bfa, 0x7c3aed, 0x6d28d9, 0xf472b6, 0xec4899, 0xfbbf24, 0x34d399, 0x60a5fa];
+      var autoRotate = true;
+
+      function cmqBuildBars(count) {
+        // 清理
+        cmq_bars.forEach(function (b) { scene.remove(b.group); });
+        cmq_bars = [];
+
+        var cols = Math.ceil(Math.sqrt(count));
+        var rows = Math.ceil(count / cols);
+        var spacing = 14;
+        var offsetX = (cols - 1) * spacing / 2;
+        var offsetZ = (rows - 1) * spacing / 2;
+
+        for (var i = 0; i < count; i++) {
+          var x = i % cols, z = Math.floor(i / cols);
+          var px = x * spacing - offsetX;
+          var pz = z * spacing - offsetZ;
+          var h = 20 + Math.random() * 60;
+
+          var geom = new THREE.BoxGeometry(8, h, 8);
+          var mat = new THREE.MeshStandardMaterial({
+            color: BAR_COLORS[i % BAR_COLORS.length],
+            metalness: 0.3, roughness: 0.45,
+            emissive: BAR_COLORS[i % BAR_COLORS.length], emissiveIntensity: 0.15
+          });
+          var mesh = new THREE.Mesh(geom, mat);
+          mesh.position.set(px, h / 2, pz);
+
+          // 顶部发光球
+          var glow = new THREE.Mesh(
+            new THREE.SphereGeometry(2.2, 16, 16),
+            new THREE.MeshBasicMaterial({ color: BAR_COLORS[i % BAR_COLORS.length], transparent: true, opacity: 0.9 })
+          );
+          glow.position.set(px, h + 1, pz);
+
+          // 底部光柱
+          var pillarGeom = new THREE.CylinderGeometry(0.6, 2.5, h * 1.2, 8, 1, true);
+          var pillarMat = new THREE.MeshBasicMaterial({
+            color: BAR_COLORS[i % BAR_COLORS.length], transparent: true, opacity: 0.12,
+            side: THREE.DoubleSide, depthWrite: false
+          });
+          var pillar = new THREE.Mesh(pillarGeom, pillarMat);
+          pillar.position.set(px, h * 0.6 - 1, pz);
+
+          var group = new THREE.Group();
+          group.add(mesh); group.add(glow); group.add(pillar);
+          scene.add(group);
+
+          cmq_bars.push({ mesh: mesh, glow: glow, group: group, baseH: h, t: Math.random() * Math.PI * 2 });
+        }
+      }
+
+      cmqBuildBars(12);
+
+      // 按钮
+      document.getElementById('cmqBarBtn4').onclick = function () {
+        document.querySelectorAll('#cmqBarBtn4,#cmqBarBtn12').forEach(function (b) { b.classList.remove('active'); });
+        this.classList.add('active'); cmqBuildBars(4);
+      };
+      document.getElementById('cmqBarBtn12').onclick = function () {
+        document.querySelectorAll('#cmqBarBtn4,#cmqBarBtn12').forEach(function (b) { b.classList.remove('active'); });
+        this.classList.add('active'); cmqBuildBars(12);
+      };
+      document.getElementById('cmqBarBtnRandom').onclick = function () {
+        cmq_bars.forEach(function (b) {
+          var h = 20 + Math.random() * 70;
+          b.mesh.geometry.dispose();
+          b.mesh.geometry = new THREE.BoxGeometry(8, h, 8);
+          b.mesh.position.y = h / 2;
+          b.glow.position.y = h + 1;
+          b.baseH = h;
+        });
+      };
+      document.getElementById('cmqBarBtnAuto').onclick = function () {
+        autoRotate = !autoRotate;
+        this.classList.toggle('active', autoRotate);
+      };
+
+      // 循环
+      function animate() {
+        requestAnimationFrame(animate);
+        var t = performance.now() * 0.001;
+        cmq_bars.forEach(function (b, i) {
+          b.glow.position.y = b.baseH + 1 + Math.sin(t * 2 + b.t) * 1.5;
+          b.glow.scale.setScalar(1 + Math.sin(t * 3 + b.t) * 0.2);
+          b.mesh.material.emissiveIntensity = 0.1 + Math.abs(Math.sin(t * 1.5 + i)) * 0.25;
+        });
+        if (autoRotate) controls.state.azimuth += 0.002;
+        controls.update();
+        renderer.render(scene, camera);
+      }
+
+      function onResize() { cmqResize(renderer, camera, dom); }
+      window.addEventListener('resize', onResize);
+      onResize();
+      animate();
+    })();
+
+
+    // ============================================================
+    //  2. 粒子网络拓扑
+    // ============================================================
+    (function () {
+      var dom = document.getElementById('cmqNetStage');
+      var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setClearColor(0x000000, 0);
+      dom.appendChild(renderer.domElement);
+
+      var scene = new THREE.Scene();
+      scene.fog = new THREE.FogExp2(0x0a0a28, 0.0018);
+
+      var camera = new THREE.PerspectiveCamera(50, dom.clientWidth / dom.clientHeight, 1, 2000);
+      var controls = cmqOrbit(camera, dom);
+      controls.state.distance = 350;
+      controls.state.azimuth = 0.7;
+      controls.update();
+
+      scene.add(new THREE.AmbientLight(0x6060a0, 0.8));
+      var pl1 = new THREE.PointLight(0x22d3ee, 2.0, 400); pl1.position.set(100, 80, 60); scene.add(pl1);
+      var pl2 = new THREE.PointLight(0xa78bfa, 1.8, 400); pl2.position.set(-100, -50, -80); scene.add(pl2);
+
+      var NET = { group: null, nodeMeshes: [], edges: [], particles: [] };
+
+      function cmqBuildNetwork(n) {
+        if (NET.group) scene.remove(NET.group);
+        NET = { group: new THREE.Group(), nodeMeshes: [], edges: [], particles: [] };
+
+        var positions = [];
+        var R = 120;
+        // 生成节点（球壳分布，混合少量集中核心）
+        for (var i = 0; i < n; i++) {
+          var r = R * (0.3 + Math.random() * 0.7);
+          var theta = Math.random() * Math.PI * 2;
+          var phi = Math.acos(2 * Math.random() - 1);
+          var x = r * Math.sin(phi) * Math.cos(theta);
+          var y = r * Math.sin(phi) * Math.sin(theta);
+          var z = r * Math.cos(phi);
+          positions.push(new THREE.Vector3(x, y, z));
+
+          var isCore = i < Math.floor(n * 0.1);
+          var size = isCore ? 4.5 : 2.2 + Math.random() * 1.5;
+          var color = isCore ? 0x22d3ee : (Math.random() < 0.15 ? 0xf472b6 : 0xa78bfa);
+          var mesh = new THREE.Mesh(
+            new THREE.SphereGeometry(size, 14, 14),
+            new THREE.MeshStandardMaterial({
+              color: color, emissive: color, emissiveIntensity: 0.5,
+              metalness: 0.3, roughness: 0.4
+            })
+          );
+          mesh.position.copy(positions[i]);
+          NET.group.add(mesh);
+          NET.nodeMeshes.push({ mesh: mesh, base: positions[i], isCore: isCore, t: Math.random() * Math.PI * 2 });
+        }
+
+        // 连线：每个节点连最近 3~4 个
+        var edgeCount = 0;
+        for (var i = 0; i < n; i++) {
+          var dists = [];
+          for (var j = 0; j < n; j++) {
+            if (i !== j) dists.push({ idx: j, d: positions[i].distanceTo(positions[j]) });
+          }
+          dists.sort(function (a, b) { return a.d - b.d; });
+          var linkCount = NET.nodeMeshes[i].isCore ? 6 : 3;
+          for (var k = 0; k < Math.min(linkCount, dists.length); k++) {
+            var j = dists[k].idx;
+            if (j > i || (NET.nodeMeshes[i].isCore !== NET.nodeMeshes[j].isCore && Math.random() < 0.3)) {
+              var g = new THREE.BufferGeometry().setFromPoints([positions[i], positions[j]]);
+              var col = NET.nodeMeshes[i].isCore || NET.nodeMeshes[j].isCore ? 0x22d3ee : 0x4c1d95;
+              var line = new THREE.Line(g, new THREE.LineBasicMaterial({ color: col, transparent: true, opacity: 0.35 }));
+              NET.group.add(line);
+              NET.edges.push({ a: positions[i], b: positions[j], line: line });
+              edgeCount++;
+
+              // 每条边一个流动粒子
+              var p = new THREE.Mesh(
+                new THREE.SphereGeometry(1.4, 8, 8),
+                new THREE.MeshBasicMaterial({ color: 0xf472b6 })
+              );
+              p.userData.t = Math.random();
+              p.userData.speed = 0.003 + Math.random() * 0.004;
+              NET.group.add(p);
+              NET.particles.push({ mesh: p, edge: NET.edges[NET.edges.length - 1] });
+            }
+          }
+        }
+
+        scene.add(NET.group);
+        document.getElementById('cmqNodeCount').textContent = n;
+        document.getElementById('cmqEdgeCount').textContent = edgeCount;
+      }
+
+      cmqBuildNetwork(100);
+
+      document.getElementById('cmqNetBtn100').onclick = function () {
+        document.querySelectorAll('#cmqNetBtn100,#cmqNetBtn200').forEach(function (b) { b.classList.remove('active'); });
+        this.classList.add('active'); cmqBuildNetwork(100);
+      };
+      document.getElementById('cmqNetBtn200').onclick = function () {
+        document.querySelectorAll('#cmqNetBtn100,#cmqNetBtn200').forEach(function (b) { b.classList.remove('active'); });
+        this.classList.add('active'); cmqBuildNetwork(200);
+      };
+      document.getElementById('cmqNetBtnZoom').onclick = function () {
+        controls.state.distance = 180;
+        controls.state.azimuth = 0;
+        controls.state.polar = Math.PI / 2;
+      };
+
+      function animate() {
+        requestAnimationFrame(animate);
+        var t = performance.now() * 0.001;
+        NET.nodeMeshes.forEach(function (nd, i) {
+          nd.mesh.position.copy(nd.base);
+          nd.mesh.position.y += Math.sin(t * 1.5 + nd.t) * 3;
+          nd.mesh.position.x += Math.cos(t + nd.t) * 1.5;
+          var s = 1 + Math.sin(t * 2 + nd.t) * 0.08;
+          nd.mesh.scale.setScalar(s);
+          nd.mesh.material.emissiveIntensity = 0.4 + Math.abs(Math.sin(t + nd.t)) * 0.4;
+        });
+        NET.particles.forEach(function (pt) {
+          pt.mesh.userData.t += pt.mesh.userData.speed;
+          if (pt.mesh.userData.t > 1) pt.mesh.userData.t -= 1;
+          var p = pt.mesh.userData.t;
+          pt.mesh.position.lerpVectors(pt.edge.a, pt.edge.b, p);
+        });
+        NET.group.rotation.y += 0.0015;
+        controls.update();
+        renderer.render(scene, camera);
+      }
+
+      function onResize() { cmqResize(renderer, camera, dom); }
+      window.addEventListener('resize', onResize);
+      onResize();
+      animate();
+    })();
+  </script>
+</body>
+</html>
