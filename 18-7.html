@@ -75,7 +75,7 @@
       background: radial-gradient(ellipse at center, #0a0a28 0%, #020210 100%);
       border: 1px solid rgba(99,102,241,.22); position: relative;
     }
-    .cmq_stage canvas { display: block; }
+    .cmq_stage canvas { display: block; width: 100% !important; height: 100% !important; }
 
     .cmq_overlay {
       position: absolute; top: 14px; left: 14px; padding: 6px 12px;
@@ -162,6 +162,7 @@
   <footer>© 2026 蔡美琪 · 高级网页设计 · Three.js 3D 可视化</footer>
 
   <script>
+  document.addEventListener('DOMContentLoaded', function () {
     // ============================================================
     //  公共：极简 OrbitControls（手写，避免额外文件依赖）
     // ============================================================
@@ -205,7 +206,8 @@
 
     function cmqResize(renderer, camera, dom) {
       var w = dom.clientWidth, h = dom.clientHeight;
-      renderer.setSize(w, h, false);
+      if (w === 0 || h === 0) return;
+      renderer.setSize(w, h, true);
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
     }
@@ -224,7 +226,7 @@
       var scene = new THREE.Scene();
       scene.fog = new THREE.FogExp2(0x0a0a28, 0.0015);
 
-      var camera = new THREE.PerspectiveCamera(45, dom.clientWidth / dom.clientHeight, 1, 2000);
+      var camera = new THREE.PerspectiveCamera(45, 1, 1, 2000);
       var controls = cmqOrbit(camera, dom);
       controls.state.distance = 260;
       controls.update();
@@ -366,7 +368,7 @@
       var scene = new THREE.Scene();
       scene.fog = new THREE.FogExp2(0x0a0a28, 0.0018);
 
-      var camera = new THREE.PerspectiveCamera(50, dom.clientWidth / dom.clientHeight, 1, 2000);
+      var camera = new THREE.PerspectiveCamera(50, 1, 1, 2000);
       var controls = cmqOrbit(camera, dom);
       controls.state.distance = 350;
       controls.state.azimuth = 0.7;
@@ -489,6 +491,8 @@
       onResize();
       animate();
     })();
+
+  }); // end DOMContentLoaded
   </script>
 </body>
 </html>
