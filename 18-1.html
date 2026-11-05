@@ -261,13 +261,20 @@
       g.addColorStop(1, '#fbcfe8');
       ctx.fillStyle = g;
       ctx.fillRect(0, 0, W, H);
-      ctx.fillStyle = '#ec4899';
-      ctx.font = 'bold 54px Microsoft YaHei, sans-serif';
+      var text = (document.getElementById('cmq_text1') || {}).value || '蔡美琪';
+      var fontSize = Math.min(120, Math.floor(W / Math.max(text.length, 1) * 0.6));
+      if (fontSize < 48) fontSize = 48;
+      ctx.font = 'bold ' + fontSize + 'px Microsoft YaHei, sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.shadowColor = 'rgba(236,72,153,.4)';
-      ctx.shadowBlur = 14;
-      ctx.fillText('💥 点「衰落！」开始', W / 2, H / 2);
+      var tg = ctx.createLinearGradient(W / 2 - 200, H / 2, W / 2 + 200, H / 2);
+      tg.addColorStop(0, '#f472b6');
+      tg.addColorStop(0.5, '#ec4899');
+      tg.addColorStop(1, '#be185d');
+      ctx.fillStyle = tg;
+      ctx.shadowColor = 'rgba(236,72,153,.55)';
+      ctx.shadowBlur = 24;
+      ctx.fillText(text, W / 2, H / 2);
       ctx.shadowBlur = 0;
     }
 
@@ -282,6 +289,11 @@
       explodeText(text);
     });
     document.getElementById('cmq_btn1r').addEventListener('click', function () {
+      if (anim1) { cancelAnimationFrame(anim1); anim1 = null; }
+      particles = [];
+      drawStatic();
+    });
+    document.getElementById('cmq_text1').addEventListener('input', function () {
       if (anim1) { cancelAnimationFrame(anim1); anim1 = null; }
       particles = [];
       drawStatic();
