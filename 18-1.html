@@ -1,0 +1,666 @@
+<!-- 姓名：蔡美琪，日期：2026-11-05，功能名称：Canvas 动画 + 文字粒子衰落效果 -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>18-1 Canvas 动画</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    background: #0f0f1a;
+    padding: 30px 20px;
+    color: #e5e7eb;
+    min-height: 100vh;
+  }
+  a.cmq_home {
+    display: inline-block;
+    margin-bottom: 16px;
+    color: #a5b4fc;
+    text-decoration: none;
+    font-size: 14px;
+  }
+  a.cmq_home:hover { text-decoration: underline; color: #c4b5fd; }
+
+  .cmq_container { max-width: 1200px; margin: 0 auto; }
+  .cmq_page_title { font-size: 26px; font-weight: 700; margin-bottom: 4px; color: #f5f3ff; }
+  .cmq_page_sub { font-size: 13px; color: #9ca3af; margin-bottom: 24px; }
+
+  .cmq_card {
+    background: #1e1e2e;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,.4);
+    padding: 20px 22px;
+    margin-bottom: 22px;
+    border: 1px solid #2d2d44;
+  }
+  .cmq_card h2 {
+    font-size: 16px;
+    color: #a5b4fc;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #2d2d44;
+  }
+  .cmq_card h2 .cmq_tag {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 10px;
+    border-radius: 10px;
+    margin-left: 8px;
+    vertical-align: middle;
+    background: #4f46e5;
+    color: #fff;
+  }
+
+  canvas.cmq_canvas {
+    display: block;
+    width: 100%;
+    height: 320px;
+    background: #0a0a14;
+    border-radius: 8px;
+  }
+  canvas.cmq_canvas.cmq_large { height: 420px; }
+
+  .cmq_btns { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+  .cmq_btn {
+    padding: 8px 22px;
+    font-size: 13px;
+    font-family: inherit;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #fff;
+    background: #4f46e5;
+    transition: background .2s, transform .1s, box-shadow .2s;
+  }
+  .cmq_btn:hover { background: #4338ca; box-shadow: 0 0 14px rgba(79,70,229,.5); }
+  .cmq_btn:active { transform: scale(.97); }
+  .cmq_btn.cmq_pink { background: #ec4899; }
+  .cmq_btn.cmq_pink:hover { background: #db2777; box-shadow: 0 0 14px rgba(236,72,153,.5); }
+  .cmq_btn.cmq_ok { background: #10b981; }
+  .cmq_btn.cmq_ok:hover { background: #059669; box-shadow: 0 0 14px rgba(16,185,129,.5); }
+  .cmq_btn.cmq_warn { background: #f59e0b; }
+  .cmq_btn.cmq_warn:hover { background: #d97706; box-shadow: 0 0 14px rgba(245,158,11,.5); }
+  .cmq_btn.cmq_gray { background: #4b5563; }
+  .cmq_btn.cmq_gray:hover { background: #374151; }
+
+  .cmq_input_row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 14px;
+    flex-wrap: wrap;
+  }
+  .cmq_input_row label { font-size: 13px; color: #9ca3af; }
+  .cmq_input_row input[type=text] {
+    flex: 1;
+    min-width: 200px;
+    padding: 8px 12px;
+    background: #0f0f1a;
+    border: 1px solid #4f46e5;
+    border-radius: 6px;
+    color: #e5e7eb;
+    font-family: inherit;
+    font-size: 13px;
+  }
+  .cmq_input_row input[type=text]:focus {
+    outline: none;
+    border-color: #a5b4fc;
+    box-shadow: 0 0 8px rgba(165,180,252,.4);
+  }
+  .cmq_input_row select {
+    padding: 8px 12px;
+    background: #0f0f1a;
+    border: 1px solid #4f46e5;
+    border-radius: 6px;
+    color: #e5e7eb;
+    font-family: inherit;
+    font-size: 13px;
+  }
+
+  .cmq_info {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 10px;
+    line-height: 1.6;
+  }
+  .cmq_info b { color: #a5b4fc; }
+
+  .cmq_three_cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 860px) {
+    .cmq_three_cols { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<a class="cmq_home" href="1.html">← 返回首页</a>
+
+<div class="cmq_container">
+  <div class="cmq_page_title">🎨 Canvas 动画合集</div>
+  <div class="cmq_page_sub">5 种原生 Canvas 动画：粒子衰落、星空、水波、烟花、文字粒子</div>
+
+  <!-- 动画 1：文字粒子衰落 -->
+  <div class="cmq_card">
+    <h2>💫 文字粒子衰落 <span class="cmq_tag">爆炸效果</span></h2>
+    <canvas id="cmq_c1" class="cmq_canvas cmq_large"></canvas>
+    <div class="cmq_input_row">
+      <label>输入文字：</label>
+      <input type="text" id="cmq_text1" value="你好 世界 Hello">
+      <button class="cmq_btn cmq_pink" id="cmq_btn1">💥 衰落！</button>
+      <button class="cmq_btn cmq_gray" id="cmq_btn1r">↺ 重置</button>
+    </div>
+    <div class="cmq_info">
+      原理：先用 <b>fillText</b> 画文字，再用 <b>getImageData</b> 取像素，每 2~3 像素采样成一个粒子，<br>
+      给每个粒子随机初速度 + 重力 + 阻尼，每帧 <b>requestAnimationFrame</b> 更新位置并重绘。
+    </div>
+  </div>
+
+  <!-- 动画 2：星空 -->
+  <div class="cmq_card">
+    <h2>🌌 星空穿越 <span class="cmq_tag">视差</span></h2>
+    <canvas id="cmq_c2" class="cmq_canvas"></canvas>
+    <div class="cmq_btns">
+      <button class="cmq_btn cmq_ok" id="cmq_btn2">▶ 开始</button>
+      <button class="cmq_btn cmq_gray" id="cmq_btn2r">↺ 重置</button>
+    </div>
+    <div class="cmq_info">
+      原理：生成 <b>z-depth</b>（0~1），星点从远到近移动，屏幕上越大越快 → 形成穿越感。
+    </div>
+  </div>
+
+  <!-- 动画 3：水波 -->
+  <div class="cmq_card">
+    <h2>🌊 动态水波 <span class="cmq_tag">正弦波</span></h2>
+    <canvas id="cmq_c3" class="cmq_canvas"></canvas>
+    <div class="cmq_btns">
+      <button class="cmq_btn cmq_ok" id="cmq_btn3">▶ 开始</button>
+      <button class="cmq_btn cmq_warn" id="cmq_btn3s">🐢 变慢</button>
+      <button class="cmq_btn cmq_gray" id="cmq_btn3r">↺ 重置</button>
+    </div>
+    <div class="cmq_info">
+      原理：用 <b>sin(x + time) * amplitude</b> 画多条波形叠加，用 <b>globalAlpha</b> 控制透明度形成层次。
+    </div>
+  </div>
+
+  <!-- 动画 4：烟花 -->
+  <div class="cmq_card">
+    <h2>🎆 随机烟花 <span class="cmq_tag">粒子爆炸</span></h2>
+    <canvas id="cmq_c4" class="cmq_canvas cmq_large"></canvas>
+    <div class="cmq_btns">
+      <button class="cmq_btn cmq_ok" id="cmq_btn4">▶ 自动放</button>
+      <button class="cmq_btn cmq_pink" id="cmq_btn4m">🖱 点击发射</button>
+      <button class="cmq_btn cmq_gray" id="cmq_btn4r">↺ 清空</button>
+    </div>
+    <div class="cmq_info">
+      原理：上升阶段粒子从地面向目标点移动；爆炸阶段用 <b>Math.random()*Math.PI*2</b> 生成 360° 扩散 + 重力下落 + 透明度衰减。
+    </div>
+  </div>
+
+  <!-- 动画 5：鼠标跟随粒子 -->
+  <div class="cmq_card">
+    <h2>✨ 鼠标跟随粒子 <span class="cmq_tag">交互</span></h2>
+    <canvas id="cmq_c5" class="cmq_canvas"></canvas>
+    <div class="cmq_info">
+      在画布上 <b>移动鼠标</b> 会生成彩色粒子轨迹，粒子会逐渐下落淡出。
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ===== 工具 =====
+  function cmq_setCanvas(id, w, h) {
+    var c = document.getElementById(id);
+    var dpr = window.devicePixelRatio || 1;
+    c.width = w * dpr; c.height = h * dpr;
+    c.style.width = w + 'px'; c.style.height = h + 'px';
+    var ctx = c.getContext('2d');
+    ctx.scale(dpr, dpr);
+    return { canvas: c, ctx: ctx, w: w, h: h };
+  }
+
+  // ===== 动画 1：文字粒子衰落 =====
+  (function () {
+    var canvas = document.getElementById('cmq_c1');
+    var parent = canvas.parentElement;
+    var W = 0, H = 0, ctx;
+    function cmq_resize1() {
+      var r = parent.getBoundingClientRect();
+      var dpr = window.devicePixelRatio || 1;
+      W = r.width; H = 420;
+      canvas.width = W * dpr; canvas.height = H * dpr;
+      canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+      ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+      drawStatic();
+    }
+
+    function drawStatic() {
+      ctx.fillStyle = '#0a0a14';
+      ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = '#a5b4fc';
+      ctx.font = 'bold 52px Microsoft YaHei, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('💥 点「衰落！」开始', W / 2, H / 2);
+    }
+
+    cmq_resize1();
+    window.addEventListener('resize', cmq_resize1);
+
+    var particles = [];
+    var anim1 = null;
+
+    document.getElementById('cmq_btn1').addEventListener('click', function () {
+      var text = document.getElementById('cmq_text1').value || 'Hello';
+      explodeText(text);
+    });
+    document.getElementById('cmq_btn1r').addEventListener('click', function () {
+      if (anim1) { cancelAnimationFrame(anim1); anim1 = null; }
+      particles = [];
+      drawStatic();
+    });
+
+    function explodeText(text) {
+      // 1. 在离屏 canvas 上画文字
+      var off = document.createElement('canvas');
+      var octx = off.getContext('2d');
+      var fontSize = Math.min(64, Math.floor(W / Math.max(text.length, 2)));
+      octx.font = 'bold ' + fontSize + 'px Microsoft YaHei, sans-serif';
+      var tw = octx.measureText(text).width + 40;
+      var th = fontSize + 20;
+      off.width = tw; off.height = th;
+      octx.font = 'bold ' + fontSize + 'px Microsoft YaHei, sans-serif';
+      octx.fillStyle = '#ffffff';
+      octx.textBaseline = 'middle';
+      octx.fillText(text, 20, th / 2);
+
+      // 2. 取像素
+      var img = octx.getImageData(0, 0, tw, th);
+      var data = img.data;
+      particles = [];
+      for (var y = 0; y < th; y += 3) {
+        for (var x = 0; x < tw; x += 3) {
+          var idx = (y * tw + x) * 4;
+          if (data[idx + 3] > 128) {
+            particles.push({
+              x: W / 2 - tw / 2 + x,
+              y: H / 2 - th / 2 + y,
+              ox: W / 2 - tw / 2 + x,
+              oy: H / 2 - th / 2 + y,
+              vx: (Math.random() - 0.5) * 10,
+              vy: (Math.random() - 0.5) * 10 - 2,
+              size: 1.5 + Math.random() * 1.5,
+              hue: Math.floor(Math.random() * 360)
+            });
+          }
+        }
+      }
+
+      // 3. 动画
+      function tick() {
+        ctx.fillStyle = 'rgba(10,10,20,.25)';
+        ctx.fillRect(0, 0, W, H);
+        var alive = false;
+        for (var i = 0; i < particles.length; i++) {
+          var p = particles[i];
+          p.vy += 0.18;   // 重力
+          p.vx *= 0.98;   // 空气阻力
+          p.x += p.vx;
+          p.y += p.vy;
+          ctx.fillStyle = 'hsl(' + p.hue + ', 90%, 70%)';
+          ctx.shadowColor = 'hsl(' + p.hue + ', 90%, 70%)';
+          ctx.shadowBlur = 6;
+          ctx.fillRect(p.x, p.y, p.size, p.size);
+          ctx.shadowBlur = 0;
+          if (p.y < H + 20) alive = true;
+        }
+        if (alive) anim1 = requestAnimationFrame(tick);
+        else {
+          drawStatic();
+          anim1 = null;
+        }
+      }
+      if (anim1) cancelAnimationFrame(anim1);
+      tick();
+    }
+  })();
+
+  // ===== 动画 2：星空穿越 =====
+  (function () {
+    var canvas = document.getElementById('cmq_c2');
+    var parent = canvas.parentElement;
+    var W = 0, H = 0, ctx, stars = [], running = false, anim2 = null;
+
+    function resize() {
+      var r = parent.getBoundingClientRect();
+      var dpr = window.devicePixelRatio || 1;
+      W = r.width; H = 320;
+      canvas.width = W * dpr; canvas.height = H * dpr;
+      canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+      ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+      drawBg();
+    }
+    function drawBg() {
+      ctx.fillStyle = '#0a0a14';
+      ctx.fillRect(0, 0, W, H);
+    }
+
+    function initStars() {
+      stars = [];
+      for (var i = 0; i < 200; i++) {
+        stars.push({
+          x: Math.random() * W - W / 2,
+          y: Math.random() * H - H / 2,
+          z: Math.random(),
+          pz: Math.random()
+        });
+      }
+    }
+
+    function tick() {
+      ctx.fillStyle = 'rgba(10,10,20,.35)';
+      ctx.fillRect(0, 0, W, H);
+      var cx = W / 2, cy = H / 2;
+      for (var i = 0; i < stars.length; i++) {
+        var s = stars[i];
+        s.pz = s.z;
+        s.z -= 0.012;
+        if (s.z <= 0) {
+          s.x = Math.random() * W - W / 2;
+          s.y = Math.random() * H - H / 2;
+          s.z = 1; s.pz = 1;
+        }
+        var sx = cx + (s.x / s.z);
+        var sy = cy + (s.y / s.z);
+        var px = cx + (s.x / s.pz);
+        var py = cy + (s.y / s.pz);
+        var size = (1 - s.z) * 2.2 + 0.2;
+        var alpha = 1 - s.z;
+        ctx.strokeStyle = 'rgba(200,220,255,' + alpha + ')';
+        ctx.lineWidth = size;
+        ctx.beginPath();
+        ctx.moveTo(px, py);
+        ctx.lineTo(sx, sy);
+        ctx.stroke();
+      }
+      if (running) anim2 = requestAnimationFrame(tick);
+    }
+
+    resize(); initStars(); drawBg();
+    window.addEventListener('resize', function () { resize(); initStars(); });
+
+    document.getElementById('cmq_btn2').addEventListener('click', function () {
+      running = !running;
+      var btn = document.getElementById('cmq_btn2');
+      btn.textContent = running ? '⏸ 暂停' : '▶ 开始';
+      if (running) tick();
+    });
+    document.getElementById('cmq_btn2r').addEventListener('click', function () {
+      running = false;
+      if (anim2) cancelAnimationFrame(anim2); anim2 = null;
+      document.getElementById('cmq_btn2').textContent = '▶ 开始';
+      initStars(); drawBg();
+    });
+  })();
+
+  // ===== 动画 3：水波 =====
+  (function () {
+    var canvas = document.getElementById('cmq_c3');
+    var parent = canvas.parentElement;
+    var W = 0, H = 0, ctx, t = 0, speed = 0.04, running = false, anim3 = null;
+
+    function resize() {
+      var r = parent.getBoundingClientRect();
+      var dpr = window.devicePixelRatio || 1;
+      W = r.width; H = 320;
+      canvas.width = W * dpr; canvas.height = H * dpr;
+      canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+      ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+      drawBg();
+    }
+    function drawBg() {
+      var g = ctx.createLinearGradient(0, 0, 0, H);
+      g.addColorStop(0, '#0f172a'); g.addColorStop(1, '#1e293b');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, W, H);
+    }
+
+    var colors = ['#a5b4fc', '#818cf8', '#ec4899', '#f472b6', '#60a5fa'];
+
+    function tick() {
+      ctx.fillStyle = 'rgba(15,23,42,.25)';
+      ctx.fillRect(0, 0, W, H);
+
+      for (var w = 0; w < 5; w++) {
+        ctx.strokeStyle = colors[w];
+        ctx.lineWidth = 2;
+        ctx.globalAlpha = 0.55 - w * 0.07;
+        ctx.beginPath();
+        for (var x = 0; x <= W; x++) {
+          var y = H / 2 + Math.sin(x * 0.025 + t + w * 0.8) * 30 +
+                  Math.sin(x * 0.05 + t * 1.3 + w * 0.4) * 15 +
+                  w * 8;
+          if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+      t += speed;
+      if (running) anim3 = requestAnimationFrame(tick);
+    }
+
+    resize(); drawBg();
+    window.addEventListener('resize', resize);
+
+    document.getElementById('cmq_btn3').addEventListener('click', function () {
+      running = !running;
+      var btn = document.getElementById('cmq_btn3');
+      btn.textContent = running ? '⏸ 暂停' : '▶ 开始';
+      if (running) tick();
+    });
+    document.getElementById('cmq_btn3s').addEventListener('click', function () {
+      speed = speed === 0.04 ? 0.015 : 0.04;
+      this.textContent = speed === 0.04 ? '🐢 变慢' : '🐇 变快';
+    });
+    document.getElementById('cmq_btn3r').addEventListener('click', function () {
+      running = false;
+      if (anim3) cancelAnimationFrame(anim3); anim3 = null;
+      document.getElementById('cmq_btn3').textContent = '▶ 开始';
+      t = 0; drawBg();
+    });
+  })();
+
+  // ===== 动画 4：烟花 =====
+  (function () {
+    var canvas = document.getElementById('cmq_c4');
+    var parent = canvas.parentElement;
+    var W = 0, H = 0, ctx, particles = [], auto = false, anim4 = null;
+
+    function resize() {
+      var r = parent.getBoundingClientRect();
+      var dpr = window.devicePixelRatio || 1;
+      W = r.width; H = 420;
+      canvas.width = W * dpr; canvas.height = H * dpr;
+      canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+      ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+      ctx.fillStyle = '#0a0a14';
+      ctx.fillRect(0, 0, W, H);
+    }
+
+    function launchFirework(tx, ty) {
+      var x = Math.random() * W;
+      var tx = tx !== undefined ? tx : Math.random() * W;
+      var ty = ty !== undefined ? ty : (H * 0.2 + Math.random() * H * 0.35);
+      var hue = Math.floor(Math.random() * 360);
+      // 上升
+      var rocket = {
+        x: x, y: H,
+        vx: (tx - x) / 60,
+        vy: -(H - ty) / 60 - 2,
+        life: 60,
+        hue: hue,
+        rocket: true
+      };
+      particles.push(rocket);
+    }
+
+    function explode(x, y, hue) {
+      var count = 60 + Math.floor(Math.random() * 40);
+      for (var i = 0; i < count; i++) {
+        var angle = (Math.PI * 2 * i) / count + Math.random() * 0.2;
+        var speed = 2 + Math.random() * 4;
+        particles.push({
+          x: x, y: y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          life: 60 + Math.random() * 40,
+          hue: hue + Math.random() * 30 - 15,
+          rocket: false
+        });
+      }
+    }
+
+    function tick() {
+      ctx.fillStyle = 'rgba(10,10,20,.18)';
+      ctx.fillRect(0, 0, W, H);
+
+      for (var i = particles.length - 1; i >= 0; i--) {
+        var p = particles[i];
+        if (p.rocket) {
+          p.x += p.vx; p.y += p.vy;
+          p.vy += 0.15;
+          ctx.fillStyle = 'hsl(' + p.hue + ',90%,80%)';
+          ctx.fillRect(p.x, p.y, 2.5, 6);
+          p.life--;
+          if (p.life <= 0 || p.vy >= 0) {
+            explode(p.x, p.y, p.hue);
+            particles.splice(i, 1);
+          }
+        } else {
+          p.x += p.vx; p.y += p.vy;
+          p.vy += 0.05;
+          p.vx *= 0.985;
+          p.vy *= 0.985;
+          var alpha = Math.max(0, p.life / 100);
+          ctx.fillStyle = 'hsla(' + p.hue + ',90%,70%,' + alpha + ')';
+          ctx.shadowColor = 'hsla(' + p.hue + ',90%,70%,0.9)';
+          ctx.shadowBlur = 6;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 1.6, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.shadowBlur = 0;
+          p.life--;
+          if (p.life <= 0) particles.splice(i, 1);
+        }
+      }
+
+      if (auto && Math.random() < 0.04) launchFirework();
+      anim4 = requestAnimationFrame(tick);
+    }
+
+    resize();
+    window.addEventListener('resize', resize);
+
+    document.getElementById('cmq_btn4').addEventListener('click', function () {
+      auto = !auto;
+      this.textContent = auto ? '⏸ 停止自动' : '▶ 自动放';
+      if (!anim4) tick();
+    });
+    document.getElementById('cmq_btn4m').addEventListener('click', function () {
+      launchFirework();
+      if (!anim4) tick();
+    });
+    document.getElementById('cmq_btn4r').addEventListener('click', function () {
+      auto = false;
+      if (anim4) cancelAnimationFrame(anim4); anim4 = null;
+      particles = [];
+      document.getElementById('cmq_btn4').textContent = '▶ 自动放';
+      ctx.fillStyle = '#0a0a14';
+      ctx.fillRect(0, 0, W, H);
+    });
+
+    canvas.addEventListener('click', function (e) {
+      var rect = canvas.getBoundingClientRect();
+      launchFirework(e.clientX - rect.left, e.clientY - rect.top);
+      if (!anim4) tick();
+    });
+  })();
+
+  // ===== 动画 5：鼠标跟随粒子 =====
+  (function () {
+    var canvas = document.getElementById('cmq_c5');
+    var parent = canvas.parentElement;
+    var W = 0, H = 0, ctx, particles = [], anim5 = null;
+
+    function resize() {
+      var r = parent.getBoundingClientRect();
+      var dpr = window.devicePixelRatio || 1;
+      W = r.width; H = 320;
+      canvas.width = W * dpr; canvas.height = H * dpr;
+      canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+      ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+      ctx.fillStyle = '#0a0a14';
+      ctx.fillRect(0, 0, W, H);
+    }
+
+    function tick() {
+      ctx.fillStyle = 'rgba(10,10,20,.15)';
+      ctx.fillRect(0, 0, W, H);
+
+      for (var i = particles.length - 1; i >= 0; i--) {
+        var p = particles[i];
+        p.x += p.vx; p.y += p.vy;
+        p.vy += 0.06;
+        p.vx *= 0.98;
+        p.life -= 0.015;
+        if (p.life <= 0) { particles.splice(i, 1); continue; }
+        ctx.fillStyle = 'hsla(' + p.hue + ',90%,75%,' + p.life + ')';
+        ctx.shadowColor = 'hsl(' + p.hue + ',90%,75%)';
+        ctx.shadowBlur = 8;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+      anim5 = requestAnimationFrame(tick);
+    }
+
+    resize();
+    tick();
+    window.addEventListener('resize', function () { resize(); });
+
+    canvas.addEventListener('mousemove', function (e) {
+      var rect = canvas.getBoundingClientRect();
+      var x = e.clientX - rect.left;
+      var y = e.clientY - rect.top;
+      for (var i = 0; i < 3; i++) {
+        particles.push({
+          x: x + (Math.random() - 0.5) * 10,
+          y: y + (Math.random() - 0.5) * 10,
+          vx: (Math.random() - 0.5) * 3,
+          vy: (Math.random() - 0.5) * 2 - 1,
+          size: 1.5 + Math.random() * 2.5,
+          hue: Math.floor(Math.random() * 360),
+          life: 1
+        });
+      }
+    });
+
+    canvas.addEventListener('mouseleave', function () {
+      // 鼠标离开继续渲染让现有粒子自然消散
+    });
+  })();
+</script>
+
+</body>
+</html>

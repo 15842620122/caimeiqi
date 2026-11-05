@@ -1,0 +1,629 @@
+<!-- 姓名：蔡美琪，日期：2026-11-05，功能名称：Canvas 绘制粉色系电商系统架构图 -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>18-2 电商系统架构图</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 50%, #fbcfe8 100%);
+    background-attachment: fixed;
+    padding: 30px 20px;
+    color: #4a0e2e;
+    min-height: 100vh;
+  }
+  a.cmq_home {
+    display: inline-block;
+    margin-bottom: 16px;
+    color: #be185d;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  a.cmq_home:hover { text-decoration: underline; color: #9d174d; }
+
+  .cmq_container { max-width: 1300px; margin: 0 auto; }
+  .cmq_page_title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: #be185d;
+    text-shadow: 0 2px 12px rgba(236,72,153,.15);
+  }
+  .cmq_page_sub { font-size: 13px; color: #9d174d; margin-bottom: 22px; opacity: .75; }
+
+  .cmq_card {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(8px);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(190,24,93,.12);
+    padding: 24px;
+    margin-bottom: 22px;
+    border: 1px solid rgba(236,72,153,.15);
+  }
+  .cmq_card h2 {
+    font-size: 17px;
+    color: #be185d;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed #f9a8d4;
+  }
+
+  canvas.cmq_arch {
+    display: block;
+    width: 100%;
+    height: auto;
+    cursor: default;
+    border-radius: 12px;
+  }
+
+  .cmq_legend {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    margin-top: 18px;
+  }
+  .cmq_legend_item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: rgba(255,255,255,.6);
+    border-radius: 8px;
+    font-size: 12px;
+    color: #9d174d;
+  }
+  .cmq_legend_dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  .cmq_controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+  }
+  .cmq_btn {
+    padding: 8px 22px;
+    font-size: 13px;
+    font-family: inherit;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #fff;
+    background: #ec4899;
+    transition: all .2s;
+    font-weight: 500;
+  }
+  .cmq_btn:hover {
+    background: #db2777;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(236,72,153,.35);
+  }
+  .cmq_btn.cmq_purple { background: #a855f7; }
+  .cmq_btn.cmq_purple:hover { background: #9333ea; box-shadow: 0 4px 12px rgba(168,85,247,.35); }
+  .cmq_btn.cmq_cyan { background: #06b6d4; }
+  .cmq_btn.cmq_cyan:hover { background: #0891b2; box-shadow: 0 4px 12px rgba(6,182,212,.35); }
+
+  .cmq_tooltip {
+    position: fixed;
+    background: #be185d;
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .15s;
+    z-index: 999;
+    max-width: 240px;
+    box-shadow: 0 4px 14px rgba(190,24,93,.35);
+  }
+  .cmq_tooltip.cmq_show { opacity: 1; }
+  .cmq_tooltip .cmq_tt_title { font-weight: 600; margin-bottom: 3px; }
+  .cmq_tooltip .cmq_tt_body { opacity: .85; line-height: 1.5; }
+
+  .cmq_info_box {
+    margin-top: 16px;
+    padding: 14px 18px;
+    background: linear-gradient(135deg, #fce7f3, #fbcfe8);
+    border-radius: 10px;
+    font-size: 12.5px;
+    color: #9d174d;
+    line-height: 1.8;
+  }
+  .cmq_info_box b { color: #be185d; }
+</style>
+</head>
+<body>
+
+<a class="cmq_home" href="1.html">← 返回首页</a>
+
+<div class="cmq_container">
+  <div class="cmq_page_title">🛍️ 电商系统架构图</div>
+  <div class="cmq_page_sub">基于 Canvas 原生绘制 · 粉色系微服务架构 · 鼠标悬停节点查看详情</div>
+
+  <div class="cmq_card">
+    <h2>📐 系统全景</h2>
+    <canvas id="cmq_arch" class="cmq_arch"></canvas>
+
+    <div class="cmq_legend">
+      <div class="cmq_legend_item">
+        <div class="cmq_legend_dot" style="background:linear-gradient(135deg,#f472b6,#ec4899)"></div>
+        客户端层 (Client)
+      </div>
+      <div class="cmq_legend_item">
+        <div class="cmq_legend_dot" style="background:linear-gradient(135deg,#f9a8d4,#f472b6)"></div>
+        网关 / CDN 层
+      </div>
+      <div class="cmq_legend_item">
+        <div class="cmq_legend_dot" style="background:linear-gradient(135deg,#c084fc,#a855f7)"></div>
+        微服务层 (Service)
+      </div>
+      <div class="cmq_legend_item">
+        <div class="cmq_legend_dot" style="background:linear-gradient(135deg,#67e8f9,#06b6d4)"></div>
+        数据层 (Data)
+      </div>
+      <div class="cmq_legend_item">
+        <div class="cmq_legend_dot" style="background:linear-gradient(135deg,#fca5a5,#f87171)"></div>
+        基础设施 (Infra)
+      </div>
+      <div class="cmq_legend_item">
+        <div class="cmq_legend_dot" style="background:linear-gradient(90deg,#ec4899,#a855f7);height:3px;border-radius:2px"></div>
+        调用链路
+      </div>
+    </div>
+
+    <div class="cmq_controls">
+      <button class="cmq_btn" id="cmq_anim">✨ 流动动画开/关</button>
+      <button class="cmq_btn cmq_purple" id="cmq_pulse">💫 节点脉冲</button>
+      <button class="cmq_btn cmq_cyan" id="cmq_download">💾 下载 PNG</button>
+    </div>
+
+    <div class="cmq_info_box">
+      <b>架构说明：</b>
+      用户请求从 🖥️ 客户端进入 → 经 CDN 加速边缘节点 → 由负载均衡分发给 API 网关 → 鉴权/限流后路由到对应微服务 → 各服务按需读写 MySQL、Redis、MongoDB、ES 等数据存储 → 底层由 Docker + K8s 支撑弹性伸缩。
+      图中每个节点都可以 <b>鼠标悬停</b> 查看服务职责说明。
+    </div>
+  </div>
+</div>
+
+<div class="cmq_tooltip" id="cmq_tt">
+  <div class="cmq_tt_title" id="cmq_tt_title"></div>
+  <div class="cmq_tt_body" id="cmq_tt_body"></div>
+</div>
+
+<script>
+  // ===== 架构数据 =====
+  // 每个节点: id, 层(layer), 标题, 图标emoji, 说明
+  var cmq_nodes = [
+    // Layer 0: 客户端
+    { id: 'c1', layer: 0, title: 'Web 浏览器', icon: '🌐', x: 1, y: 0, desc: 'PC / H5 网站前端，Vue/React SPA 应用' },
+    { id: 'c2', layer: 0, title: '移动 App', icon: '📱', x: 2, y: 0, desc: 'iOS / Android 原生应用，Flutter 跨端' },
+    { id: 'c3', layer: 0, title: '小程序', icon: '🟢', x: 3, y: 0, desc: '微信 / 支付宝小程序，轻量级入口' },
+
+    // Layer 1: CDN + 负载均衡
+    { id: 'g1', layer: 1, title: 'CDN 边缘节点', icon: '⚡', x: 1.5, y: 1, desc: '静态资源加速，图片/JS/CSS 边缘缓存' },
+    { id: 'g2', layer: 1, title: 'DNS / SLB', icon: '🎯', x: 2.5, y: 1, desc: '阿里云 SLB / Nginx 负载均衡，流量分发' },
+
+    // Layer 2: API 网关
+    { id: 'gw', layer: 2, title: 'API Gateway', icon: '🚪', x: 2, y: 2, desc: '统一入口：鉴权、限流、灰度、日志、熔断' },
+
+    // Layer 3: 微服务
+    { id: 's1', layer: 3, title: '用户服务', icon: '👤', x: 0, y: 3, desc: '注册/登录/JWT/个人中心/收货地址' },
+    { id: 's2', layer: 3, title: '商品服务', icon: '📦', x: 1, y: 3, desc: 'SPU/SKU/分类/品牌/库存管理' },
+    { id: 's3', layer: 3, title: '订单服务', icon: '🧾', x: 2, y: 3, desc: '下单/取消/状态流转/超时关单' },
+    { id: 's4', layer: 3, title: '支付服务', icon: '💳', x: 3, y: 3, desc: '微信/支付宝对接，回调验签，对账' },
+    { id: 's5', layer: 3, title: '搜索服务', icon: '🔎', x: 4, y: 3, desc: 'Elasticsearch 全文检索，排序过滤' },
+    { id: 's6', layer: 3, title: '购物车', icon: '🛒', x: 0.5, y: 4, desc: 'Redis 实现的高性能购物车' },
+    { id: 's7', layer: 3, title: '营销服务', icon: '🎁', x: 1.5, y: 4, desc: '优惠券/秒杀/拼团/满减活动引擎' },
+    { id: 's8', layer: 3, title: '物流服务', icon: '🚚', x: 2.5, y: 4, desc: '快递对接，运单轨迹，发货管理' },
+    { id: 's9', layer: 3, title: '消息推送', icon: '📨', x: 3.5, y: 4, desc: '短信/邮件/App Push 通知' },
+
+    // Layer 4: 数据层
+    { id: 'd1', layer: 4, title: 'MySQL 主从', icon: '🗄️', x: 0, y: 5, desc: '业务关系数据，读写分离，分库分表' },
+    { id: 'd2', layer: 4, title: 'Redis 集群', icon: '⚙️', x: 1.2, y: 5, desc: '缓存/会话/购物车/排行榜，哨兵模式' },
+    { id: 'd3', layer: 4, title: 'MongoDB', icon: '🍃', x: 2.4, y: 5, desc: '商品详情/评价/日志，文档型存储' },
+    { id: 'd4', layer: 4, title: 'Elasticsearch', icon: '🔍', x: 3.6, y: 5, desc: '商品搜索/日志分析/全文检索引擎' },
+    { id: 'd5', layer: 4, title: 'Kafka 消息队列', icon: '📡', x: 4.6, y: 5, desc: '异步解耦，削峰填谷，事件驱动' },
+
+    // Layer 5: 基础设施
+    { id: 'i1', layer: 5, title: 'K8s 集群', icon: '☸️', x: 1.5, y: 6, desc: '容器编排，自动扩缩容，滚动发布' },
+    { id: 'i2', layer: 5, title: 'Docker 容器', icon: '🐳', x: 2.5, y: 6, desc: '服务打包镜像，统一运行环境' },
+    { id: 'i3', layer: 5, title: '监控告警', icon: '📊', x: 3.5, y: 6, desc: 'Prometheus + Grafana，链路追踪 SkyWalking' },
+  ];
+
+  // ===== 绘制 =====
+  var canvas = document.getElementById('cmq_arch');
+  var ctx;
+  var W = 0, H = 0;
+  var dpr = window.devicePixelRatio || 1;
+  var animating = false;
+  var pulseOn = false;
+  var animFrame = null;
+  var time = 0;
+  var hoveredNode = null;
+
+  // 每个节点的像素位置和尺寸
+  var pxNodes = [];
+
+  var cmq_layers = [
+    { color1: '#f472b6', color2: '#ec4899', label: '客户端层' },
+    { color1: '#f9a8d4', color2: '#f472b6', label: 'CDN / 负载均衡' },
+    { color1: '#e879f9', color2: '#c026d3', label: 'API 网关' },
+    { color1: '#c084fc', color2: '#a855f7', label: '微服务层' },
+    { color1: '#67e8f9', color2: '#06b6d4', label: '数据存储层' },
+    { color1: '#fca5a5', color2: '#f87171', label: '基础设施' },
+  ];
+
+  function resize() {
+    var parent = canvas.parentElement;
+    var r = parent.getBoundingClientRect();
+    var availW = r.width - 48; // padding
+    W = Math.max(720, availW);
+    // 根据节点层数动态算高度
+    H = Math.max(560, W * 0.72);
+
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+
+    computePositions();
+    draw();
+  }
+
+  function computePositions() {
+    pxNodes = [];
+    var layers = 7; // 0~6
+    var layerGap = H / (layers + 1);
+    var nodeW = Math.min(140, W / 6.5);
+    var nodeH = 54;
+
+    // 先按层分组
+    var byLayer = {};
+    for (var i = 0; i < cmq_nodes.length; i++) {
+      var n = cmq_nodes[i];
+      if (!byLayer[n.layer]) byLayer[n.layer] = [];
+      byLayer[n.layer].push(n);
+    }
+
+    for (var layer = 0; layer < layers; layer++) {
+      var arr = byLayer[layer] || [];
+      var cy = layerGap * (layer + 1);
+      var totalW = arr.length * nodeW + (arr.length - 1) * 18;
+      var startX = (W - totalW) / 2 + nodeW / 2;
+
+      arr.sort(function (a, b) { return a.x - b.x; });
+
+      for (var j = 0; j < arr.length; j++) {
+        var n = arr[j];
+        var px = startX + j * (nodeW + 18);
+        pxNodes.push({
+          id: n.id,
+          data: n,
+          cx: px,
+          cy: cy,
+          w: nodeW,
+          h: nodeH,
+          color1: cmq_layers[layer] ? cmq_layers[layer].color1 : '#ec4899',
+          color2: cmq_layers[layer] ? cmq_layers[layer].color2 : '#db2777',
+          layer: layer
+        });
+      }
+    }
+  }
+
+  function drawRoundRect(x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+  }
+
+  function drawBackground() {
+    // 粉色渐变背景
+    var g = ctx.createLinearGradient(0, 0, W, H);
+    g.addColorStop(0, '#fdf2f8');
+    g.addColorStop(0.5, '#fce7f3');
+    g.addColorStop(1, '#fbcfe8');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, W, H);
+
+    // 装饰小圆点
+    ctx.globalAlpha = 0.18;
+    for (var i = 0; i < 30; i++) {
+      var px = ((i * 97 + time * 0.2) % W);
+      var py = ((i * 163) % H);
+      ctx.fillStyle = '#ec4899';
+      ctx.beginPath();
+      ctx.arc(px, py, 3 + (i % 4), 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function drawLayerBands() {
+    var layers = 7;
+    var layerGap = H / (layers + 1);
+    var byLayer = {};
+    for (var i = 0; i < pxNodes.length; i++) {
+      var p = pxNodes[i];
+      if (!byLayer[p.layer]) byLayer[p.layer] = [];
+      byLayer[p.layer].push(p);
+    }
+    for (var l = 0; l < layers; l++) {
+      var arr = byLayer[l] || [];
+      if (arr.length === 0) continue;
+      var cy = layerGap * (l + 1);
+      // 层标签
+      var label = cmq_layers[l] ? cmq_layers[l].label : '';
+      ctx.save();
+      ctx.font = 'bold 12px Microsoft YaHei, sans-serif';
+      ctx.fillStyle = cmq_layers[l] ? cmq_layers[l].color2 : '#be185d';
+      ctx.globalAlpha = 0.5;
+      ctx.fillText('▌ ' + label, 16, cy + 4);
+      ctx.restore();
+    }
+  }
+
+  function drawConnections() {
+    // 连接规则：
+    // L0 -> L1: c1/c2/c3 -> g1/g2
+    // L1 -> L2: g1,g2 -> gw
+    // L2 -> L3: gw -> 所有 L3
+    // L3 -> L4: 各服务 -> 相关数据节点（简单画全连）
+    // L3 -> L5: 服务依赖 infra（底部虚线连）
+    var conns = [];
+
+    // L0 -> L1
+    var cNodes = pxNodes.filter(function (p) { return p.layer === 0; });
+    var gNodes = pxNodes.filter(function (p) { return p.layer === 1; });
+    for (var i = 0; i < cNodes.length; i++) {
+      for (var j = 0; j < gNodes.length; j++) {
+        conns.push({ from: cNodes[i], to: gNodes[j], w: 1 });
+      }
+    }
+    // L1 -> L2
+    var gwNodes = pxNodes.filter(function (p) { return p.layer === 2; });
+    for (var i = 0; i < gNodes.length; i++) {
+      for (var j = 0; j < gwNodes.length; j++) {
+        conns.push({ from: gNodes[i], to: gwNodes[j], w: 2 });
+      }
+    }
+    // L2 -> L3
+    var sNodes = pxNodes.filter(function (p) { return p.layer === 3; });
+    for (var i = 0; i < gwNodes.length; i++) {
+      for (var j = 0; j < sNodes.length; j++) {
+        conns.push({ from: gwNodes[i], to: sNodes[j], w: 1.5 });
+      }
+    }
+    // L3 -> L4
+    var dNodes = pxNodes.filter(function (p) { return p.layer === 4; });
+    for (var i = 0; i < sNodes.length; i++) {
+      for (var j = 0; j < dNodes.length; j++) {
+        conns.push({ from: sNodes[i], to: dNodes[j], w: 0.8 });
+      }
+    }
+    // L4 -> L5
+    var infraNodes = pxNodes.filter(function (p) { return p.layer === 5; });
+    for (var i = 0; i < dNodes.length; i++) {
+      for (var j = 0; j < infraNodes.length; j++) {
+        conns.push({ from: dNodes[i], to: infraNodes[j], w: 1 });
+      }
+    }
+
+    // 绘制
+    for (var i = 0; i < conns.length; i++) {
+      var c = conns[i];
+      var fx = c.from.cx, fy = c.from.cy + c.from.h / 2;
+      var tx = c.to.cx, ty = c.to.cy - c.to.h / 2;
+
+      // 贝塞尔曲线
+      var cpx1 = fx, cpy1 = fy + (ty - fy) * 0.5;
+      var cpx2 = tx, cpy2 = fy + (ty - fy) * 0.5;
+
+      var grad = ctx.createLinearGradient(fx, fy, tx, ty);
+      grad.addColorStop(0, c.from.color2 + '99');
+      grad.addColorStop(1, c.to.color2 + '99');
+
+      ctx.save();
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = c.w;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(fx, fy);
+      ctx.bezierCurveTo(cpx1, cpy1, cpx2, cpy2, tx, ty);
+      ctx.stroke();
+
+      // 流动光点（动画）
+      if (animating) {
+        var phase = ((time * 0.0015 + i * 0.13) % 1);
+        var mx = fx + (tx - fx) * phase;
+        var my = fy + (ty - fy) * phase + Math.sin(phase * Math.PI) * 6;
+        ctx.fillStyle = c.to.color2;
+        ctx.shadowColor = c.to.color2;
+        ctx.shadowBlur = 10;
+        ctx.beginPath();
+        ctx.arc(mx, my, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+      ctx.restore();
+    }
+  }
+
+  function drawNode(p) {
+    var x = p.cx - p.w / 2;
+    var y = p.cy - p.h / 2;
+    var r = 10;
+
+    // 脉冲
+    var pulseAlpha = 0;
+    var pulseR = 0;
+    if (pulseOn) {
+      pulseAlpha = 0.35 * (0.5 + 0.5 * Math.sin(time * 0.005 + p.cx));
+      pulseR = 8 * (0.5 + 0.5 * Math.sin(time * 0.005 + p.cx));
+    }
+
+    ctx.save();
+
+    // 脉冲圈
+    if (pulseAlpha > 0) {
+      ctx.globalAlpha = pulseAlpha;
+      ctx.fillStyle = p.color2;
+      drawRoundRect(x - pulseR, y - pulseR, p.w + pulseR * 2, p.h + pulseR * 2, r + pulseR);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+
+    // 阴影
+    ctx.shadowColor = p.color2 + '80';
+    ctx.shadowBlur = hoveredNode === p.id ? 20 : 10;
+    ctx.shadowOffsetY = 3;
+
+    // 渐变填充
+    var grad = ctx.createLinearGradient(x, y, x + p.w, y + p.h);
+    grad.addColorStop(0, p.color1);
+    grad.addColorStop(1, p.color2);
+    ctx.fillStyle = grad;
+    drawRoundRect(x, y, p.w, p.h, r);
+    ctx.fill();
+
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetY = 0;
+
+    // 高光
+    ctx.globalAlpha = 0.35;
+    var hg = ctx.createLinearGradient(x, y, x, y + p.h * 0.6);
+    hg.addColorStop(0, 'rgba(255,255,255,0.7)');
+    hg.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = hg;
+    drawRoundRect(x, y, p.w, p.h * 0.55, r);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+
+    // 边框（hover 高亮）
+    if (hoveredNode === p.id) {
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2.5;
+      drawRoundRect(x - 2, y - 2, p.w + 4, p.h + 4, r + 2);
+      ctx.stroke();
+    }
+
+    // 文字
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 13px Microsoft YaHei, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    // emoji 图标 + 标题
+    var iconSize = 18;
+    var titleSize = p.data.title.length > 5 ? 11 : 12;
+    var icon = p.data.icon;
+    ctx.font = iconSize + 'px sans-serif';
+    ctx.fillText(icon, p.cx, p.cy - 8);
+
+    ctx.font = 'bold ' + titleSize + 'px Microsoft YaHei, sans-serif';
+    ctx.fillText(p.data.title, p.cx, p.cy + 12);
+
+    ctx.restore();
+  }
+
+  function draw() {
+    drawBackground();
+    drawLayerBands();
+    drawConnections();
+    for (var i = 0; i < pxNodes.length; i++) {
+      drawNode(pxNodes[i]);
+    }
+  }
+
+  function tick() {
+    time += 16;
+    draw();
+    if (animating || pulseOn) animFrame = requestAnimationFrame(tick);
+  }
+
+  // ===== 事件 =====
+  canvas.addEventListener('mousemove', function (e) {
+    var rect = canvas.getBoundingClientRect();
+    var mx = e.clientX - rect.left;
+    var my = e.clientY - rect.top;
+    var found = null;
+    for (var i = 0; i < pxNodes.length; i++) {
+      var p = pxNodes[i];
+      if (mx >= p.cx - p.w / 2 && mx <= p.cx + p.w / 2 &&
+          my >= p.cy - p.h / 2 && my <= p.cy + p.h / 2) {
+        found = p; break;
+      }
+    }
+    if (found) {
+      hoveredNode = found.id;
+      var tt = document.getElementById('cmq_tt');
+      document.getElementById('cmq_tt_title').textContent = found.data.icon + '  ' + found.data.title;
+      document.getElementById('cmq_tt_body').textContent = found.data.desc;
+      tt.style.left = (e.clientX + 14) + 'px';
+      tt.style.top = (e.clientY + 14) + 'px';
+      tt.classList.add('cmq_show');
+    } else {
+      hoveredNode = null;
+      document.getElementById('cmq_tt').classList.remove('cmq_show');
+    }
+    draw();
+  });
+  canvas.addEventListener('mouseleave', function () {
+    hoveredNode = null;
+    document.getElementById('cmq_tt').classList.remove('cmq_show');
+    draw();
+  });
+
+  document.getElementById('cmq_anim').addEventListener('click', function () {
+    animating = !animating;
+    this.textContent = animating ? '⏸ 流动动画开' : '✨ 流动动画开/关';
+    if (animating || pulseOn) {
+      if (!animFrame) tick();
+    } else {
+      if (animFrame) cancelAnimationFrame(animFrame);
+      animFrame = null;
+      draw();
+    }
+  });
+  document.getElementById('cmq_pulse').addEventListener('click', function () {
+    pulseOn = !pulseOn;
+    this.textContent = pulseOn ? '⏸ 节点脉冲' : '💫 节点脉冲';
+    if (animating || pulseOn) {
+      if (!animFrame) tick();
+    } else {
+      if (animFrame) cancelAnimationFrame(animFrame);
+      animFrame = null;
+      draw();
+    }
+  });
+  document.getElementById('cmq_download').addEventListener('click', function () {
+    var link = document.createElement('a');
+    link.download = '电商系统架构图.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  });
+
+  window.addEventListener('resize', function () { resize(); });
+  resize();
+</script>
+
+</body>
+</html>
