@@ -1,0 +1,552 @@
+<!-- 姓名：蔡美琪，日期：2026-11-05，功能名称：ECharts 数据可视化（折线图 + 3D 地图） -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>18-4 ECharts 数据可视化 · 蔡美琪</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      min-height: 100vh;
+      font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+      background: linear-gradient(180deg, #0f172a, #1e1b4b 60%, #020617);
+      color: #e2e8f0;
+    }
+    a.cmq_back {
+      display: inline-block;
+      margin: 18px 24px 0;
+      padding: 8px 16px;
+      color: #22d3ee;
+      text-decoration: none;
+      font-size: 13px;
+      border: 1px solid rgba(34,211,238,.35);
+      border-radius: 20px;
+      background: rgba(15,23,42,.6);
+      transition: all .3s;
+    }
+    a.cmq_back:hover { background: rgba(34,211,238,.12); box-shadow: 0 0 16px rgba(34,211,238,.3); }
+    header.cmq_hd {
+      text-align: center;
+      padding: 28px 16px 18px;
+    }
+    header.cmq_hd h1 {
+      font-size: 30px;
+      font-weight: 700;
+      background: linear-gradient(90deg, #22d3ee, #a78bfa, #f472b6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 4px;
+    }
+    header.cmq_hd p {
+      margin-top: 8px;
+      color: #94a3b8;
+      font-size: 13px;
+      letter-spacing: 2px;
+    }
+    .cmq_container {
+      max-width: 1400px;
+      margin: 0 auto 40px;
+      padding: 0 16px;
+    }
+    .cmq_card {
+      background: linear-gradient(180deg, rgba(30,27,75,.6), rgba(10,10,26,.6));
+      border: 1px solid rgba(167,139,250,.25);
+      border-radius: 16px;
+      padding: 22px;
+      margin-bottom: 28px;
+      box-shadow: 0 10px 40px rgba(0,0,0,.5);
+    }
+    .cmq_card h2 {
+      font-size: 18px;
+      color: #22d3ee;
+      margin-bottom: 4px;
+      letter-spacing: 2px;
+    }
+    .cmq_card .cmq_desc {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-bottom: 14px;
+    }
+    .cmq_chart {
+      width: 100%;
+      height: 520px;
+      border-radius: 10px;
+      background: radial-gradient(ellipse at center, #0f172a 0%, #020617 100%);
+    }
+    .cmq_toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+    .cmq_btn {
+      padding: 6px 16px;
+      font-size: 12px;
+      border: 1px solid rgba(167,139,250,.35);
+      background: transparent;
+      color: #c4b5fd;
+      border-radius: 16px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all .25s;
+    }
+    .cmq_btn:hover { background: rgba(167,139,250,.12); }
+    .cmq_btn.active { background: linear-gradient(135deg,#06b6d4,#7c3aed); color: #fff; border-color: transparent; box-shadow: 0 0 12px rgba(109,40,217,.4); }
+  </style>
+  <script src="./cdn/echarts.min.js"></script>
+  <script src="./cdn/echarts-gl.min.js"></script>
+</head>
+<body>
+  <a href="1.html" class="cmq_back">← 返回首页</a>
+  <header class="cmq_hd">
+    <h1>ECHARTS · 数据可视化</h1>
+    <p>LINE CHART &amp; 3D MAP · WEBGL · BY 蔡美琪</p>
+  </header>
+
+  <div class="cmq_container">
+
+    <div class="cmq_card">
+      <h2>① 折线图 · 数据统计趋势</h2>
+      <div class="cmq_desc">多系列对比 + 渐变填充 + 数据区域缩放 + 动态切换。</div>
+      <div class="cmq_toolbar">
+        <button class="cmq_btn active" data-series="4">4 系列</button>
+        <button class="cmq_btn" data-series="6">6 系列</button>
+        <button class="cmq_btn" data-series="8">8 系列</button>
+        <button class="cmq_btn" id="cmqBtnAnim">🔄 刷新数据</button>
+        <button class="cmq_btn" id="cmqBtnDark">◐ 明/暗</button>
+      </div>
+      <div id="cmqChart1" class="cmq_chart"></div>
+    </div>
+
+    <div class="cmq_card">
+      <h2>② 3D 地图 · 中国航线与城市</h2>
+      <div class="cmq_desc">基于 echarts-gl geo3D + scatter3D + lines3D，鼠标可拖拽旋转缩放。</div>
+      <div class="cmq_toolbar">
+        <button class="cmq_btn active" data-view="china">🇨🇳 中国地图</button>
+        <button class="cmq_btn" data-view="globe">🌍 3D 地球</button>
+      </div>
+      <div id="cmqChart2" class="cmq_chart"></div>
+    </div>
+
+  </div>
+
+  <script>
+    // ============================================================
+    //  1. 折线图
+    // ============================================================
+    var cmqChart1 = echarts.init(document.getElementById('cmqChart1'), 'dark');
+
+    var CMQ_MONTHS = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+    var CMQ_NAMES = ['营收','利润','流量','订单','用户','转化','留存','活跃'];
+    var CMQ_COLORS = ['#22d3ee','#a78bfa','#f472b6','#fbbf24','#34d399','#60a5fa','#fb7185','#c084fc'];
+
+    function cmqRandSeries(idx) {
+      var base = 200 + idx * 60;
+      var data = [];
+      for (var i = 0; i < 12; i++) {
+        data.push(Math.round(base + Math.random() * 280 + Math.sin(i + idx) * 40));
+      }
+      return data;
+    }
+
+    function cmqBuildLineOption(count) {
+      var series = [];
+      for (var i = 0; i < count; i++) {
+        var c = CMQ_COLORS[i % CMQ_COLORS.length];
+        var grad1 = new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+          { offset: 0, color: c + 'cc' },
+          { offset: 1, color: c + '08' }
+        ]);
+        var grad2 = new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+          { offset: 0, color: c + 'ff' },
+          { offset: 1, color: c + '88' }
+        ]);
+        series.push({
+          name: CMQ_NAMES[i],
+          type: 'line',
+          smooth: true,
+          symbol: 'circle',
+          symbolSize: 8,
+          data: cmqRandSeries(i),
+          itemStyle: { color: c, borderColor: '#fff', borderWidth: 1 },
+          lineStyle: { color: grad2, width: 3, shadowColor: c, shadowBlur: 10 },
+          areaStyle: { color: grad1 },
+          emphasis: { focus: 'series' }
+        });
+      }
+      return {
+        backgroundColor: 'transparent',
+        title: {
+          text: '📊 年度数据趋势分析',
+          left: 'center',
+          textStyle: { color: '#22d3ee', fontSize: 16, fontWeight: 700 }
+        },
+        tooltip: {
+          trigger: 'axis',
+          backgroundColor: 'rgba(15,23,42,.92)',
+          borderColor: 'rgba(167,139,250,.4)',
+          textStyle: { color: '#e2e8f0' },
+          axisPointer: { type: 'cross', label: { backgroundColor: '#6d28d9' } }
+        },
+        legend: {
+          top: 36,
+          textStyle: { color: '#cbd5e1' },
+          data: CMQ_NAMES.slice(0, count)
+        },
+        grid: { left: 50, right: 40, top: 90, bottom: 80 },
+        xAxis: {
+          type: 'category',
+          data: CMQ_MONTHS,
+          boundaryGap: false,
+          axisLine: { lineStyle: { color: '#475569' } },
+          axisLabel: { color: '#94a3b8' }
+        },
+        yAxis: {
+          type: 'value',
+          axisLine: { show: false },
+          axisTick: { show: false },
+          splitLine: { lineStyle: { color: 'rgba(148,163,184,.15)', type: 'dashed' } },
+          axisLabel: { color: '#94a3b8' }
+        },
+        dataZoom: [
+          { type: 'inside', start: 0, end: 100 },
+          { type: 'slider', height: 22, bottom: 20,
+            borderColor: 'rgba(167,139,250,.3)',
+            backgroundColor: 'rgba(15,23,42,.8)',
+            fillerColor: 'rgba(167,139,250,.2)',
+            handleStyle: { color: '#a78bfa' },
+            textStyle: { color: '#94a3b8' } }
+        ],
+        animationDuration: 1200,
+        animationEasing: 'cubicInOut',
+        series: series
+      };
+    }
+
+    cmqChart1.setOption(cmqBuildLineOption(4));
+    var cmqLineCount = 4;
+
+    document.querySelectorAll('[data-series]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        document.querySelectorAll('[data-series]').forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        cmqLineCount = parseInt(btn.dataset.series);
+        cmqChart1.setOption(cmqBuildLineOption(cmqLineCount), true);
+      });
+    });
+
+    document.getElementById('cmqBtnAnim').addEventListener('click', function () {
+      cmqChart1.setOption(cmqBuildLineOption(cmqLineCount), true);
+    });
+    var cmqIsDark = true;
+    document.getElementById('cmqBtnDark').addEventListener('click', function () {
+      cmqIsDark = !cmqIsDark;
+      cmqChart1.dispose();
+      cmqChart1 = echarts.init(document.getElementById('cmqChart1'), cmqIsDark ? 'dark' : null);
+      cmqChart1.setOption(cmqBuildLineOption(cmqLineCount));
+    });
+
+
+    // ============================================================
+    //  2. 3D 地图 —— 先注册 china.json，再 geo3D 或 globe
+    // ============================================================
+    var cmqChart2 = echarts.init(document.getElementById('cmqChart2'), 'dark');
+
+    // ------- 中国城市坐标 -------
+    var CMQ_CITIES = [
+      { name: '北京',   lng: 116.4074, lat: 39.9042, cat: 0 },
+      { name: '上海',   lng: 121.4737, lat: 31.2304, cat: 0 },
+      { name: '广州',   lng: 113.2644, lat: 23.1291, cat: 0 },
+      { name: '深圳',   lng: 114.0579, lat: 22.5431, cat: 1 },
+      { name: '杭州',   lng: 120.1551, lat: 30.2741, cat: 1 },
+      { name: '成都',   lng: 104.0668, lat: 30.5728, cat: 1 },
+      { name: '武汉',   lng: 114.3055, lat: 30.5930, cat: 1 },
+      { name: '西安',   lng: 108.9402, lat: 34.3416, cat: 1 },
+      { name: '南京',   lng: 118.7969, lat: 32.0603, cat: 1 },
+      { name: '重庆',   lng: 106.5516, lat: 29.5630, cat: 1 },
+      { name: '长沙',   lng: 112.9388, lat: 28.2282, cat: 1 },
+      { name: '青岛',   lng: 120.3826, lat: 36.0671, cat: 1 },
+      { name: '大连',   lng: 121.6187, lat: 38.9140, cat: 2 },
+      { name: '哈尔滨', lng: 126.6424, lat: 45.7567, cat: 2 },
+      { name: '乌鲁木齐', lng: 87.6168, lat: 43.8256, cat: 2 },
+      { name: '拉萨',   lng: 91.1322,  lat: 29.6500, cat: 2 },
+      { name: '海口',   lng: 110.3312, lat: 20.0311, cat: 2 },
+      { name: '昆明',   lng: 102.8329, lat: 25.0389, cat: 2 },
+      { name: '厦门',   lng: 118.0894, lat: 24.4798, cat: 2 },
+      { name: '呼和浩特', lng: 111.7492, lat: 40.8426, cat: 2 }
+    ];
+
+    var CMQ_HUB = ['北京','上海','广州'];
+    var CMQ_CAT_COLOR = ['#f472b6','#22d3ee','#a78bfa'];
+
+    function cmqBuildScatterData(cities) {
+      return cities.map(function (c) {
+        return {
+          name: c.name,
+          value: [c.lng, c.lat, 12 + c.cat * 6],
+          itemStyle: { color: CMQ_CAT_COLOR[c.cat] },
+          symbolSize: 14 - c.cat * 2,
+          label: { show: true, formatter: c.name, textStyle: { color: '#fff', fontSize: 11 } }
+        };
+      });
+    }
+
+    function cmqBuildLinesData(cities) {
+      var hubCities = CMQ_HUB;
+      var data = [];
+      for (var i = 0; i < hubCities.length; i++) {
+        var hub = cities.find(function (c) { return c.name === hubCities[i]; });
+        if (!hub) continue;
+        for (var j = 0; j < cities.length; j++) {
+          if (cities[j].name !== hub.name && Math.random() < 0.55) {
+            data.push({
+              coords: [[hub.lng, hub.lat], [cities[j].lng, cities[j].lat]],
+              lineStyle: { color: CMQ_CAT_COLOR[i % CMQ_CAT_COLOR.length] }
+            });
+          }
+        }
+      }
+      return data;
+    }
+
+    // --------- 中国 3D 地图 ---------
+    function cmqShowChinaMap() {
+      cmqChart2.showLoading('default', { text: '加载地图...', color: '#22d3ee', textColor: '#e2e8f0', maskColor: 'rgba(15,23,42,.9)' });
+      fetch('./cdn/china.json').then(function (r) { return r.json(); }).then(function (geo) {
+        echarts.registerMap('china', geo);
+        cmqChart2.hideLoading();
+
+        var scatter = cmqBuildScatterData(CMQ_CITIES);
+        var lines = cmqBuildLinesData(CMQ_CITIES);
+
+        cmqChart2.setOption({
+          backgroundColor: 'transparent',
+          tooltip: {
+            backgroundColor: 'rgba(15,23,42,.92)',
+            borderColor: 'rgba(167,139,250,.4)',
+            textStyle: { color: '#e2e8f0' },
+            formatter: function (p) {
+              if (p.seriesType === 'scatter3D') return '<b>' + p.data.name + '</b>';
+              return '';
+            }
+          },
+          title: {
+            text: '🗺️ 中国城市航线 3D 地图',
+            subtext: '拖拽旋转 · 滚轮缩放',
+            left: 'center',
+            top: 10,
+            textStyle: { color: '#22d3ee', fontSize: 15, fontWeight: 700 },
+            subtextStyle: { color: '#94a3b8', fontSize: 11 }
+          },
+          visualMap: { show: false, min: 0, max: 100 },
+          geo3D: {
+            map: 'china',
+            boxWidth: 120,
+            boxDepth: 100,
+            boxHeight: 2,
+            regionHeight: 0.6,
+            shading: 'realistic',
+            realisticMaterial: {
+              roughness: 0.45,
+              metalness: 0.1,
+              textureTiling: 2
+            },
+            light: {
+              main: {
+                intensity: 1.3,
+                shadow: true,
+                shadowQuality: 'high',
+                alpha: 40,
+                beta: 40
+              },
+              ambient: { intensity: 0.35 }
+            },
+            postEffect: {
+              enable: true,
+              SSAO: { enable: true, quality: 'high', radius: 2, intensity: 1.2 }
+            },
+            viewControl: {
+              alpha: 45,
+              beta: 10,
+              distance: 160,
+              panMouseButton: 'left',
+              rotateMouseButton: 'right',
+              autoRotate: false
+            },
+            itemStyle: {
+              color: '#2d1b69',
+              borderWidth: 0.8,
+              borderColor: '#7c3aed'
+            },
+            label: { show: false },
+            emphasis: {
+              label: { show: true, color: '#fff' },
+              itemStyle: { color: '#4c1d95' }
+            }
+          },
+          series: [
+            {
+              type: 'scatter3D',
+              coordinateSystem: 'geo3D',
+              blendMode: 'lighter',
+              symbolSize: 10,
+              data: scatter,
+              itemStyle: { borderColor: '#fff', borderWidth: 0.5 }
+            },
+            {
+              type: 'lines3D',
+              coordinateSystem: 'geo3D',
+              effect: {
+                show: true,
+                period: 4,
+                trailLength: 0.18,
+                trailWidth: 1.6
+              },
+              blendMode: 'lighter',
+              lineStyle: { width: 1, opacity: 0.5 },
+              data: lines
+            }
+          ]
+        }, true);
+      }).catch(function (e) {
+        cmqChart2.hideLoading();
+        cmqChart2.setOption({
+          backgroundColor: 'transparent',
+          title: { text: 'china.json 加载失败，请检查 cdn 目录', left: 'center', textStyle: { color: '#f472b6' } }
+        });
+      });
+    }
+
+    // --------- 3D 地球（globe 组件，无需地图文件） ---------
+    function cmqShowGlobe() {
+      var CMQ_WORLD_CITIES = [
+        { name: '北京',     lng: 116.4074, lat: 39.9042 },
+        { name: '上海',     lng: 121.4737, lat: 31.2304 },
+        { name: '东京',     lng: 139.6917, lat: 35.6895 },
+        { name: '首尔',     lng: 126.9780, lat: 37.5665 },
+        { name: '新加坡',   lng: 103.8198, lat: 1.3521 },
+        { name: '迪拜',     lng: 55.2708,  lat: 25.2048 },
+        { name: '伦敦',     lng: -0.1276,  lat: 51.5074 },
+        { name: '巴黎',     lng: 2.3522,   lat: 48.8566 },
+        { name: '纽约',     lng: -74.0060, lat: 40.7128 },
+        { name: '洛杉矶',   lng: -118.2437,lat: 34.0522 },
+        { name: '悉尼',     lng: 151.2093, lat: -33.8688 },
+        { name: '莫斯科',   lng: 37.6173,  lat: 55.7558 },
+        { name: '开罗',     lng: 31.2357,  lat: 30.0444 },
+        { name: '圣保罗',   lng: -46.6333, lat: -23.5505 },
+        { name: '墨西哥城', lng: -99.1332, lat: 19.4326 },
+        { name: '多伦多',   lng: -79.3832, lat: 43.6532 }
+      ];
+      var CMQ_WORLD_ROUTES = (function () {
+        var hubs = [0, 1, 4, 6, 8];
+        var routes = [];
+        for (var i = 0; i < CMQ_WORLD_CITIES.length; i++) {
+          for (var j = 0; j < hubs.length; j++) {
+            if (i !== hubs[j] && Math.random() < 0.4) {
+              routes.push({ coords: [
+                [CMQ_WORLD_CITIES[hubs[j]].lng, CMQ_WORLD_CITIES[hubs[j]].lat],
+                [CMQ_WORLD_CITIES[i].lng, CMQ_WORLD_CITIES[i].lat]
+              ]});
+            }
+          }
+        }
+        return routes;
+      })();
+
+      cmqChart2.setOption({
+        backgroundColor: 'transparent',
+        title: {
+          text: '🌍 3D 地球 · 全球航线',
+          subtext: 'echarts-gl globe + lines3D',
+          left: 'center',
+          top: 10,
+          textStyle: { color: '#22d3ee', fontSize: 15, fontWeight: 700 },
+          subtextStyle: { color: '#94a3b8', fontSize: 11 }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(15,23,42,.92)',
+          borderColor: 'rgba(167,139,250,.4)',
+          textStyle: { color: '#e2e8f0' },
+          formatter: function (p) {
+            if (p.seriesType === 'scatter3D') return '<b>' + p.data.name + '</b>';
+            return '';
+          }
+        },
+        globe: {
+          baseTexture: '',
+          heightTexture: '',
+          shading: 'lambert',
+          showAtmosphere: true,
+          atmosphere: {
+            show: true,
+            offset: 0,
+            blur: 30,
+            color: 'rgba(102,126,234,0.35)'
+          },
+          globeOuterRadius: 100,
+          lighting: {
+            main: { intensity: 1.2, shadow: false },
+            ambient: { intensity: 0.4 }
+          },
+          itemStyle: {
+            color: '#1a1a3e',
+            borderWidth: 0.5,
+            borderColor: '#4c1d95'
+          },
+          viewControl: {
+            alpha: 25,
+            beta: 0,
+            distance: 160,
+            autoRotate: true,
+            autoRotateSpeed: 8
+          }
+        },
+        series: [
+          {
+            type: 'lines3D',
+            coordinateSystem: 'globe',
+            effect: {
+              show: true,
+              period: 4,
+              trailLength: 0.18,
+              trailWidth: 1.8,
+              trailColor: 'rgba(34,211,238,.5)'
+            },
+            blendMode: 'lighter',
+            lineStyle: { color: '#22d3ee', width: 1, opacity: 0.6 },
+            data: CMQ_WORLD_ROUTES
+          },
+          {
+            type: 'scatter3D',
+            coordinateSystem: 'globe',
+            blendMode: 'lighter',
+            symbolSize: 10,
+            itemStyle: { color: '#f472b6', borderColor: '#fff', borderWidth: 0.5 },
+            label: { show: true, formatter: '{b}', textStyle: { color: '#f472b6', fontSize: 11 } },
+            data: CMQ_WORLD_CITIES.map(function (c) {
+              return { name: c.name, value: [c.lng, c.lat] };
+            })
+          }
+        ]
+      }, true);
+    }
+
+    cmqShowChinaMap();
+
+    document.querySelectorAll('[data-view]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        document.querySelectorAll('[data-view]').forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        if (btn.dataset.view === 'china') cmqShowChinaMap();
+        else cmqShowGlobe();
+      });
+    });
+
+    window.addEventListener('resize', function () {
+      cmqChart1.resize();
+      cmqChart2.resize();
+    });
+  </script>
+</body>
+</html>
